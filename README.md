@@ -1,3 +1,7 @@
+<p align="center" >
+<img src="https://s3-eu-west-1.amazonaws.com/hokoassets/hoko_logo.png" alt="Hoko" title="Hoko">
+</p>
+
 # What's Hoko?
 
 The Hoko Framework is a easy to use deep linking framework that enables an app to map deep linking routes to actual behavior in the app. This behavior can include showing a particular screen or performing a certain action. Hoko also provides new ways for users to be redirected to your app regardless of the platform they are on.
