@@ -10,15 +10,22 @@ your.app.scheme://<mapped_route>/<route_param>?<query_params>
 
 # Quick Start - Hoko Framework for Android
 
-This document is just a quick start introduction to the Hoko Framework for Android. You can read the full documentation at [https://www.hoko.com/documentation/android/](https://www.hoko.com/documentation/android/).
+This document is just a quick start introduction to the Hoko Framework for Android. You can read the full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
 
 To integrate Hoko in your app, just follow the 4 simple steps below after adding it to your project.
 
 ## Add Hoko to your project
 
-Add the `Hoko-v0.1.jar` to the `/libs` folder in your project.
+Add the `Hoko.jar` to the `/libs` folder in your project.
 
 Be sure your project includes the `Android Support Library v4` and the `Google Play Services` if you want to use the push notifications module.
+```java
+dependencies {
+	compile fileTree(include: ['*.jar'], dir: 'libs')
+	compile 'com.google.android.gms:play-services:6.5.87'
+	compile 'com.android.support:support-v4:21.0.3'
+}
+```
 
 ## Start using Hoko
 
@@ -141,7 +148,7 @@ Hoko.analytics().identifyUser("johndoe", HokoUserAccountType.GITHUB, "John Doe",
 
 ### Full documentation
 
-We recommend you to read the full documentation at [https://www.hoko.com/documentation/android/](https://www.hoko.com/documentation/android/).
+We recommend you to read the full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
 
 
 # Author
