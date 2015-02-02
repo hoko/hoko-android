@@ -114,16 +114,19 @@ To make sure your application receives notifications from the `Hoko` service, yo
 
 ### 3. Deeplinking
 
+#### Activities
+
 To map routes to your `Activities` all you have to do is use the proper annotations.
 
 ```java
-@HokoDeeplinkable("product/:product_id")
+// ProductActivity.java
+@DeeplinkRoute("product/:product_id")
 public class ProductActivity extends Activity {
 
-	@HokoRouteParameter("product_id")
+	@DeeplinkRouteParameter("product_id")
 	private int mProductId;
 	
-	@HokoQueryParameter("product_price")
+	@DeeplinkQueryParameter("product_price")
 	private String mProductPrice;
 
 	@Override
