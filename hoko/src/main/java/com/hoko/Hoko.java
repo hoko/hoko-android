@@ -5,7 +5,6 @@ import android.content.Context;
 import com.hoko.analytics.HokoAnalytics;
 import com.hoko.deeplinking.HokoAnnotationParser;
 import com.hoko.deeplinking.HokoDeeplinking;
-import com.hoko.hoko.BuildConfig;
 import com.hoko.model.HokoApp;
 import com.hoko.model.exceptions.HokoSetupCalledMoreThanOnceException;
 import com.hoko.model.exceptions.HokoSetupNotCalledYetException;
@@ -28,6 +27,8 @@ import com.hoko.utils.versionchecker.HokoVersionChecker;
  * Hoko.setup(this, "YOUR-API-TOKEN")
  */
 public class Hoko {
+
+    public static String HokoVersion = "1.1.0";
 
     // Static Instance
     private static Hoko mInstance;
@@ -92,7 +93,7 @@ public class Hoko {
             HokoAnnotationParser.parseActivities(context);
             if (debugMode) {
                 HokoApp.postIcon(token, context);
-                HokoVersionChecker.getInstance().checkForNewVersion(BuildConfig.VERSION_NAME);
+                HokoVersionChecker.getInstance().checkForNewVersion(HokoVersion);
             }
         } else {
             HokoLog.e(new HokoSetupCalledMoreThanOnceException());

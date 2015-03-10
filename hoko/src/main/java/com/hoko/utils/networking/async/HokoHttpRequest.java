@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.net.http.AndroidHttpClient;
 
 import com.hoko.Hoko;
-import com.hoko.hoko.BuildConfig;
 import com.hoko.model.exceptions.HokoException;
 import com.hoko.utils.log.HokoLog;
 
@@ -228,7 +227,7 @@ public class HokoHttpRequest implements Serializable {
         get.setHeader("Accept-Encoding", "gzip");
         if (getToken() != null) {
             get.setHeader("Authorization", "Token " + getToken());
-            get.setHeader("Hoko-SDK-Version", BuildConfig.VERSION_NAME);
+            get.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
         }
         HttpResponse httpResponse = httpClient.execute(get);
         handleHttpResponse(httpResponse, httpCallback);
@@ -250,7 +249,7 @@ public class HokoHttpRequest implements Serializable {
         put.setHeader("Content-Type", "gzip/json");
         if (getToken() != null) {
             put.setHeader("Authorization", "Token " + getToken());
-            put.setHeader("Hoko-SDK-Version", BuildConfig.VERSION_NAME);
+            put.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
         }
 
         put.setEntity(getCompressedEntity(getParameters().getBytes(), null));
@@ -276,7 +275,7 @@ public class HokoHttpRequest implements Serializable {
         post.setHeader("Content-Type", "gzip/json");
         if (getToken() != null) {
             post.setHeader("Authorization", "Token " + getToken());
-            post.setHeader("Hoko-SDK-Version", BuildConfig.VERSION_NAME);
+            post.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
         }
 
         post.setEntity(getCompressedEntity(getParameters().getBytes(), null));

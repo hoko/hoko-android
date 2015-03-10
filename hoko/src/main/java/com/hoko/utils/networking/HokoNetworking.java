@@ -48,6 +48,7 @@ public class HokoNetworking {
      *
      * @param context A context object.
      */
+    @SuppressWarnings("unchecked")
     private HokoNetworking(Context context) {
         mContext = context;
         try {
