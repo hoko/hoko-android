@@ -154,8 +154,8 @@ public class HokoApplicationLifecycle {
                         }
 
                         private void handlePossibleBackground() {
-                            if (statusHistory.get(0) == HokoActivityStatus.PAUSED &&
-                                    statusHistory.get(1) == HokoActivityStatus.STOPPED) {
+                            if (statusHistory.get(0) == HokoActivityStatus.PAUSED
+                                    && statusHistory.get(1) == HokoActivityStatus.STOPPED) {
                                 onPause();
                             }
                             statusHistory = new ArrayList<HokoActivityStatus>();

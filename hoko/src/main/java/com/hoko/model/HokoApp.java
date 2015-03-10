@@ -211,7 +211,7 @@ public class HokoApp {
     public static void postIcon(String token, Context context) {
         String previousAppIcon = HokoUtils.getString(HokoAppIconKey, context);
         String iconJson = iconJSON(context).toString();
-        String iconJsonMD5 = HokoUtils.MD5FromString(iconJson);
+        String iconJsonMD5 = HokoUtils.md5FromString(iconJson);
 
         if (previousAppIcon == null || previousAppIcon.compareTo(iconJsonMD5) != 0) {
             HokoUtils.saveString(iconJsonMD5, HokoAppIconKey, context);

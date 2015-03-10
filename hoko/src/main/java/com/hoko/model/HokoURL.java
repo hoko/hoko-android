@@ -103,7 +103,7 @@ public class HokoURL {
      * @return A String object representing the sanitized url.
      */
     public static String sanitizeURL(String urlString) {
-        String sanitizedURLString = urlString.replaceAll("^/+","");
+        String sanitizedURLString = urlString.replaceAll("^/+", "");
         sanitizedURLString = sanitizedURLString.replaceAll("/+$", "");
         sanitizedURLString = sanitizedURLString.replaceAll("(?<!:)(/)+", "/");
         return sanitizedURLString;

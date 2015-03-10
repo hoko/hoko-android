@@ -32,6 +32,7 @@ public class HokoDateUtils {
 
     /**
      * Accessor for static GMT timezone instance.
+     *
      * @return The GMT Timezone
      */
     public static TimeZone timeZoneGMT() {
@@ -78,9 +79,9 @@ public class HokoDateUtils {
     /**
      * Format date into yyyy-MM-ddThh:mm:ss[.sss][Z|[+-]hh:mm]
      *
-     * @param date   the date to format
-     * @param millis true to include millis precision otherwise false
-     * @param tz     timezone to use for the formatting (GMT will produce 'Z')
+     * @param date     the date to format
+     * @param millis   true to include millis precision otherwise false
+     * @param tz       timezone to use for the formatting (GMT will produce 'Z')
      * @param dateOnly boolean whether to return only the date.
      * @return the date formatted as yyyy-MM-ddThh:mm:ss[.sss][Z|[+-]hh:mm]
      */
@@ -229,8 +230,8 @@ public class HokoDateUtils {
             IndexOutOfBoundsException {
         char found = value.charAt(offset);
         if (found != expected) {
-            throw new IndexOutOfBoundsException("Expected '" + expected + "' character but " +
-                    "found '" + found + "'");
+            throw new IndexOutOfBoundsException("Expected '" + expected + "' character but "
+                    + "found '" + found + "'");
         }
     }
 

@@ -153,8 +153,8 @@ public class HokoDevice {
      */
     public static boolean hasInternetConnectivity(Context context) {
         String internetConnectivity = getInternetConnectivity(context);
-        return internetConnectivity.equals(HokoDeviceConnectivityCellular) ||
-                internetConnectivity.equals(HokoDeviceConnectivityWifi);
+        return internetConnectivity.equals(HokoDeviceConnectivityCellular)
+                || internetConnectivity.equals(HokoDeviceConnectivityWifi);
     }
 
     /**
@@ -164,7 +164,7 @@ public class HokoDevice {
      * @param context A context object.
      * @return The one-time generated device ID.
      */
-    public synchronized static String getDeviceID(Context context) {
+    public static synchronized String getDeviceID(Context context) {
         String uid = HokoUtils.getString(HokoDeviceUUIDKey, context);
         if (uid == null) {
             uid = HokoUtils.generateUUID();

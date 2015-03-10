@@ -158,9 +158,9 @@ public class HokoDeeplink {
         String route = mRoute != null ? mRoute : "";
         String routeParameters = mRouteParameters != null ? mRouteParameters.toString() : "";
         String queryParameters = mQueryParameters != null ? mQueryParameters.toString() : "";
-        return "<HokoDeeplink> URLScheme='" + urlScheme + "' route ='" + route +
-                "' routeParameters='" + routeParameters + "' queryParameters='" + queryParameters +
-                "'";
+        return "<HokoDeeplink> URLScheme='" + urlScheme + "' route ='" + route
+                + "' routeParameters='" + routeParameters + "' queryParameters='" + queryParameters
+                + "'";
     }
 
 

@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DeeplinkRoute {
-    public static final String noValue = "DeeplinkNoValue";
+    static final String noValue = "DeeplinkNoValue";
 
-    public String value() default noValue;
+    String value() default noValue;
 
 }

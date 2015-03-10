@@ -37,8 +37,8 @@ public class HokoUtils {
      */
     public static boolean hasPermission(String permission, Context context) {
         PackageManager packageManager = context.getPackageManager();
-        if (packageManager.checkPermission(permission, context.getPackageName()) ==
-                PackageManager.PERMISSION_GRANTED) {
+        if (packageManager.checkPermission(permission, context.getPackageName())
+                == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
             HokoLog.e("Requesting permission " + permission
@@ -158,7 +158,7 @@ public class HokoUtils {
      * @param string The string of which to get the MD5 value.
      * @return The MD5 value.
      */
-    public static String MD5FromString(String string) {
+    public static String md5FromString(String string) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             byte[] array = md.digest(string.getBytes());

@@ -55,8 +55,8 @@ public class HokoVersionChecker {
                 if (versionName != null) {
                     String versionNumber = versionName.replace("v", "");
                     if (requiresUpdate(currentVersion, versionNumber)) {
-                        Log.e("HOKO", "A new version of HOKO is available at " +
-                                "http://github.com/hokolinks/hoko-android " + versionName);
+                        Log.e("HOKO", "A new version of HOKO is available at "
+                                + "http://github.com/hokolinks/hoko-android " + versionName);
                     }
                 }
             }

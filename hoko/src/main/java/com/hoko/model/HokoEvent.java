@@ -53,8 +53,8 @@ public class HokoEvent {
 
     @Override
     public String toString() {
-        return "<HokoEvent> name='" + mName + "' amount='" + mAmount + "' createdAt='" +
-                mCreatedAt + "'";
+        return "<HokoEvent> name='" + mName + "' amount='" + mAmount + "' createdAt='"
+                + mCreatedAt + "'";
     }
 
 }

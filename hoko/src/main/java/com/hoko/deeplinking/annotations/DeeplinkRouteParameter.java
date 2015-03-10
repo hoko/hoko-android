@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DeeplinkRouteParameter {
-    public String value();
+    String value();
 }

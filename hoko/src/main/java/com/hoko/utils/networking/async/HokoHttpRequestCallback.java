@@ -7,8 +7,8 @@ import org.json.JSONObject;
  */
 public interface HokoHttpRequestCallback {
 
-    public void onSuccess(JSONObject jsonObject);
+    void onSuccess(JSONObject jsonObject);
 
-    public void onFailure(Exception e);
+    void onFailure(Exception e);
 
 }

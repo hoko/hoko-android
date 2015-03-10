@@ -18,14 +18,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DeeplinkFragment {
 
-    public static final int noValue = -1;
+    static final int noValue = -1;
 
     /**
      * The view identifier into which Hoko should add the fragment. (e.g. R.id.content_view)
      *
      * @return The view id.
      */
-    public int id() default noValue;
+    int id() default noValue;
 
     /**
      * An array of Fragment subclasses. These Fragment subclasses should be annotated with
@@ -33,5 +33,5 @@ public @interface DeeplinkFragment {
      *
      * @return An array of Fragment subclasses.
      */
-    public Class[] fragments() default {};
+    Class[] fragments() default { };
 }

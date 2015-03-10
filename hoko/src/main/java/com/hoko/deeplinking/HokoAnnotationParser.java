@@ -204,8 +204,8 @@ public class HokoAnnotationParser {
         DeeplinkFragment deeplinkFragmentAnnotation =
                 getFragmentAnnotationFromClass(activity.getClass());
 
-        if (deeplinkFragmentAnnotation == null ||
-                deeplinkFragmentAnnotation.fragments().length == 0)
+        if (deeplinkFragmentAnnotation == null
+                || deeplinkFragmentAnnotation.fragments().length == 0)
             return false;
 
         Class[] fragmentClasses = deeplinkFragmentAnnotation.fragments();

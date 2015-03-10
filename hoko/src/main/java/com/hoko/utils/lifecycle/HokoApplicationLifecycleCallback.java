@@ -10,11 +10,11 @@ public interface HokoApplicationLifecycleCallback {
     /**
      * Will be called when the application is resumed.
      */
-    public void onResume();
+    void onResume();
 
     /**
      * Will be called when the application is paused.
      */
-    public void onPause();
+    void onPause();
 
 }

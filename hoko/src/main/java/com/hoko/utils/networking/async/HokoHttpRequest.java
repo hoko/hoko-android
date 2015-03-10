@@ -99,8 +99,8 @@ public class HokoHttpRequest implements Serializable {
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
-        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "." +
-                HokoNetworkingTaskFormat;
+        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "."
+                + HokoNetworkingTaskFormat;
     }
 
     // Property Gets
@@ -165,6 +165,8 @@ public class HokoHttpRequest implements Serializable {
                         case PUT:
                             performPUT(httpCallback);
                             break;
+                        default:
+                            break;
                     }
                 } catch (IOException e) {
                     HokoLog.e(e);
@@ -198,8 +200,8 @@ public class HokoHttpRequest implements Serializable {
         HostnameVerifier hostnameVerifier =
                 org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
-        DefaultHttpClient client = httpParams != null ? new DefaultHttpClient(httpParams) :
-                new DefaultHttpClient();
+        DefaultHttpClient client = httpParams != null ? new DefaultHttpClient(httpParams)
+                : new DefaultHttpClient();
 
         if (HokoNetworkingTaskEndpoint.startsWith("https")) {
 
@@ -232,7 +234,7 @@ public class HokoHttpRequest implements Serializable {
         get.setHeader("Accept-Encoding", "gzip");
         if (getToken() != null) {
             get.setHeader("Authorization", "Token " + getToken());
-            get.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
+            get.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
         HttpResponse httpResponse = httpClient.execute(get);
         handleHttpResponse(httpResponse, httpCallback);
@@ -254,7 +256,7 @@ public class HokoHttpRequest implements Serializable {
         put.setHeader("Content-Type", "gzip/json");
         if (getToken() != null) {
             put.setHeader("Authorization", "Token " + getToken());
-            put.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
+            put.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
 
         put.setEntity(getCompressedEntity(getParameters().getBytes(), null));
@@ -280,7 +282,7 @@ public class HokoHttpRequest implements Serializable {
         post.setHeader("Content-Type", "gzip/json");
         if (getToken() != null) {
             post.setHeader("Authorization", "Token " + getToken());
-            post.setHeader("Hoko-SDK-Version", Hoko.HokoVersion);
+            post.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
 
         post.setEntity(getCompressedEntity(getParameters().getBytes(), null));
