@@ -116,7 +116,9 @@ public class HokoApp {
         int iconResId = getIcon(context);
         Drawable drawable;
         if (android.os.Build.VERSION.SDK_INT >= 15) { //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
-            ArrayList<Integer> densities = new ArrayList<Integer>(Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH, DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
+            ArrayList<Integer> densities = new ArrayList<Integer>(
+                    Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
+                    DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
             if (Build.VERSION.SDK_INT >= 16) { //Build.VERSION_CODES.JELLY_BEAN
                 densities.add(0, 480); //DisplayMetrics.DENSITY_XXHIGH
             }
@@ -136,7 +138,11 @@ public class HokoApp {
     @TargetApi(15)
     public static Bitmap getIconBitmapForNotification(Context context) {
         Bitmap iconBitmap = BitmapFactory.decodeResource(context.getResources(), getIcon(context));
-        return Bitmap.createScaledBitmap(iconBitmap, context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_width), context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_height), true);
+        return Bitmap.createScaledBitmap(iconBitmap, context.getResources()
+                .getDimensionPixelOffset(android.R.dimen.notification_large_icon_width),
+                context.getResources()
+                        .getDimensionPixelOffset(android.R.dimen.notification_large_icon_height)
+                , true);
     }
 
     /**
@@ -158,7 +164,8 @@ public class HokoApp {
     }
 
     /**
-     * Converts all the HokoApp information into a JSONObject to be sent to the Hoko backend service.
+     * Converts all the HokoApp information into a JSONObject to be sent to the Hoko backend
+     * service.
      *
      * @param context A context object.
      * @return The JSONObject representation of HokoApp.
@@ -208,7 +215,8 @@ public class HokoApp {
 
         if (previousAppIcon == null || previousAppIcon.compareTo(iconJsonMD5) != 0) {
             HokoUtils.saveString(iconJsonMD5, HokoAppIconKey, context);
-            HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "icons", token, iconJson));
+            HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest
+                    .HokoNetworkOperationType.POST, "icons", token, iconJson));
         }
     }
 

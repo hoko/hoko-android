@@ -59,7 +59,8 @@ public class HokoURL {
      * in case it is a valid match.
      *
      * @param route A HokoRoute instance.
-     * @return A HashMap where the keys are route components and values are their value representation of path components.
+     * @return A HashMap where the keys are route components and values are their value
+     * representation of path components.
      */
     public HashMap<String, String> matchesWithRoute(HokoRoute route) {
         List<String> pathComponents = new ArrayList<String>();
@@ -77,9 +78,11 @@ public class HokoURL {
      *
      * @param pathComponents Path components in list form.
      * @param routeComponents Route components in list form.
-     * @return A HashMap where the keys are route components and values are their value representation of path components.
+     * @return A HashMap where the keys are route components and values are their value
+     * representation of path components.
      */
-    private static HashMap<String, String> matchComponents(List<String> pathComponents, List<String> routeComponents) {
+    private static HashMap<String, String> matchComponents(List<String> pathComponents,
+                                                           List<String> routeComponents) {
         HashMap<String, String> routeParameters = new HashMap<String, String>();
         for (int index = 0; index < pathComponents.size(); index++) {
             String pathComponent = pathComponents.get(index);

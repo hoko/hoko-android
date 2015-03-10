@@ -6,8 +6,8 @@ import com.hoko.model.HokoDeeplink;
 import java.util.ArrayList;
 
 /**
- * This class serves the purpose of abstracting the call of handlers from the HokoDeeplinking module,
- * it calls the handlers in the order they were added.
+ * This class serves the purpose of abstracting the call of handlers from the HokoDeeplinking
+ * module, it calls the handlers in the order they were added.
  */
 public class HokoHandling {
 

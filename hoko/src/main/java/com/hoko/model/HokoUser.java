@@ -21,7 +21,8 @@ import java.util.TimeZone;
  * HokoUser is the representation of a User, with a few properties to allow user segmentation
  * on the Hoko platform. There are 2 kinds of users: anonymous and identified.
  * Anonymous users have no attributes are exist solely for the purpose of tracking individual users.
- * Identified users have attributes which can later be used for segmentation in Hokolink redirection.
+ * Identified users have attributes which can later be used for segmentation in Hokolink
+ * redirection.
  * <p>
  * When identifying a user with an identifier it will associated the previous anonymous user
  * (in case it exists) the new user being created. This helps with dealing with duplicate users
@@ -64,7 +65,8 @@ public class HokoUser implements Serializable {
      * @param gender             The user's gender.
      * @param previousIdentifier The previous identifier in case the previous user was anonymous.
      */
-    public HokoUser(String identifier, HokoUserAccountType accountType, String name, String email, Date birthDate, HokoUserGender gender, String previousIdentifier) {
+    public HokoUser(String identifier, HokoUserAccountType accountType, String name, String email,
+                    Date birthDate, HokoUserGender gender, String previousIdentifier) {
         if (identifier != null) {
             mIdentifier = identifier;
             mAccountType = accountType;
@@ -131,7 +133,9 @@ public class HokoUser implements Serializable {
      * @param token The Hoko API Token.
      */
     public void post(String token, Context context) {
-        HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "users", token, json(context).toString()));
+        HokoNetworking.getNetworking().addRequest(
+                new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "users", token,
+                        json(context).toString()));
     }
 
     /**

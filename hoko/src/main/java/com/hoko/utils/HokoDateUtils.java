@@ -8,8 +8,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Utilities methods for manipulating dates in iso8601 format. This is much much faster and GC friendly than
- * using SimpleDateFormat so highly suitable if you (un)serialize lots of date objects.
+ * Utilities methods for manipulating dates in iso8601 format. This is much much faster and GC
+ * friendly than using SimpleDateFormat so highly suitable if you (un)serialize lots of date
+ * objects.
  */
 public class HokoDateUtils {
 
@@ -137,7 +138,8 @@ public class HokoDateUtils {
 	 */
 
     /**
-     * Parse a date from ISO-8601 formatted string. It expects a format yyyy-MM-ddThh:mm:ss[.sss][Z|[+-]hh:mm]
+     * Parse a date from ISO-8601 formatted string. It expects a format
+     * yyyy-MM-ddThh:mm:ss[.sss][Z|[+-]hh:mm]
      *
      * @param date ISO string to parse in the appropriate format.
      * @return the parsed date
@@ -169,7 +171,8 @@ public class HokoDateUtils {
 
             int seconds = parseInt(date, offset += 1, offset += 2);
             // milliseconds can be optional in the format
-            int milliseconds = 0; // always use 0 otherwise returned date will include millis of current time
+            // always use 0 otherwise returned date will include millis of current time
+            int milliseconds = 0;
             if (date.charAt(offset) == '.') {
                 checkOffset(date, offset, '.');
                 milliseconds = parseInt(date, offset += 1, offset += 3);
@@ -183,7 +186,8 @@ public class HokoDateUtils {
             } else if (timezoneIndicator == 'Z') {
                 timezoneId = GMT_ID;
             } else {
-                throw new IndexOutOfBoundsException("Invalid time zone indicator " + timezoneIndicator);
+                throw new IndexOutOfBoundsException("Invalid time zone indicator " +
+                        timezoneIndicator);
             }
             TimeZone timezone = TimeZone.getTimeZone(timezoneId);
             if (!timezone.getID().equals(timezoneId)) {
@@ -221,10 +225,12 @@ public class HokoDateUtils {
      * @param expected the expected character
      * @throws IndexOutOfBoundsException if the expected character is not found
      */
-    private static void checkOffset(String value, int offset, char expected) throws IndexOutOfBoundsException {
+    private static void checkOffset(String value, int offset, char expected) throws
+            IndexOutOfBoundsException {
         char found = value.charAt(offset);
         if (found != expected) {
-            throw new IndexOutOfBoundsException("Expected '" + expected + "' character but found '" + found + "'");
+            throw new IndexOutOfBoundsException("Expected '" + expected + "' character but " +
+                    "found '" + found + "'");
         }
     }
 
@@ -237,11 +243,13 @@ public class HokoDateUtils {
      * @return the int
      * @throws NumberFormatException if the value is not a number
      */
-    private static int parseInt(String value, int beginIndex, int endIndex) throws NumberFormatException {
+    private static int parseInt(String value, int beginIndex, int endIndex) throws
+            NumberFormatException {
         if (beginIndex < 0 || endIndex > value.length() || beginIndex > endIndex) {
             throw new NumberFormatException(value);
         }
-        // use same logic as in Integer.parseInt() but less generic we're not supporting negative values
+        // use same logic as in Integer.parseInt() but less generic we're not supporting negative
+        // values
         int i = beginIndex;
         int result = 0;
         int digit;

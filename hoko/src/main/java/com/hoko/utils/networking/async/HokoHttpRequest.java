@@ -41,7 +41,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 /**
  * HokoHttpRequest is a savable model around HttpRequests.
- * It contains the path, an operation type, parameters in the form of json and the number of retries.
+ * It contains the path, an operation type, parameters in the form of json and the number of
+ * retries.
  */
 public class HokoHttpRequest implements Serializable {
 
@@ -69,7 +70,8 @@ public class HokoHttpRequest implements Serializable {
      * @param token         The application token.
      * @param parameters    The parameters in json string form.
      */
-    public HokoHttpRequest(HokoNetworkOperationType operationType, String url, String token, String parameters) {
+    public HokoHttpRequest(HokoNetworkOperationType operationType, String url, String token,
+                           String parameters) {
         mOperationType = operationType;
         mUrl = url.contains("http") ? url : HokoHttpRequest.getURLFromPath(url);
         mToken = token;
@@ -97,7 +99,8 @@ public class HokoHttpRequest implements Serializable {
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
-        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "." + HokoNetworkingTaskFormat;
+        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "." +
+                HokoNetworkingTaskFormat;
     }
 
     // Property Gets
@@ -192,9 +195,11 @@ public class HokoHttpRequest implements Serializable {
      * @return The HttpClient.
      */
     private HttpClient getHttpsClient(HttpParams httpParams) {
-        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+        HostnameVerifier hostnameVerifier =
+                org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
-        DefaultHttpClient client = httpParams != null ? new DefaultHttpClient(httpParams) : new DefaultHttpClient();
+        DefaultHttpClient client = httpParams != null ? new DefaultHttpClient(httpParams) :
+                new DefaultHttpClient();
 
         if (HokoNetworkingTaskEndpoint.startsWith("https")) {
 
@@ -294,8 +299,10 @@ public class HokoHttpRequest implements Serializable {
      * @param httpCallback The HokoHttpRequestCallback object.
      * @throws IOException Throws an IOException in case of a network problem.
      */
-    private void handleHttpResponse(HttpResponse httpResponse, HokoHttpRequestCallback httpCallback) throws IOException {
-        InputStream gzipedInputStream = AndroidHttpClient.getUngzippedContent(httpResponse.getEntity());
+    private void handleHttpResponse(HttpResponse httpResponse, HokoHttpRequestCallback httpCallback)
+            throws IOException {
+        InputStream gzipedInputStream =
+                AndroidHttpClient.getUngzippedContent(httpResponse.getEntity());
         String response = convertStreamToString(gzipedInputStream);
         JSONObject jsonResponse;
         try {

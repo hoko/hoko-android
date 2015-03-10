@@ -37,7 +37,8 @@ public class HokoUtils {
      */
     public static boolean hasPermission(String permission, Context context) {
         PackageManager packageManager = context.getPackageManager();
-        if (packageManager.checkPermission(permission, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+        if (packageManager.checkPermission(permission, context.getPackageName()) ==
+                PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
             HokoLog.e("Requesting permission " + permission
@@ -54,7 +55,8 @@ public class HokoUtils {
      * @param context A context object.
      */
     public static void saveString(String string, String key, Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences =
+                context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, string);
         editor.apply();
@@ -68,7 +70,8 @@ public class HokoUtils {
      * @return The string in case it exists, null otherwise.
      */
     public static String getString(String key, Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences =
+                context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
         return sharedPreferences.getString(key, null);
     }
 
@@ -81,7 +84,8 @@ public class HokoUtils {
      */
     public static void saveToFile(Object object, String filename, Context context) {
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(fileFromFilename(filename, context));
+            FileOutputStream fileOutputStream =
+                    new FileOutputStream(fileFromFilename(filename, context));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
@@ -99,7 +103,8 @@ public class HokoUtils {
      */
     public static Object loadFromFile(String filename, Context context) {
         try {
-            FileInputStream fileInputStream = new FileInputStream(fileFromFilename(filename, context));
+            FileInputStream fileInputStream =
+                    new FileInputStream(fileFromFilename(filename, context));
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             Object object = objectInputStream.readObject();
             objectInputStream.close();

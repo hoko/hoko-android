@@ -49,26 +49,29 @@ public class HokoLinkGenerator {
      * @param deeplink A user generated deeplink or an annotation based deeplink.
      * @param listener A HokoLinkGenerationListener instance.
      */
-    private void requestForDeeplink(HokoDeeplink deeplink, final HokoLinkGenerationListener listener) {
+    private void requestForDeeplink(HokoDeeplink deeplink,
+                                    final HokoLinkGenerationListener listener) {
         //TODO Change to omnilinks
-        new HokoAsyncTask(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "omnilinks", mToken, deeplink.json().toString()).toRunnable(new HokoHttpRequestCallback() {
-            @Override
-            public void onSuccess(JSONObject jsonObject) {
-                String hokolink = jsonObject.optString("hokolink");
-                if (listener != null) {
-                    if (hokolink != null)
-                        listener.onLinkGenerated(hokolink);
-                    else
-                        listener.onError(new HokoLinkGenerationException());
-                }
-            }
+        new HokoAsyncTask(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST,
+                "omnilinks", mToken, deeplink.json().toString())
+                .toRunnable(new HokoHttpRequestCallback() {
+                    @Override
+                    public void onSuccess(JSONObject jsonObject) {
+                        String hokolink = jsonObject.optString("hokolink");
+                        if (listener != null) {
+                            if (hokolink != null)
+                                listener.onLinkGenerated(hokolink);
+                            else
+                                listener.onError(new HokoLinkGenerationException());
+                        }
+                    }
 
-            @Override
-            public void onFailure(Exception e) {
-                if (listener != null)
-                    listener.onError(new HokoLinkGenerationException());
-            }
-        })).execute();
+                    @Override
+                    public void onFailure(Exception e) {
+                        if (listener != null)
+                            listener.onError(new HokoLinkGenerationException());
+                    }
+                })).execute();
     }
 
 }

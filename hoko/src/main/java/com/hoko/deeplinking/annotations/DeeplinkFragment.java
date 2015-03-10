@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation on the fragment activities you wish to be deeplinkable.
- * <pre>{@code @DeeplinkFragment(id = R.id.content_view, fragments = {ProductFragment.class, CategoryFragment.class})
+ * <pre>{@code @DeeplinkFragment(id = R.id.content_view, fragments = {ProductFragment.class,
+ * CategoryFragment.class})
  * public class MainActivity extends FragmentActivity { ... }
  * }</pre>
  */

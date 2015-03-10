@@ -5,6 +5,7 @@ package com.hoko.model.exceptions;
  */
 public class HokoGooglePlayServicesException extends HokoException {
     public HokoGooglePlayServicesException() {
-        super(8, "There seems to be an issue with your Google Cloud Messaging key or the signing of your application");
+        super(8, "There seems to be an issue with your Google Cloud Messaging key " +
+                "or the signing of your application");
     }
 }

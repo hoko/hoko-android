@@ -52,7 +52,8 @@ public class HokoNetworking {
     private HokoNetworking(Context context) {
         mContext = context;
         try {
-            mHttpTasks = (List<HokoHttpRequest>) HokoUtils.loadFromFile(HokoNetworkingHttpTasksFilename, context);
+            mHttpTasks = (List<HokoHttpRequest>)
+                    HokoUtils.loadFromFile(HokoNetworkingHttpTasksFilename, context);
         } catch (ClassCastException e) {
             mHttpTasks = new ArrayList<HokoHttpRequest>();
         }
@@ -190,17 +191,18 @@ public class HokoNetworking {
      * foreground, stopping the timer or flushing.
      */
     private void registerActivityLifecycleCallbacks() {
-        HokoApplicationLifecycle.registerApplicationLifecycleCallback(mContext, new HokoApplicationLifecycleCallback() {
-            @Override
-            public void onResume() {
-                flush();
-            }
+        HokoApplicationLifecycle.registerApplicationLifecycleCallback(mContext,
+                new HokoApplicationLifecycleCallback() {
+                    @Override
+                    public void onResume() {
+                        flush();
+                    }
 
-            @Override
-            public void onPause() {
-                stopFlushTimer();
-            }
-        });
+                    @Override
+                    public void onPause() {
+                        stopFlushTimer();
+                    }
+                });
     }
 
 

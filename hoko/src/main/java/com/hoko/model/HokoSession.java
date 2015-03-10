@@ -81,7 +81,9 @@ public class HokoSession {
      * @param token   The Hoko API Token.
      */
     public void post(String token, Context context) {
-        HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "sessions", token, json(context).toString()));
+        HokoNetworking.getNetworking().addRequest(
+                new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "sessions",
+                        token, json(context).toString()));
     }
 
     /**
@@ -98,8 +100,10 @@ public class HokoSession {
             sessionJsonObject.putOpt("duration", getDuration());
             sessionJsonObject.putOpt("user", mUser.json(context).getJSONObject("user"));
             sessionJsonObject.putOpt("key_events", eventsJSON());
-            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkLinkIdentifierKey, mDeeplink.getLinkIdentifier());
-            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkHokolinkIdentifierKey, mDeeplink.getHokolinkIdentifier());
+            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkLinkIdentifierKey,
+                    mDeeplink.getLinkIdentifier());
+            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkHokolinkIdentifierKey,
+                    mDeeplink.getHokolinkIdentifier());
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("session", sessionJsonObject);
             return jsonObject;

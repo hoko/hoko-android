@@ -40,14 +40,19 @@ public class HokoRouting {
      *
      * @param route             The route in route format.
      * @param activityClassName The activity class name.
-     * @param routeParameters   A HashMap where the keys are the route components and the fields are the values.
-     * @param queryParameters   A HashMap where the keys are the query components and the fields are the values.
+     * @param routeParameters   A HashMap where the keys are the route components and the fields are
+     *                          the values.
+     * @param queryParameters   A HashMap where the keys are the query components and the fields are
+     *                          the values.
      */
-    public void mapRoute(String route, String activityClassName, HashMap<String, Field> routeParameters, HashMap<String, Field> queryParameters) {
+    public void mapRoute(String route, String activityClassName,
+                         HashMap<String, Field> routeParameters,
+                         HashMap<String, Field> queryParameters) {
         if (route != null && routeExists(route))
             HokoLog.e(new HokoDuplicateRouteException(route));
         else
-            addNewRoute(new HokoRoute(HokoURL.sanitizeURL(route), activityClassName, routeParameters, queryParameters, mContext));
+            addNewRoute(new HokoRoute(HokoURL.sanitizeURL(route), activityClassName,
+                    routeParameters, queryParameters, mContext));
     }
 
     /**
@@ -135,14 +140,16 @@ public class HokoRouting {
         for (HokoRoute route : mRoutes) {
             HashMap<String, String> routeParameters = url.matchesWithRoute(route);
             if (routeParameters != null) {
-                HokoDeeplink deeplink = new HokoDeeplink(url.getScheme(), route.getRoute(), routeParameters, url.getQueryParameters());
+                HokoDeeplink deeplink = new HokoDeeplink(url.getScheme(), route.getRoute(),
+                        routeParameters, url.getQueryParameters());
                 Hoko.deeplinking().handling().handle(deeplink);
                 return route.getIntent(url);
             }
         }
 
         if (mDefaultRoute != null) {
-            HokoDeeplink deeplink = new HokoDeeplink(url.getScheme(), null, null, url.getQueryParameters());
+            HokoDeeplink deeplink = new HokoDeeplink(url.getScheme(), null, null,
+                    url.getQueryParameters());
             Hoko.deeplinking().handling().handle(deeplink);
             return mDefaultRoute.getIntent(url);
         }

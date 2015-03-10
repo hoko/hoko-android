@@ -21,7 +21,8 @@ import com.hoko.utils.versionchecker.HokoVersionChecker;
  * <p/>
  * Hoko includes three separate modules:
  * - HokoDeeplinking - handles every incoming deeplink, so long as it has been mapped
- * - HokoAnalytics - handles the tracking of users and events to allow creation and evaluation of campaigns
+ * - HokoAnalytics - handles the tracking of users and events to allow creation and evaluation of
+ * campaigns
  * <p/>
  * You should setup Hoko on your Application's onCreate(...), by calling
  * Hoko.setup(this, "YOUR-API-TOKEN")
@@ -103,8 +104,10 @@ public class Hoko {
     // Modules
 
     /**
-     * The HokoDeeplinking module provides all the necessary APIs to map, handle and generate deeplinks.
-     * Different APIs as provided in order to be as versatile as your application requires them to be.
+     * The HokoDeeplinking module provides all the necessary APIs to map, handle and generate
+     * deeplinks.
+     * Different APIs as provided in order to be as versatile as your application requires them to
+     * be.
      *
      * @return A reference to the HokoDeeplinking instance.
      */
@@ -117,9 +120,10 @@ public class Hoko {
     }
 
     /**
-     * The HokoAnalytics module provides all the necessary APIs to manage user and application behavior.
-     * Users should be identified to this module, as well as key events (e.g. sales, referrals, etc) in order
-     * to track campaign value and allow user segmentation.
+     * The HokoAnalytics module provides all the necessary APIs to manage user and application
+     * behavior.
+     * Users should be identified to this module, as well as key events (e.g. sales, referrals, etc)
+     * in order to track campaign value and allow user segmentation.
      *
      * @return A reference to the HokoAnalytics instance.
      */

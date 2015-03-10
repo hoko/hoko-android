@@ -54,7 +54,8 @@ public class HokoApplicationLifecycle {
      * @param context  A context.
      * @param callback A callback.
      */
-    public static void registerApplicationLifecycleCallback(Context context, HokoApplicationLifecycleCallback callback) {
+    public static void registerApplicationLifecycleCallback(
+            Context context, HokoApplicationLifecycleCallback callback) {
         getInstance(context).registerApplicationLifecycleCallback(callback);
     }
 
@@ -105,59 +106,62 @@ public class HokoApplicationLifecycle {
     private void registerActivityLifecycle(Context context) {
         if (context != null) {
             Application application = (Application) context.getApplicationContext();
-            application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            application.registerActivityLifecycleCallbacks(
+                    new Application.ActivityLifecycleCallbacks() {
 
 
-                private ArrayList<HokoActivityStatus> statusHistory = new ArrayList<HokoActivityStatus>();
+                        private ArrayList<HokoActivityStatus> statusHistory =
+                                new ArrayList<HokoActivityStatus>();
 
-                @Override
-                public void onActivityCreated(Activity activity, Bundle bundle) {
-                }
+                        @Override
+                        public void onActivityCreated(Activity activity, Bundle bundle) {
+                        }
 
-                @Override
-                public void onActivityStarted(Activity activity) {
-                }
+                        @Override
+                        public void onActivityStarted(Activity activity) {
+                        }
 
-                @Override
-                public void onActivityResumed(Activity activity) {
-                    if (activity instanceof HokoActivity)
-                        return;
-                    if (statusHistory.size() != 0)
-                        statusHistory.add(HokoActivityStatus.RESUMED);
-                    onResume();
-                }
+                        @Override
+                        public void onActivityResumed(Activity activity) {
+                            if (activity instanceof HokoActivity)
+                                return;
+                            if (statusHistory.size() != 0)
+                                statusHistory.add(HokoActivityStatus.RESUMED);
+                            onResume();
+                        }
 
-                @Override
-                public void onActivityPaused(Activity activity) {
-                    if (activity instanceof HokoActivity)
-                        return;
-                    statusHistory.add(HokoActivityStatus.PAUSED);
-                }
+                        @Override
+                        public void onActivityPaused(Activity activity) {
+                            if (activity instanceof HokoActivity)
+                                return;
+                            statusHistory.add(HokoActivityStatus.PAUSED);
+                        }
 
 
-                @Override
-                public void onActivityStopped(Activity activity) {
-                    statusHistory.add(HokoActivityStatus.STOPPED);
-                    handlePossibleBackground();
+                        @Override
+                        public void onActivityStopped(Activity activity) {
+                            statusHistory.add(HokoActivityStatus.STOPPED);
+                            handlePossibleBackground();
 
-                }
+                        }
 
-                @Override
-                public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-                }
+                        @Override
+                        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+                        }
 
-                @Override
-                public void onActivityDestroyed(Activity activity) {
-                }
+                        @Override
+                        public void onActivityDestroyed(Activity activity) {
+                        }
 
-                private void handlePossibleBackground() {
-                    if (statusHistory.get(0) == HokoActivityStatus.PAUSED && statusHistory.get(1) == HokoActivityStatus.STOPPED) {
-                        onPause();
-                    }
-                    statusHistory = new ArrayList<HokoActivityStatus>();
-                }
+                        private void handlePossibleBackground() {
+                            if (statusHistory.get(0) == HokoActivityStatus.PAUSED &&
+                                    statusHistory.get(1) == HokoActivityStatus.STOPPED) {
+                                onPause();
+                            }
+                            statusHistory = new ArrayList<HokoActivityStatus>();
+                        }
 
-            });
+                    });
         } else {
             throw new NullPointerException();
         }

@@ -13,9 +13,11 @@ public class HokoException extends Exception {
     public static HokoException serverException(JSONObject errorJSON) {
         try {
             if (errorJSON.has("warning")) {
-                return new HokoServerWarningException(errorJSON.getInt("status"), errorJSON.getString("warning"));
+                return new HokoServerWarningException(errorJSON.getInt("status"),
+                        errorJSON.getString("warning"));
             } else if (errorJSON.has("error")) {
-                return new HokoServerErrorException(errorJSON.getInt("status"), errorJSON.getString("error"));
+                return new HokoServerErrorException(errorJSON.getInt("status"),
+                        errorJSON.getString("error"));
             } else {
                 return new HokoGenericServerException();
             }

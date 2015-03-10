@@ -3,8 +3,8 @@ package com.hoko.utils.networking.async;
 import android.os.AsyncTask;
 
 /**
- * An easy to use wrapper around the AsyncTask, by providing a Runnable it executes in the background
- * thread. (Used on GoogleCloudMessaging calls)
+ * An easy to use wrapper around the AsyncTask, by providing a Runnable it executes in the
+ * background thread. (Used on GoogleCloudMessaging calls)
  */
 public class HokoAsyncTask extends AsyncTask<Void, Void, Void> {
 

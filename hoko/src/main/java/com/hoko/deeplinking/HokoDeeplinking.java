@@ -38,7 +38,8 @@ public class HokoDeeplinking {
      * @param routeParameters   The route parameters mapped from Strings to Fields.
      * @param queryParameters   The query parameters mapped from Strings to Fields.
      */
-    void mapRoute(String route, String activityClassName, HashMap<String, Field> routeParameters, HashMap<String, Field> queryParameters) {
+    void mapRoute(String route, String activityClassName, HashMap<String, Field> routeParameters,
+                  HashMap<String, Field> queryParameters) {
         mRouting.mapRoute(route, activityClassName, routeParameters, queryParameters);
     }
 
@@ -54,8 +55,8 @@ public class HokoDeeplinking {
 
     /**
      * inject(activity) should be called on your DeeplinkRoute activities' onCreate(...) method.
-     * It will try to map the current deeplink to annotated DeeplinkRouteParameters or DeeplinkQueryParameters,
-     * on that particular activity instance.
+     * It will try to map the current deeplink to annotated DeeplinkRouteParameters or
+     * DeeplinkQueryParameters, on that particular activity instance.
      * In case it is not possible to map a deeplink or one does not exist, this function will return
      * false.
      * <pre>{@code
@@ -71,8 +72,8 @@ public class HokoDeeplinking {
 
     /**
      * inject(fragment) should be called on your DeeplinkRoute fragment' onCreateView(...) method.
-     * It will try to map the current deeplink to annotated DeeplinkRouteParameters or DeeplinkQueryParameters,
-     * on that particular fragment instance.
+     * It will try to map the current deeplink to annotated DeeplinkRouteParameters or
+     * DeeplinkQueryParameters, on that particular fragment instance.
      * In case it is not possible to map a deeplink or one does not exist, this function will return
      * false.
      * <pre>{@code
@@ -87,7 +88,8 @@ public class HokoDeeplinking {
     }
 
     /**
-     * openURL(urlString) is called when HokoActivity receives a deeplink Intent from the Android OS.
+     * openURL(urlString) is called when HokoActivity receives a deeplink Intent from the Android
+     * OS.
      * It returns true or false depending on whether it has such a deeplink mapped.
      *
      * @param urlString The url passed on the intent.
@@ -141,7 +143,8 @@ public class HokoDeeplinking {
      * <pre>{@code
      * HashMap<String, String> routeParameters = new HashMap<String, String>();
      * routeParameters.put("id", "30");
-     * Hoko.deeplinking().generateHokolink(HokoDeeplink.deeplink("products/:id", routeParameters, null), new HokoLinkGenerationListener() {
+     * Hoko.deeplinking().generateHokolink(HokoDeeplink
+     * .deeplink("products/:id", routeParameters, null), new HokoLinkGenerationListener() {
      *      public void onLinkGenerated(String hokolink) {
      *          shareLink(hokolink);
      *      }
@@ -160,10 +163,10 @@ public class HokoDeeplinking {
     /**
      * generateHokolink(activity, listener) allows the app to generate Hoko Hokolinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An activity annotated with DeeplinkRoute may be passed along to generate the
-     * deeplinks for all available platforms. In case the request is successful, the onLinkGenerated
-     * function will be called receiving an hokolink (e.g. http://hoko.io/XmPle). Otherwise it will
-     * return the cause of failure in the onError function.
+     * corresponding view. An activity annotated with DeeplinkRoute may be passed along to generate
+     * the deeplinks for all available platforms. In case the request is successful, the
+     * onLinkGenerated function will be called receiving an hokolink (e.g. http://hoko.io/XmPle).
+     * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code
      * Hoko.deeplinking().generateHokolink(this, new HokoLinkGenerationListener() {
      *      public void onLinkGenerated(String hokolink) {
@@ -189,10 +192,10 @@ public class HokoDeeplinking {
     /**
      * generateHokolink(fragment, listener) allows the app to generate Hoko Hokolinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to generate the
-     * deeplinks for all available platforms. In case the request is successful, the onLinkGenerated
-     * function will be called receiving an hokolink (e.g. http://hoko.io/XmPle). Otherwise it will
-     * return the cause of failure in the onError function.
+     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to generate
+     * the deeplinks for all available platforms. In case the request is successful, the
+     * onLinkGenerated function will be called receiving an hokolink (e.g. http://hoko.io/XmPle).
+     * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code
      * Hoko.deeplinking().generateHokolink(this, new HokoLinkGenerationListener() {
      *      public void onLinkGenerated(String hokolink) {

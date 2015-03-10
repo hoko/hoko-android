@@ -153,7 +153,8 @@ public class HokoDevice {
      */
     public static boolean hasInternetConnectivity(Context context) {
         String internetConnectivity = getInternetConnectivity(context);
-        return internetConnectivity.equals(HokoDeviceConnectivityCellular) || internetConnectivity.equals(HokoDeviceConnectivityWifi);
+        return internetConnectivity.equals(HokoDeviceConnectivityCellular) ||
+                internetConnectivity.equals(HokoDeviceConnectivityWifi);
     }
 
     /**

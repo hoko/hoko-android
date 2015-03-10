@@ -22,7 +22,8 @@ public class HokoDeeplink {
 
     // Key values from incoming deeplinks
     public static final String HokoDeeplinkLinkIdentifierKey = "hk_id";
-    public static final String HokoDeeplinkHokolinkIdentifierKey = "hk_oid"; //TODO change to hokolink
+    //TODO change to hokolink
+    public static final String HokoDeeplinkHokolinkIdentifierKey = "hk_oid";
 
     private static final int HokoDeeplinkOpenedStatus = 3;
 
@@ -36,10 +37,13 @@ public class HokoDeeplink {
      *
      * @param urlScheme       Optional url scheme.
      * @param route           A route in route format.
-     * @param routeParameters A HashMap where the keys are the route components and the values are the route parameters.
-     * @param queryParameters A HashMap where the keys are the query components and the values are the query parameters.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
      */
-    public HokoDeeplink(String urlScheme, String route, HashMap<String, String> routeParameters, HashMap<String, String> queryParameters) {
+    public HokoDeeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
+                        HashMap<String, String> queryParameters) {
         if (urlScheme == null)
             mURLScheme = "";
         else
@@ -55,12 +59,16 @@ public class HokoDeeplink {
      * generate Hokolinks afterwards.
      *
      * @param route           A route in route format.
-     * @param routeParameters A HashMap where the keys are the route components and the values are the route parameters.
-     * @param queryParameters A HashMap where the keys are the query components and the values are the query parameters.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
      * @return The generated HokoDeeplink.
      */
-    public static HokoDeeplink deeplink(String route, HashMap<String, String> routeParameters, HashMap<String, String> queryParameters) {
-        return new HokoDeeplink(null, HokoUtils.sanitizeRoute(route), routeParameters, queryParameters);
+    public static HokoDeeplink deeplink(String route, HashMap<String, String> routeParameters,
+                                        HashMap<String, String> queryParameters) {
+        return new HokoDeeplink(null, HokoUtils.sanitizeRoute(route), routeParameters,
+                queryParameters);
     }
 
     /**
@@ -75,7 +83,10 @@ public class HokoDeeplink {
     public void post(Context context, String token, HokoUser user) {
         //TODO Change to hokolink
         if (isHokolink()) {
-            HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "omnilinks/" + getHokolinkIdentifier() + "/open", token, hokolinkJSON(context, user).toString()));
+            HokoNetworking.getNetworking().addRequest(
+                    new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST,
+                            "omnilinks/" + getHokolinkIdentifier() + "/open", token,
+                            hokolinkJSON(context, user).toString()));
         }
 
     }
@@ -147,7 +158,9 @@ public class HokoDeeplink {
         String route = mRoute != null ? mRoute : "";
         String routeParameters = mRouteParameters != null ? mRouteParameters.toString() : "";
         String queryParameters = mQueryParameters != null ? mQueryParameters.toString() : "";
-        return "<HokoDeeplink> URLScheme='" + urlScheme + "' route ='" + route + "' routeParameters='" + routeParameters + "' queryParameters='" + queryParameters + "'";
+        return "<HokoDeeplink> URLScheme='" + urlScheme + "' route ='" + route +
+                "' routeParameters='" + routeParameters + "' queryParameters='" + queryParameters +
+                "'";
     }
 
 

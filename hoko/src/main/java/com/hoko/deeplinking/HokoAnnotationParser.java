@@ -52,8 +52,8 @@ public class HokoAnnotationParser {
     // Generating
 
     /**
-     * This generates a HokoDeeplink instance from an Activity instance, taking basis on the annotations
-     * within. It collects values, propagates the hashmaps and returns a HokoDeeplink.
+     * This generates a HokoDeeplink instance from an Activity instance, taking basis on the
+     * annotations within. It collects values, propagates the hashmaps and returns a HokoDeeplink.
      *
      * @param activity An annotated activity.
      * @return A HokoDeeplink instance or null.
@@ -63,8 +63,8 @@ public class HokoAnnotationParser {
     }
 
     /**
-     * This generates a HokoDeeplink instance from a Fragment instance, taking basis on the annotations
-     * within. It collects values, propagates the hashmaps and returns a HokoDeeplink.
+     * This generates a HokoDeeplink instance from a Fragment instance, taking basis on the
+     * annotations within. It collects values, propagates the hashmaps and returns a HokoDeeplink.
      *
      * @param fragment An annotated fragment.
      * @return A HokoDeeplink instance or null.
@@ -148,15 +148,18 @@ public class HokoAnnotationParser {
         if (route == null)
             return false;
 
-        Bundle routeParametersBundle = activity.getIntent().getBundleExtra(HokoRoute.HokoRouteRouteParametersBundleKey);
-        Bundle queryParametersBundle = activity.getIntent().getBundleExtra(HokoRoute.HokoRouteQueryParametersBundleKey);
+        Bundle routeParametersBundle = activity.getIntent()
+                .getBundleExtra(HokoRoute.HokoRouteRouteParametersBundleKey);
+        Bundle queryParametersBundle = activity.getIntent()
+                .getBundleExtra(HokoRoute.HokoRouteQueryParametersBundleKey);
 
         String routeFromClass = routeFromClass(activity.getClass());
 
         if (routeFromClass != null && routeFromClass.compareTo(route) == 0) { // Activity
             return inject(activity, route, routeParametersBundle, queryParametersBundle);
         } else if (activity instanceof FragmentActivity) {
-            return injectFragment((FragmentActivity) activity, route, routeParametersBundle, queryParametersBundle);
+            return injectFragment((FragmentActivity) activity, route, routeParametersBundle,
+                    queryParametersBundle);
         }
         return false;
     }
@@ -177,8 +180,10 @@ public class HokoAnnotationParser {
         if (route == null)
             return false;
 
-        Bundle routeParametersBundle = fragment.getArguments().getBundle(HokoRoute.HokoRouteRouteParametersBundleKey);
-        Bundle queryParametersBundle = fragment.getArguments().getBundle(HokoRoute.HokoRouteQueryParametersBundleKey);
+        Bundle routeParametersBundle = fragment.getArguments()
+                .getBundle(HokoRoute.HokoRouteRouteParametersBundleKey);
+        Bundle queryParametersBundle = fragment.getArguments()
+                .getBundle(HokoRoute.HokoRouteQueryParametersBundleKey);
 
         return inject(fragment, route, routeParametersBundle, queryParametersBundle);
     }
@@ -193,10 +198,14 @@ public class HokoAnnotationParser {
      * @param queryParametersBundle A bundle containing the query parameters.
      * @return true in case it injected values, false otherwise.
      */
-    private static boolean injectFragment(FragmentActivity activity, String route, Bundle routeParametersBundle, Bundle queryParametersBundle) {
-        DeeplinkFragment deeplinkFragmentAnnotation = getFragmentAnnotationFromClass(activity.getClass());
+    private static boolean injectFragment(FragmentActivity activity, String route,
+                                          Bundle routeParametersBundle,
+                                          Bundle queryParametersBundle) {
+        DeeplinkFragment deeplinkFragmentAnnotation =
+                getFragmentAnnotationFromClass(activity.getClass());
 
-        if (deeplinkFragmentAnnotation == null || deeplinkFragmentAnnotation.fragments().length == 0)
+        if (deeplinkFragmentAnnotation == null ||
+                deeplinkFragmentAnnotation.fragments().length == 0)
             return false;
 
         Class[] fragmentClasses = deeplinkFragmentAnnotation.fragments();
@@ -213,7 +222,8 @@ public class HokoAnnotationParser {
             bundle.putBundle(HokoRoute.HokoRouteQueryParametersBundleKey, queryParametersBundle);
             fragment.setArguments(bundle);
             FragmentManager fragmentManager = activity.getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(deeplinkFragmentAnnotation.id(), fragment).commit();
+            fragmentManager.beginTransaction()
+                    .replace(deeplinkFragmentAnnotation.id(), fragment).commit();
             return true;
         } catch (Exception e) {
             HokoLog.e(e);
@@ -231,7 +241,8 @@ public class HokoAnnotationParser {
      * @param queryParametersBundle A bundle containing the query parameters.
      * @return true in case it injected values, false otherwise.
      */
-    private static boolean inject(Object object, String route, Bundle routeParametersBundle, Bundle queryParametersBundle) {
+    private static boolean inject(Object object, String route, Bundle routeParametersBundle,
+                                  Bundle queryParametersBundle) {
         HokoRoute hokoRoute = Hoko.deeplinking().routing().getRoute(route);
         if (routeParametersBundle != null && queryParametersBundle != null) {
             if (hokoRoute.getRouteParameters() != null) {
@@ -268,7 +279,8 @@ public class HokoAnnotationParser {
      * @param logError true if an error should be logged, false otherwise
      * @return true if the value was properly set, false otherwise.
      */
-    private static boolean setValueForField(Field field, Object object, String value, boolean logError) {
+    private static boolean setValueForField(Field field, Object object, String value,
+                                            boolean logError) {
         boolean accessible = field.isAccessible();
         boolean returnValue;
         try {
@@ -321,7 +333,8 @@ public class HokoAnnotationParser {
     }
 
     /**
-     * Returns the String value of a certain field on a certain object, independent of access modifiers.
+     * Returns the String value of a certain field on a certain object, independent of access
+     * modifiers.
      * It also provides type-safety by performing casting and conversion from primitive-types and
      * supported classes.
      *
@@ -387,7 +400,8 @@ public class HokoAnnotationParser {
      * @return true in case it has the DeeplinkDefaultRoute annotation.
      */
     public static boolean isDefaultRoute(Class classObject) {
-        DeeplinkDefaultRoute annotation = (DeeplinkDefaultRoute) classObject.getAnnotation(DeeplinkDefaultRoute.class);
+        DeeplinkDefaultRoute annotation =
+                (DeeplinkDefaultRoute) classObject.getAnnotation(DeeplinkDefaultRoute.class);
         return annotation != null;
     }
 
@@ -436,7 +450,8 @@ public class HokoAnnotationParser {
      * @param shouldDefault  true if it should look for a default route, false otherwise.
      * @param shouldFragment true if it should look for fragments inside the class, false otherwise.
      */
-    private static void mapClassToDeeplink(String activityName, Class classObject, boolean shouldDefault, boolean shouldFragment) {
+    private static void mapClassToDeeplink(String activityName, Class classObject,
+                                           boolean shouldDefault, boolean shouldFragment) {
         String route = routeFromClass(classObject);
         if (route != null) {
             HashMap<String, Field> routeParameters = getRouteParameters(classObject);
@@ -489,7 +504,8 @@ public class HokoAnnotationParser {
         HashMap<String, Field> routeParametersMap = new HashMap<String, Field>();
         List<Field> fieldList = getFields(classObject);
         for (Field field : fieldList) {
-            DeeplinkRouteParameter routeParameterAnnotation = field.getAnnotation(DeeplinkRouteParameter.class);
+            DeeplinkRouteParameter routeParameterAnnotation =
+                    field.getAnnotation(DeeplinkRouteParameter.class);
             if (routeParameterAnnotation != null) {
                 routeParametersMap.put(routeParameterAnnotation.value(), field);
             }
@@ -507,7 +523,8 @@ public class HokoAnnotationParser {
         HashMap<String, Field> queryParametersMap = new HashMap<String, Field>();
         List<Field> fieldList = getFields(classObject);
         for (Field field : fieldList) {
-            DeeplinkQueryParameter queryParameterAnnotation = field.getAnnotation(DeeplinkQueryParameter.class);
+            DeeplinkQueryParameter queryParameterAnnotation =
+                    field.getAnnotation(DeeplinkQueryParameter.class);
             if (queryParameterAnnotation != null) {
                 queryParametersMap.put(queryParameterAnnotation.value(), field);
             }
@@ -534,7 +551,9 @@ public class HokoAnnotationParser {
     private static List<String> getActivities(Context context) {
         List<String> activitiesList = new ArrayList<String>();
         try {
-            ActivityInfo[] activityInfoList = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES).activities;
+            ActivityInfo[] activityInfoList = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES)
+                    .activities;
             for (ActivityInfo activityInfo : activityInfoList) {
                 activitiesList.add(activityInfo.name);
             }

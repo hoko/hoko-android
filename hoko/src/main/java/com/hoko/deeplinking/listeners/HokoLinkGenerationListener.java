@@ -5,7 +5,7 @@ package com.hoko.deeplinking.listeners;
  * onLinkGenerated in case of success or onError in case of failure.
  */
 public interface HokoLinkGenerationListener {
-    public void onLinkGenerated(String hokolink);
+    void onLinkGenerated(String hokolink);
 
-    public void onError(Exception e);
+    void onError(Exception e);
 }

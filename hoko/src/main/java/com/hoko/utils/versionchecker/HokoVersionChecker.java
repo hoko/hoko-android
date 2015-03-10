@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 
 public class HokoVersionChecker {
 
-    private static final String HokoVersionCheckerGitHubApi = "https://api.github.com/repos/hokolinks/hoko-android/releases?per_page=1";
+    private static final String HokoVersionCheckerGitHubApi =
+            "https://api.github.com/repos/hokolinks/hoko-android/releases?per_page=1";
     private static final String HokoVersionCheckerGitHubVersionName = "tag_name";
     private static HokoVersionChecker mInstance;
 
@@ -45,7 +46,8 @@ public class HokoVersionChecker {
     }
 
     public void checkForNewVersion(final String currentVersion) {
-        new HokoAsyncTask(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.GET, HokoVersionCheckerGitHubApi, null, null).toRunnable(new HokoHttpRequestCallback() {
+        new HokoAsyncTask(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.GET,
+                HokoVersionCheckerGitHubApi, null, null).toRunnable(new HokoHttpRequestCallback() {
 
             @Override
             public void onSuccess(JSONObject jsonObject) {
@@ -53,7 +55,8 @@ public class HokoVersionChecker {
                 if (versionName != null) {
                     String versionNumber = versionName.replace("v", "");
                     if (requiresUpdate(currentVersion, versionNumber)) {
-                        Log.e("HOKO", "A new version of HOKO is available at http://github.com/hokolinks/hoko-android " + versionName);
+                        Log.e("HOKO", "A new version of HOKO is available at " +
+                                "http://github.com/hokolinks/hoko-android " + versionName);
                     }
                 }
             }

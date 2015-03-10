@@ -41,11 +41,14 @@ public class HokoRoute {
      *
      * @param route             A route in route format.
      * @param activityClassName The activity's class name.
-     * @param routeParameters   A HashMap where the keys are route components and the values are Fields.
-     * @param queryParameters   A HashMap where the keys are query components and the values are Fields.
+     * @param routeParameters   A HashMap where the keys are route components and the values are
+     *                          Fields.
+     * @param queryParameters   A HashMap where the keys are query components and the values are
+     *                          Fields.
      * @param context           A context to be able to generate the JSON, and the intent.
      */
-    public HokoRoute(String route, String activityClassName, HashMap<String, Field> routeParameters, HashMap<String, Field> queryParameters, Context context) {
+    public HokoRoute(String route, String activityClassName, HashMap<String, Field> routeParameters,
+                     HashMap<String, Field> queryParameters, Context context) {
         mRoute = route;
         mActivityClassName = activityClassName;
         mRouteParameters = routeParameters;
@@ -87,7 +90,9 @@ public class HokoRoute {
      * @param token The Hoko API Token.
      */
     public void post(String token) {
-        HokoNetworking.getNetworking().addRequest(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "routes", token, getJSON().toString()));
+        HokoNetworking.getNetworking().addRequest(
+                new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST, "routes", token,
+                        getJSON().toString()));
     }
 
     /**
@@ -128,8 +133,9 @@ public class HokoRoute {
     /**
      * Generates an Intent out of mapping HokoURL information with the HokoRoute object.
      * The intent has 2 bundles, a route parameters bundle which contains a HashMap<String, String>
-     * of key value pairs and a query parameters bundle which also contains a HashMap<String, String>
-     * of key value pairs. The function also sets a few flags for better deeplinking experience.
+     * of key value pairs and a query parameters bundle which also contains a
+     * HashMap<String, String> of key value pairs. The function also sets a few flags for better
+     * deeplinking experience.
      *
      * @param url A HokoURL instance coming from a deeplink.
      * @return The generated intent.
@@ -170,8 +176,8 @@ public class HokoRoute {
     }
 
     /**
-     * Checks if an instance of HokoRoute is actually valid when it comes to mapping route components
-     * to the route parameters available.
+     * Checks if an instance of HokoRoute is actually valid when it comes to mapping route
+     * components to the route parameters available.
      *
      * @return true if it's valid, false otherwise.
      */
