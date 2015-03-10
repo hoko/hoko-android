@@ -77,7 +77,7 @@ public class HokoRoute {
     public List<String> getComponents() {
         if (mRoute == null)
             return null;
-        return new ArrayList<>(Arrays.asList(mRoute.split("/")));
+        return new ArrayList<String>(Arrays.asList(mRoute.split("/")));
     }
 
     /**

@@ -29,7 +29,7 @@ public class HokoApplicationLifecycle {
      * @param context A context.
      */
     private HokoApplicationLifecycle(Context context) {
-        mCallbacks = new ArrayList<>();
+        mCallbacks = new ArrayList<HokoApplicationLifecycleCallback>();
         mApplicationStatus = HokoApplicationStatus.FOREGROUND;
         registerActivityLifecycle(context);
     }
@@ -108,7 +108,7 @@ public class HokoApplicationLifecycle {
             application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
 
 
-                private ArrayList<HokoActivityStatus> statusHistory = new ArrayList<>();
+                private ArrayList<HokoActivityStatus> statusHistory = new ArrayList<HokoActivityStatus>();
 
                 @Override
                 public void onActivityCreated(Activity activity, Bundle bundle) {
@@ -154,7 +154,7 @@ public class HokoApplicationLifecycle {
                     if (statusHistory.get(0) == HokoActivityStatus.PAUSED && statusHistory.get(1) == HokoActivityStatus.STOPPED) {
                         onPause();
                     }
-                    statusHistory = new ArrayList<>();
+                    statusHistory = new ArrayList<HokoActivityStatus>();
                 }
 
             });

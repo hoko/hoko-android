@@ -31,7 +31,7 @@ public class HokoRouting {
     public HokoRouting(String token, Context context) {
         mToken = token;
         mContext = context;
-        mRoutes = new ArrayList<>();
+        mRoutes = new ArrayList<HokoRoute>();
     }
 
     /**

@@ -53,10 +53,10 @@ public class HokoNetworking {
         try {
             mHttpTasks = (List<HokoHttpRequest>) HokoUtils.loadFromFile(HokoNetworkingHttpTasksFilename, context);
         } catch (ClassCastException e) {
-            mHttpTasks = new ArrayList<>();
+            mHttpTasks = new ArrayList<HokoHttpRequest>();
         }
         if (mHttpTasks == null) {
-            mHttpTasks = new ArrayList<>();
+            mHttpTasks = new ArrayList<HokoHttpRequest>();
         }
         flush();
         registerActivityLifecycleCallbacks();

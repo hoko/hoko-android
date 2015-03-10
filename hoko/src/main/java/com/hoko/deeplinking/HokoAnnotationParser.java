@@ -122,7 +122,7 @@ public class HokoAnnotationParser {
      */
     private static HashMap<String, String> getQueryParametersFromInstance(Object object) {
         HashMap<String, Field> queryParameterFields = getQueryParameters(object.getClass());
-        HashMap<String, String> queryParameters = new HashMap<>();
+        HashMap<String, String> queryParameters = new HashMap<String, String>();
         for (String key : queryParameterFields.keySet()) {
             Field field = queryParameterFields.get(key);
             String value = getValueForField(field, object);
@@ -522,7 +522,7 @@ public class HokoAnnotationParser {
      * @return A list of the fields on a given class.
      */
     public static List<Field> getFields(Class classObject) {
-        return new ArrayList<>(Arrays.asList(classObject.getDeclaredFields()));
+        return new ArrayList<Field>(Arrays.asList(classObject.getDeclaredFields()));
     }
 
     /**
