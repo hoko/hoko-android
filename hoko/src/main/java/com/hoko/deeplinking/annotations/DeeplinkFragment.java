@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface DeeplinkFragment {
 
-    static final int noValue = -1;
+    final int noValue = -1;
 
     /**
      * The view identifier into which Hoko should add the fragment. (e.g. R.id.content_view)

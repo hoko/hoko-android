@@ -24,11 +24,11 @@ public class HokoDateUtils {
      */
     private static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone(GMT_ID);
 
-	/*
+    /*
     /**********************************************************
     /* Static factories
     /**********************************************************
-	 */
+     */
 
     /**
      * Accessor for static GMT timezone instance.
@@ -39,11 +39,11 @@ public class HokoDateUtils {
         return TIMEZONE_GMT;
     }
 
-	/*
+    /*
     /**********************************************************
     /* Formatting
     /**********************************************************
-	 */
+     */
 
     /**
      * Format a date into 'yyyy-MM-ddThh:mm:ss.sssZ' (GMT timezone, no milliseconds precision)
@@ -132,11 +132,11 @@ public class HokoDateUtils {
         return formatted.toString();
     }
 
-	/*
+    /*
     /**********************************************************
     /* Parsing
     /**********************************************************
-	 */
+     */
 
     /**
      * Parse a date from ISO-8601 formatted string. It expects a format
@@ -187,8 +187,8 @@ public class HokoDateUtils {
             } else if (timezoneIndicator == 'Z') {
                 timezoneId = GMT_ID;
             } else {
-                throw new IndexOutOfBoundsException("Invalid time zone indicator " +
-                        timezoneIndicator);
+                throw new IndexOutOfBoundsException("Invalid time zone indicator "
+                        + timezoneIndicator);
             }
             TimeZone timezone = TimeZone.getTimeZone(timezoneId);
             if (!timezone.getID().equals(timezoneId)) {
