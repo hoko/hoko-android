@@ -65,10 +65,10 @@ public class HokoApp {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
                     context.getPackageName(), 0);
             return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return "";
+        return null;
 
     }
 
@@ -83,10 +83,10 @@ public class HokoApp {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
                     context.getPackageName(), 0);
             return String.valueOf(packageInfo.versionCode);
-        } catch (PackageManager.NameNotFoundException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return "";
+        return null;
     }
 
     /**
@@ -100,7 +100,7 @@ public class HokoApp {
         try {
             ApplicationInfo appInfo = manager.getApplicationInfo(context.getPackageName(), 0);
             return appInfo.icon;
-        } catch (PackageManager.NameNotFoundException exception) {
+        } catch (Exception exception) {
             return android.R.drawable.sym_def_app_icon;
         }
     }
@@ -113,36 +113,30 @@ public class HokoApp {
      */
     @TargetApi(15)
     public static Drawable getIconDrawable(Context context) {
-        int iconResId = getIcon(context);
-        Drawable drawable;
-        if (android.os.Build.VERSION.SDK_INT >= 15) { //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
-            ArrayList<Integer> densities = new ArrayList<Integer>(
-                    Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
-                    DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
-            if (Build.VERSION.SDK_INT >= 16) { //Build.VERSION_CODES.JELLY_BEAN
-                densities.add(0, 480); //DisplayMetrics.DENSITY_XXHIGH
+        try {
+            int iconResId = getIcon(context);
+            Drawable drawable;
+            if (android.os.Build.VERSION.SDK_INT >= 15) { //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
+                ArrayList<Integer> densities = new ArrayList<Integer>(
+                        Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
+                                DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
+                if (Build.VERSION.SDK_INT >= 16) { //Build.VERSION_CODES.JELLY_BEAN
+                    densities.add(0, 480); //DisplayMetrics.DENSITY_XXHIGH
+                }
+                if (Build.VERSION.SDK_INT >= 18) { //Build.VERSION_CODES.JELLY_BEAN_MR2
+                    densities.add(0, 640); //DisplayMetrics.DENSITY_XXXHIGH
+                }
+                for (int density : densities) {
+                    drawable = context.getResources().getDrawableForDensity(iconResId, density);
+                    if (drawable != null)
+                        return drawable;
+                }
             }
-            if (Build.VERSION.SDK_INT >= 18) { //Build.VERSION_CODES.JELLY_BEAN_MR2
-                densities.add(0, 640); //DisplayMetrics.DENSITY_XXXHIGH
-            }
-            for (int density : densities) {
-                drawable = context.getResources().getDrawableForDensity(iconResId, density);
-                if (drawable != null)
-                    return drawable;
-            }
+            drawable = context.getResources().getDrawable(iconResId);
+            return drawable;
+        } catch(Exception e) {
+            return null;
         }
-        drawable = context.getResources().getDrawable(iconResId);
-        return drawable;
-    }
-
-    @TargetApi(15)
-    public static Bitmap getIconBitmapForNotification(Context context) {
-        Bitmap iconBitmap = BitmapFactory.decodeResource(context.getResources(), getIcon(context));
-        return Bitmap.createScaledBitmap(iconBitmap, context.getResources()
-                .getDimensionPixelOffset(android.R.dimen.notification_large_icon_width),
-                context.getResources()
-                        .getDimensionPixelOffset(android.R.dimen.notification_large_icon_height)
-                , true);
     }
 
     /**
@@ -153,14 +147,16 @@ public class HokoApp {
      */
     public static String getBase64Icon(Context context) {
         Drawable iconDrawable = getIconDrawable(context);
+        if (iconDrawable != null) {
+            BitmapDrawable iconBitmapDrawable = ((BitmapDrawable) iconDrawable);
+            Bitmap bitmap = iconBitmapDrawable.getBitmap();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+            byte[] bitmapByte = stream.toByteArray();
 
-        BitmapDrawable iconBitmapDrawable = ((BitmapDrawable) iconDrawable);
-        Bitmap bitmap = iconBitmapDrawable.getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        byte[] bitmapByte = stream.toByteArray();
-
-        return Base64.encodeToString(bitmapByte, 0);
+            return Base64.encodeToString(bitmapByte, 0);
+        }
+        return null;
     }
 
     /**

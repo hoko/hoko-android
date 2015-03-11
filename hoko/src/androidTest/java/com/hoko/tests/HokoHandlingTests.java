@@ -1,19 +1,22 @@
 package com.hoko.tests;
 
-import android.test.InstrumentationTestCase;
-
 import com.hoko.deeplinking.HokoHandling;
 import com.hoko.deeplinking.listeners.HokoHandler;
 import com.hoko.model.HokoDeeplink;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 /**
  * Created by ivanbruel on 10/03/15.
  */
-public class HokoHandlingTests extends InstrumentationTestCase {
+public class HokoHandlingTests {
 
     /** Countdown latch */
     private CountDownLatch lock;
@@ -22,13 +25,14 @@ public class HokoHandlingTests extends InstrumentationTestCase {
 
     private Date timestamp;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         deeplink = null;
         timestamp = null;
         lock = null;
     }
 
+    @Test
     public void testAnnonymousHandling() throws Exception{
 
         lock = new CountDownLatch(1);
@@ -67,10 +71,9 @@ public class HokoHandlingTests extends InstrumentationTestCase {
             }
         };
 
-        assertEquals("product/:product_id", deeplink.getRoute());
-        assertEquals(expectedRouteParameters, deeplink.getRouteParameters());
-        assertEquals(expectedQueryParameters, deeplink.getQueryParameters());
-
+        assertThat(deeplink.getRoute()).isEqualTo("product/:product_id");
+        assertThat(deeplink.getRouteParameters()).isEqualTo(expectedRouteParameters);
+        assertThat(deeplink.getQueryParameters()).isEqualTo(expectedQueryParameters);
     }
 
     public void testInterfaceImplementationHandling() throws Exception{
@@ -107,9 +110,10 @@ public class HokoHandlingTests extends InstrumentationTestCase {
             }
         };
 
-        assertEquals("product/:product_id", handler.deeplink.getRoute());
-        assertEquals(expectedRouteParameters, handler.deeplink.getRouteParameters());
-        assertEquals(expectedQueryParameters, handler.deeplink.getQueryParameters());
+        assertThat(handler.deeplink.getRoute()).isEqualTo("product/:product_id");
+        assertThat(handler.deeplink.getRouteParameters()).isEqualTo(expectedRouteParameters);
+        assertThat(handler.deeplink.getQueryParameters()).isEqualTo(expectedQueryParameters);
+
     }
 
     public void testMultipleHandling() throws Exception{
@@ -154,13 +158,13 @@ public class HokoHandlingTests extends InstrumentationTestCase {
             }
         };
 
-        assertEquals("product/:product_id", handler.deeplink.getRoute());
-        assertEquals(expectedRouteParameters, handler.deeplink.getRouteParameters());
-        assertEquals(expectedQueryParameters, handler.deeplink.getQueryParameters());
+        assertThat(handler.deeplink.getRoute()).isEqualTo("product/:product_id");
+        assertThat(handler.deeplink.getRouteParameters()).isEqualTo(expectedRouteParameters);
+        assertThat(handler.deeplink.getQueryParameters()).isEqualTo(expectedQueryParameters);
 
-        assertEquals("product/:product_id", deeplink.getRoute());
-        assertEquals(expectedRouteParameters, deeplink.getRouteParameters());
-        assertEquals(expectedQueryParameters, deeplink.getQueryParameters());
+        assertThat(deeplink.getRoute()).isEqualTo("product/:product_id");
+        assertThat(deeplink.getRouteParameters()).isEqualTo(expectedRouteParameters);
+        assertThat(deeplink.getQueryParameters()).isEqualTo(expectedQueryParameters);
     }
 
     public void testHandlingOrder() throws Exception{
@@ -199,7 +203,7 @@ public class HokoHandlingTests extends InstrumentationTestCase {
 
         lock.await();
 
-        assertEquals(handler.timestamp.compareTo(timestamp) < 0, true);
+        assertThat(timestamp).isAfter(handler.timestamp);
 
     }
 

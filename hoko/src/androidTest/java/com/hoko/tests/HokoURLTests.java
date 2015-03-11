@@ -1,24 +1,32 @@
 package com.hoko.tests;
 
-import android.test.InstrumentationTestCase;
 
 import com.hoko.model.HokoRoute;
 import com.hoko.model.HokoURL;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
 import java.util.HashMap;
+import static org.fest.assertions.api.Assertions.assertThat;
 
-public class HokoURLTests extends InstrumentationTestCase{
+@RunWith(RobolectricTestRunner.class)
+public class HokoURLTests {
 
+    @Test
     public void testSanitize() {
         String sanitizedURLString = HokoURL.sanitizeURL("hoko://///hoko/needs/testing////is/sanitization/ok///");
-        assertEquals("hoko://hoko/needs/testing/is/sanitization/ok", sanitizedURLString);
+        assertThat(sanitizedURLString).isEqualTo("hoko://hoko/needs/testing/is/sanitization/ok");
     }
 
+    @Test
     public void testNoNeedForSanitization() {
         String sanitizedURLString = HokoURL.sanitizeURL("hoko://hoko/needs/testing/is/sanitization/ok");
-        assertEquals("hoko://hoko/needs/testing/is/sanitization/ok", sanitizedURLString);
+        assertThat(sanitizedURLString).isEqualTo("hoko://hoko/needs/testing/is/sanitization/ok");
     }
 
+    @Test
     public void testQuery() {
         HokoURL url = new HokoURL("hoko://param/1/other_param/2?test=1&q_param=2&string=hi+there");
 
@@ -30,12 +38,12 @@ public class HokoURLTests extends InstrumentationTestCase{
             }
         };
 
-        assertEquals(expectedQueryParameters, url.getQueryParameters());
+        assertThat(url.getQueryParameters()).isEqualTo(expectedQueryParameters);
     }
 
     public void testScheme() {
         HokoURL url = new HokoURL("hoko://param/1/other_param/2?test=1&q_param=2&string=hi+there");
-        assertEquals("hoko", url.getScheme());
+        assertThat(url.getScheme()).isEqualTo("hoko");
     }
 
     public void testRouteMatched() {
@@ -51,7 +59,7 @@ public class HokoURLTests extends InstrumentationTestCase{
             }
         };
 
-        assertEquals(expectedRouteParameters, routeParameters);
+        assertThat(routeParameters).isEqualTo(expectedRouteParameters);
     }
 
     public void testRouteNotMatched() {
@@ -60,7 +68,7 @@ public class HokoURLTests extends InstrumentationTestCase{
 
         HashMap<String, String> routeParameters =  url.matchesWithRoute(route);
 
-        assertEquals(null, routeParameters);
+        assertThat(routeParameters).isNullOrEmpty();
     }
 
     public void testRouteNotMatchedExtraParameter() {
@@ -69,7 +77,7 @@ public class HokoURLTests extends InstrumentationTestCase{
 
         HashMap<String, String> routeParameters =  url.matchesWithRoute(route);
 
-        assertEquals(null, routeParameters);
+        assertThat(routeParameters).isNullOrEmpty();
     }
 
 }

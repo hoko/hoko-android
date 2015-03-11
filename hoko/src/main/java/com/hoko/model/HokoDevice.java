@@ -97,14 +97,18 @@ public class HokoDevice {
      * @return The screen size of the device.
      */
     public static String getScreenSize(Context context) {
-        WindowManager windowManager = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        return height + "x" + width;
+        try {
+            WindowManager windowManager = (WindowManager) context
+                    .getSystemService(Context.WINDOW_SERVICE);
+            Display display = windowManager.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            return height + "x" + width;
+        } catch (Exception e) {
+            return "0x0";
+        }
     }
 
     /**
@@ -114,9 +118,13 @@ public class HokoDevice {
      * @return The carrier network of the device.
      */
     public static String getCarrier(Context context) {
-        TelephonyManager telephonyManager = ((TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE));
-        return telephonyManager.getNetworkOperatorName();
+        try {
+            TelephonyManager telephonyManager = ((TelephonyManager) context
+                    .getSystemService(Context.TELEPHONY_SERVICE));
+            return telephonyManager.getNetworkOperatorName();
+        } catch (Exception e) {
+            return "Unknown Carrier";
+        }
     }
 
     /**

@@ -15,6 +15,8 @@ before_script:
   - ./android-wait-for-emulator
   - adb shell input keyevent 82 &
 
+script: mvn install -Pintegration-tests -Dandroid.device=test
+
 jdk:
   - oraclejdk7
   - oraclejdk8

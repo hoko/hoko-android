@@ -29,8 +29,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.android</groupId>
-            <artifactId>android-test</artifactId>
+            <groupId>org.robolectric</groupId>
+            <artifactId>robolectric</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.testing.compile</groupId>
+            <artifactId>compile-testing</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -38,6 +44,19 @@
             <groupId>com.google.android</groupId>
             <artifactId>support-v4</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-assert-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>fest-android</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -54,7 +73,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <excludePackageNames>com.hoko.internal:com.hoko.internal.*</excludePackageNames>
+                    <excludePackageNames>com.hoko.tests:com.hoko.tests.*</excludePackageNames>
                 </configuration>
             </plugin>
         </plugins>
