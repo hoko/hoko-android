@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -116,15 +115,20 @@ public class HokoApp {
         try {
             int iconResId = getIcon(context);
             Drawable drawable;
-            if (android.os.Build.VERSION.SDK_INT >= 15) { //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
+            //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
+            if (android.os.Build.VERSION.SDK_INT >= 15) {
                 ArrayList<Integer> densities = new ArrayList<Integer>(
                         Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
                                 DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
-                if (Build.VERSION.SDK_INT >= 16) { //Build.VERSION_CODES.JELLY_BEAN
-                    densities.add(0, 480); //DisplayMetrics.DENSITY_XXHIGH
+                //Build.VERSION_CODES.JELLY_BEAN
+                if (Build.VERSION.SDK_INT >= 16) {
+                    //DisplayMetrics.DENSITY_XXHIGH
+                    densities.add(0, 480);
                 }
-                if (Build.VERSION.SDK_INT >= 18) { //Build.VERSION_CODES.JELLY_BEAN_MR2
-                    densities.add(0, 640); //DisplayMetrics.DENSITY_XXXHIGH
+                //Build.VERSION_CODES.JELLY_BEAN_MR2
+                if (Build.VERSION.SDK_INT >= 18) {
+                    //DisplayMetrics.DENSITY_XXXHIGH
+                    densities.add(0, 640);
                 }
                 for (int density : densities) {
                     drawable = context.getResources().getDrawableForDensity(iconResId, density);
@@ -134,7 +138,7 @@ public class HokoApp {
             }
             drawable = context.getResources().getDrawable(iconResId);
             return drawable;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
