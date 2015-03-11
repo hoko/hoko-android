@@ -7,12 +7,14 @@ import com.hoko.model.HokoURL;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class HokoURLTests {
+@Config(manifest=Config.NONE)
+public class HokoURLTest {
 
     @Test
     public void testSanitize() {

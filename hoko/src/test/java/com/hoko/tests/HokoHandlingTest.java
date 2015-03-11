@@ -6,6 +6,7 @@ import com.hoko.model.HokoDeeplink;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.annotation.Config;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +17,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Created by ivanbruel on 10/03/15.
  */
-public class HokoHandlingTests {
+@Config(manifest=Config.NONE)
+public class HokoHandlingTest {
 
     /** Countdown latch */
     private CountDownLatch lock;
@@ -42,7 +44,7 @@ public class HokoHandlingTests {
         handling.addHandler(new HokoHandler() {
             @Override
             public void handle(HokoDeeplink deeplink) {
-                HokoHandlingTests.this.deeplink = deeplink;
+                HokoHandlingTest.this.deeplink = deeplink;
                 lock.countDown();
             }
         });
@@ -129,7 +131,7 @@ public class HokoHandlingTests {
         handling.addHandler(new HokoHandler() {
             @Override
             public void handle(HokoDeeplink deeplink) {
-                HokoHandlingTests.this.deeplink = deeplink;
+                HokoHandlingTest.this.deeplink = deeplink;
                 lock.countDown();
             }
         });
@@ -180,8 +182,8 @@ public class HokoHandlingTests {
         handling.addHandler(new HokoHandler() {
             @Override
             public void handle(HokoDeeplink deeplink) {
-                HokoHandlingTests.this.deeplink = deeplink;
-                HokoHandlingTests.this.timestamp = new Date();
+                HokoHandlingTest.this.deeplink = deeplink;
+                HokoHandlingTest.this.timestamp = new Date();
                 lock.countDown();
                 try {
                     Thread.sleep(1);

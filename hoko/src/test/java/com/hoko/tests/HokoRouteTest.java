@@ -1,11 +1,14 @@
 package com.hoko.tests;
 
+import com.hoko.Hoko;
 import com.hoko.model.HokoDevice;
 import com.hoko.model.HokoRoute;
 
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +18,13 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Created by ivanbruel on 10/03/15.
  */
-public class HokoRouteTests {
+@Config(manifest=Config.NONE)
+public class HokoRouteTest {
+
+    @BeforeClass
+    public static void setUp() {
+        Hoko.setVerbose(false);
+    }
 
     @Test
     public void testRoute() {

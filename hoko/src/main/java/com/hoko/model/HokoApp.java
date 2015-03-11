@@ -65,7 +65,7 @@ public class HokoApp {
                     context.getPackageName(), 0);
             return packageInfo.versionName;
         } catch (Exception exception) {
-            exception.printStackTrace();
+            HokoLog.e(exception);
         }
         return null;
 
@@ -83,7 +83,7 @@ public class HokoApp {
                     context.getPackageName(), 0);
             return String.valueOf(packageInfo.versionCode);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            HokoLog.e(exception);
         }
         return null;
     }
@@ -139,6 +139,7 @@ public class HokoApp {
             drawable = context.getResources().getDrawable(iconResId);
             return drawable;
         } catch (Exception e) {
+            HokoLog.e(e);
             return null;
         }
     }
