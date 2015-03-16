@@ -79,7 +79,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <excludePackageNames>com.hoko.tests:com.hoko.tests.*</excludePackageNames>
+                    <excludePackageNames>com.hokolinks.tests:com.hokolinks.tests.*</excludePackageNames>
                 </configuration>
             </plugin>
         </plugins>

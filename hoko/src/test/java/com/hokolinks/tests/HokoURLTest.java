@@ -1,4 +1,4 @@
-package com.hoko.tests;
+package com.hokolinks.tests;
 
 
 import com.hokolinks.model.HokoRoute;

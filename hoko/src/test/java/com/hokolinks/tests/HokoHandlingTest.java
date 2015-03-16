@@ -1,4 +1,4 @@
-package com.hoko.tests;
+package com.hokolinks.tests;
 
 import com.hokolinks.deeplinking.HokoHandling;
 import com.hokolinks.deeplinking.listeners.HokoHandler;
