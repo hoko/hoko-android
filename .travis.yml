@@ -1,18 +1,20 @@
 language: android
-
 android:
   components:
-    - build-tools-21.1.2
-    - android-21
+  - build-tools-21.1.2
+  - android-21
   licenses:
-    - android-sdk-license-5be876d5
-
+  - android-sdk-license-5be876d5
 jdk:
-  - oraclejdk7
-  - oraclejdk8
-
+- oraclejdk7
+- oraclejdk8
 sudo: false
-
 cache:
   directories:
-    - $HOME/.m2
+  - $HOME/.m2
+after_success:
+  - .buildscript/deploy_snapshot.sh
+env:
+  global:
+  - secure: UujOFfmTmKqzih/PK/a09APXrOi6UHyl+ZkSwT0/nJSZ8X12ccQVEqtcLFPliaVcoeEzRA2XUw7YSeA1kTmywj4EdcmB7pSbNwxplVw9uX/PH8RPenZ8ubQUCpxQwSLZPWHcNHjOT/t7Lif+Q5J5k6b45ImBhPd+B5RB5PIEauQ=
+  - secure: HPS6il+HO3c6bg1aVr5E7CCCzdRM5OSFmeJ5kficct646RedWKH3NmPW2SZvkrNKpTEJR1t01pHCB6hmego8F4WZxwcm31E3ilC4CKoUTjwLiy4RllM5Q8fTlqZWkIzEdEzBHSvxZBCXnaZoI6AFJmZuepiFexVv12v0G3BhBSE=
