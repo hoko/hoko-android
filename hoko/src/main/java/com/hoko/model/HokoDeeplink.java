@@ -69,8 +69,8 @@ public class HokoDeeplink {
      */
     public static HokoDeeplink deeplink(String route, HashMap<String, String> routeParameters,
                                         HashMap<String, String> queryParameters) {
-        HokoDeeplink deeplink = new HokoDeeplink(null, HokoUtils.sanitizeRoute(route), routeParameters,
-                queryParameters);
+        HokoDeeplink deeplink = new HokoDeeplink(null, HokoUtils.sanitizeRoute(route),
+                routeParameters, queryParameters);
 
         if (HokoDeeplink.matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
             return deeplink;
@@ -201,7 +201,7 @@ public class HokoDeeplink {
 
     public static boolean matchRoute(String route, HashMap<String, String> routeParameters) {
         List<String> routeComponents = Arrays.asList(route.split("/"));
-        for (int index = 0; index < routeComponents.size(); index ++) {
+        for (int index = 0; index < routeComponents.size(); index++) {
             String routeComponent = routeComponents.get(index);
 
             if (routeComponent.startsWith(":") && routeComponent.length() > 2) {

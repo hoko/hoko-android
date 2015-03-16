@@ -62,7 +62,8 @@ public class HokoUtils {
     public static void saveString(String string, String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                            Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(key, string);
             editor.apply();
@@ -81,7 +82,8 @@ public class HokoUtils {
     public static String getString(String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                            Context.MODE_PRIVATE);
             return sharedPreferences.getString(key, null);
         } catch (NullPointerException e) {
             HokoLog.e(e);
