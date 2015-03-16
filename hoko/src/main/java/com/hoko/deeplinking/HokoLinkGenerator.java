@@ -57,7 +57,7 @@ public class HokoLinkGenerator {
                 .toRunnable(new HokoHttpRequestCallback() {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
-                        String hokolink = jsonObject.optString("hokolink");
+                        String hokolink = jsonObject.optString("omnilink");
                         if (listener != null) {
                             if (hokolink != null)
                                 listener.onLinkGenerated(hokolink);

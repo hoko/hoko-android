@@ -39,8 +39,13 @@ public class HokoApp {
      * @return The name of the application.
      */
     public static String getName(Context context) {
-        int stringId = context.getApplicationInfo().labelRes;
-        return context.getString(stringId);
+        try {
+            int stringId = context.getApplicationInfo().labelRes;
+            return context.getString(stringId);
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+            return null;
+        }
     }
 
     /**
@@ -50,7 +55,12 @@ public class HokoApp {
      * @return The package name of the application.
      */
     public static String getPackageName(Context context) {
-        return context.getPackageName();
+        try {
+            return context.getPackageName();
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+            return null;
+        }
     }
 
     /**

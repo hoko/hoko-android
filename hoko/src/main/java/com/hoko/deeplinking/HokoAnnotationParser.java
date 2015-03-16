@@ -559,6 +559,8 @@ public class HokoAnnotationParser {
             }
         } catch (PackageManager.NameNotFoundException e) {
             HokoLog.e(e);
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
         }
         return activitiesList;
     }

@@ -36,13 +36,18 @@ public class HokoUtils {
      * @return true if has permission, false otherwise.
      */
     public static boolean hasPermission(String permission, Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        if (packageManager.checkPermission(permission, context.getPackageName())
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            HokoLog.e("Requesting permission " + permission
-                    + " but it is not on the AndroidManifest.xml");
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            if (packageManager.checkPermission(permission, context.getPackageName())
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                HokoLog.e("Requesting permission " + permission
+                        + " but it is not on the AndroidManifest.xml");
+                return false;
+            }
+        } catch (Exception e) {
+            HokoLog.e(e);
             return false;
         }
     }
@@ -55,11 +60,15 @@ public class HokoUtils {
      * @param context A context object.
      */
     public static void saveString(String string, String key, Context context) {
-        SharedPreferences sharedPreferences =
-                context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key, string);
-        editor.apply();
+        try {
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(key, string);
+            editor.apply();
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+        }
     }
 
     /**
@@ -70,9 +79,14 @@ public class HokoUtils {
      * @return The string in case it exists, null otherwise.
      */
     public static String getString(String key, Context context) {
-        SharedPreferences sharedPreferences =
-                context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(key, null);
+        try {
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey, Context.MODE_PRIVATE);
+            return sharedPreferences.getString(key, null);
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+            return null;
+        }
     }
 
     /**
@@ -90,6 +104,8 @@ public class HokoUtils {
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
         } catch (IOException e) {
+            HokoLog.e(e);
+        } catch (NullPointerException e) {
             HokoLog.e(e);
         }
     }
@@ -112,6 +128,8 @@ public class HokoUtils {
         } catch (IOException e) {
             HokoLog.e(e);
         } catch (ClassNotFoundException e) {
+            HokoLog.e(e);
+        } catch (NullPointerException e) {
             HokoLog.e(e);
         }
         return null;

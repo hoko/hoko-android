@@ -10,8 +10,10 @@ import com.hoko.utils.networking.async.HokoHttpRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * HokoDeeplink is the model which represents an inbound or outbound deeplink object.
@@ -67,8 +69,13 @@ public class HokoDeeplink {
      */
     public static HokoDeeplink deeplink(String route, HashMap<String, String> routeParameters,
                                         HashMap<String, String> queryParameters) {
-        return new HokoDeeplink(null, HokoUtils.sanitizeRoute(route), routeParameters,
+        HokoDeeplink deeplink = new HokoDeeplink(null, HokoUtils.sanitizeRoute(route), routeParameters,
                 queryParameters);
+
+        if (HokoDeeplink.matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
+            return deeplink;
+        }
+        return null;
     }
 
     /**
@@ -190,6 +197,21 @@ public class HokoDeeplink {
 
     public boolean isHokolink() {
         return getHokolinkIdentifier() != null;
+    }
+
+    public static boolean matchRoute(String route, HashMap<String, String> routeParameters) {
+        List<String> routeComponents = Arrays.asList(route.split("/"));
+        for (int index = 0; index < routeComponents.size(); index ++) {
+            String routeComponent = routeComponents.get(index);
+
+            if (routeComponent.startsWith(":") && routeComponent.length() > 2) {
+                String token = routeComponent.substring(1);
+                if (!routeParameters.containsKey(token)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

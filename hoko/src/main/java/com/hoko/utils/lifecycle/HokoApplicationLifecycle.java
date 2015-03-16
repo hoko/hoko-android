@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.hoko.activity.HokoActivity;
+import com.hoko.utils.log.HokoLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,11 @@ public class HokoApplicationLifecycle {
     private HokoApplicationLifecycle(Context context) {
         mCallbacks = new ArrayList<HokoApplicationLifecycleCallback>();
         mApplicationStatus = HokoApplicationStatus.FOREGROUND;
-        registerActivityLifecycle(context);
+        try {
+            registerActivityLifecycle(context);
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+        }
     }
 
     /**
