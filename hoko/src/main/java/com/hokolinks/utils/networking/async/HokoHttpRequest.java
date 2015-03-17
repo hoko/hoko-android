@@ -44,8 +44,7 @@ public class HokoHttpRequest implements Serializable {
     // Constants
     private static final int HokoNetworkingTaskTimeout = 15000; // millis
     //private static final String HokoNetworkingTaskEndpoint = "http://192.168.1.10:3000";
-    private static final String HokoNetworkingTaskEndpoint = "http://35d1b582.ngrok.com";
-    //private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
+    private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
     private static final String HokoNetworkingTaskVersion = "v1";
     private static final String HokoNetworkingTaskFormat = "json";
 
