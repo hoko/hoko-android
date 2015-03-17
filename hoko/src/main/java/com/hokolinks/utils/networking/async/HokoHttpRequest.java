@@ -218,6 +218,7 @@ public class HokoHttpRequest implements Serializable {
             get.setHeader("Authorization", "Token " + getToken());
             get.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
+        HokoLog.d("GETing to " + getUrl());
         HttpResponse httpResponse = httpClient.execute(get);
         handleHttpResponse(httpResponse, httpCallback);
 
@@ -244,7 +245,7 @@ public class HokoHttpRequest implements Serializable {
 
         put.setEntity(new StringEntity(getParameters()));
 
-        // HokoLog.d("PUTing " + getParameters());
+        HokoLog.d("PUTing to " + getUrl() + " " + getParameters());
         HttpResponse httpResponse = httpClient.execute(put);
         handleHttpResponse(httpResponse, httpCallback);
 
@@ -271,7 +272,7 @@ public class HokoHttpRequest implements Serializable {
 
         post.setEntity(new StringEntity(getParameters()));
 
-        //HokoLog.d("POSTing " + getParameters());
+        HokoLog.d("POSTing to " + getUrl() + " " + getParameters());
         HttpResponse httpResponse = httpClient.execute(post);
         handleHttpResponse(httpResponse, httpCallback);
 
