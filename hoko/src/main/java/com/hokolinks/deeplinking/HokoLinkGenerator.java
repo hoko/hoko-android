@@ -51,7 +51,8 @@ public class HokoLinkGenerator {
      */
     private void requestForSmartlink(HokoDeeplink deeplink,
                                      final HokoLinkGenerationListener listener) {
-        String path = deeplink.hasURLs() ? "smartlinks/create_custom" : "smartlinks/create_with_template";
+        String path = deeplink.hasURLs() ? "smartlinks/create_custom"
+                : "smartlinks/create_with_template";
         new HokoAsyncTask(new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST,
                 path, mToken, deeplink.json().toString())
                 .toRunnable(new HokoHttpRequestCallback() {

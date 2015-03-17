@@ -132,14 +132,16 @@ public class HokoDeeplink {
 
     private String getURL() {
         String url = this.getRoute();
-        for (String routeParameterKey: this.getRouteParameters().keySet()) {
-            url = url.replace(":" + routeParameterKey, this.getRouteParameters().get(routeParameterKey));
+        for (String routeParameterKey : this.getRouteParameters().keySet()) {
+            url = url.replace(":" + routeParameterKey, this.getRouteParameters()
+                    .get(routeParameterKey));
         }
 
         if (this.getQueryParameters().size() > 0) {
             url = url + "?";
-            for (String queryParameterKey: this.getQueryParameters().keySet()) {
-                url = url + queryParameterKey + "=" + this.getQueryParameters().get(queryParameterKey) + "&";
+            for (String queryParameterKey : this.getQueryParameters().keySet()) {
+                url = url + queryParameterKey + "=" + this.getQueryParameters()
+                        .get(queryParameterKey) + "&";
             }
             url = url.substring(url.length() - 1);
         }
