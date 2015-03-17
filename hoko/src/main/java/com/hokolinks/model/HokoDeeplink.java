@@ -195,7 +195,7 @@ public class HokoDeeplink {
         try {
             JSONObject root = new JSONObject();
             JSONObject omnilink = new JSONObject();
-            omnilink.putOpt("smartlink_open_id", getOpenIdentifier());
+            omnilink.putOpt(HokoDeeplinkOpenLinkIdentifierKey, getOpenIdentifier());
             omnilink.put("opened_at", HokoDateUtils.format(new Date()));
             omnilink.put("user", user.baseJSON(context));
             root.put("smartlink", omnilink);
