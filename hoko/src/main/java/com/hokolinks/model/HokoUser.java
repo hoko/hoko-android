@@ -21,7 +21,7 @@ import java.util.TimeZone;
  * HokoUser is the representation of a User, with a few properties to allow user segmentation
  * on the Hoko platform. There are 2 kinds of users: anonymous and identified.
  * Anonymous users have no attributes are exist solely for the purpose of tracking individual users.
- * Identified users have attributes which can later be used for segmentation in Hokolink
+ * Identified users have attributes which can later be used for segmentation in Smartlink
  * redirection.
  * <p>
  * When identifying a user with an identifier it will associated the previous anonymous user

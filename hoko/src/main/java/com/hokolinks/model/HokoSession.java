@@ -100,10 +100,10 @@ public class HokoSession {
             sessionJsonObject.putOpt("duration", getDuration());
             sessionJsonObject.putOpt("user", mUser.json(context).getJSONObject("user"));
             sessionJsonObject.putOpt("key_events", eventsJSON());
-            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkLinkIdentifierKey,
-                    mDeeplink.getLinkIdentifier());
-            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkHokolinkIdentifierKey,
-                    mDeeplink.getHokolinkIdentifier());
+            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkOpenLinkIdentifierKey,
+                    mDeeplink.getOpenIdentifier());
+            sessionJsonObject.putOpt(HokoDeeplink.HokoDeeplinkSmartlinkIdentifierKey,
+                    mDeeplink.getSmartlinkIdentifier());
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("session", sessionJsonObject);
             return jsonObject;

@@ -1,6 +1,5 @@
 package com.hokolinks.utils.networking.async;
 
-import android.content.ContentResolver;
 import android.net.http.AndroidHttpClient;
 
 import com.hokolinks.Hoko;
@@ -16,8 +15,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -28,13 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -49,7 +44,8 @@ public class HokoHttpRequest implements Serializable {
     // Constants
     private static final int HokoNetworkingTaskTimeout = 15000; // millis
     //private static final String HokoNetworkingTaskEndpoint = "http://192.168.1.10:3000";
-    private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
+    private static final String HokoNetworkingTaskEndpoint = "http://35d1b582.ngrok.com";
+    //private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
     private static final String HokoNetworkingTaskVersion = "v1";
     private static final String HokoNetworkingTaskFormat = "json";
 
@@ -77,20 +73,6 @@ public class HokoHttpRequest implements Serializable {
         mToken = token;
         mParameters = parameters;
         mNumberOfRetries = 0;
-    }
-
-    private static AbstractHttpEntity getCompressedEntity(byte data[], ContentResolver resolver)
-            throws IOException {
-        AbstractHttpEntity entity;
-
-        ByteArrayOutputStream arr = new ByteArrayOutputStream();
-        OutputStream zipper = new GZIPOutputStream(arr);
-        zipper.write(data);
-        zipper.close();
-        entity = new ByteArrayEntity(arr.toByteArray());
-        entity.setContentEncoding("gzip");
-
-        return entity;
     }
 
     /**
@@ -231,7 +213,7 @@ public class HokoHttpRequest implements Serializable {
         HttpClient httpClient = getHttpsClient(null);
         HttpGet get = new HttpGet(getUrl());
         get.setHeader("Accept", "application/json");
-        get.setHeader("Accept-Encoding", "gzip");
+        get.setHeader("Accept-Encoding", "gzip, deflate");
         if (getToken() != null) {
             get.setHeader("Authorization", "Token " + getToken());
             get.setHeader("Hoko-SDK-Version", Hoko.VERSION);
@@ -251,15 +233,16 @@ public class HokoHttpRequest implements Serializable {
         HttpClient httpClient = getHttpsClient(getHttpParams());
         HttpPut put = new HttpPut(getUrl());
 
-        put.setHeader("Accept-Encoding", "gzip");
+        put.setHeader("Accept-Encoding", "gzip, deflate");
         put.setHeader("Accept", "application/json");
-        put.setHeader("Content-Type", "gzip/json");
+        put.setHeader("Content-Type", "application/json");
+
         if (getToken() != null) {
             put.setHeader("Authorization", "Token " + getToken());
             put.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
 
-        put.setEntity(getCompressedEntity(getParameters().getBytes(), null));
+        put.setEntity(new StringEntity(getParameters()));
 
         // HokoLog.d("PUTing " + getParameters());
         HttpResponse httpResponse = httpClient.execute(put);
@@ -277,15 +260,16 @@ public class HokoHttpRequest implements Serializable {
         HttpClient httpClient = getHttpsClient(getHttpParams());
         HttpPost post = new HttpPost(getUrl());
 
-        post.setHeader("Accept-Encoding", "gzip");
+        post.setHeader("Accept-Encoding", "gzip, deflate");
         post.setHeader("Accept", "application/json");
-        post.setHeader("Content-Type", "gzip/json");
+        post.setHeader("Content-Type", "application/json");
+
         if (getToken() != null) {
             post.setHeader("Authorization", "Token " + getToken());
             post.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
 
-        post.setEntity(getCompressedEntity(getParameters().getBytes(), null));
+        post.setEntity(new StringEntity(getParameters()));
 
         //HokoLog.d("POSTing " + getParameters());
         HttpResponse httpResponse = httpClient.execute(post);

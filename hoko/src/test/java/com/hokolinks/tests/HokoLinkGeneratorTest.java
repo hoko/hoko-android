@@ -38,7 +38,7 @@ public class HokoLinkGeneratorTest {
 
     /** Countdown latch */
     private CountDownLatch lock;
-    private String hokolink;
+    private String smartlink;
     private Exception exception;
 
     @BeforeClass
@@ -66,7 +66,7 @@ public class HokoLinkGeneratorTest {
 
     @After
     public void tearDown() {
-        hokolink = null;
+        smartlink = null;
         exception = null;
         lock = null;
     }
@@ -76,7 +76,7 @@ public class HokoLinkGeneratorTest {
         lock = new CountDownLatch(1);
         HttpResponseFactory factory = new DefaultHttpResponseFactory();
         HttpResponse response = factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null), null);
-        response.setEntity(new StringEntity("{omnilink: 'http://hoko.link/PRMLNK'}"));
+        response.setEntity(new StringEntity("{smartlink: 'http://hoko.link/PRMLNK'}"));
         Robolectric.addPendingHttpResponse(response);
         HashMap<String, String> routeParameters = new HashMap<String, String>() {
             {
@@ -92,10 +92,10 @@ public class HokoLinkGeneratorTest {
             }
         };
 
-        Hoko.deeplinking().generateHokolink(HokoDeeplink.deeplink("store/:language_code/product/:product_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
+        Hoko.deeplinking().generateSmartlink(HokoDeeplink.deeplink("store/:language_code/product/:product_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
             @Override
-            public void onLinkGenerated(String hokolink) {
-                HokoLinkGeneratorTest.this.hokolink = hokolink;
+            public void onLinkGenerated(String smartlink) {
+                HokoLinkGeneratorTest.this.smartlink = smartlink;
                 lock.countDown();
             }
 
@@ -105,7 +105,7 @@ public class HokoLinkGeneratorTest {
             }
         });
         lock.await();
-        assertThat(this.hokolink).isEqualTo("http://hoko.link/PRMLNK");
+        assertThat(this.smartlink).isEqualTo("http://hoko.link/PRMLNK");
     }
 
     @Test
@@ -113,7 +113,7 @@ public class HokoLinkGeneratorTest {
         lock = new CountDownLatch(1);
         HttpResponseFactory factory = new DefaultHttpResponseFactory();
         HttpResponse response = factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null), null);
-        response.setEntity(new StringEntity("{omnilink: 'http://hoko.link/PRMLNK'}"));
+        response.setEntity(new StringEntity("{smartlink: 'http://hoko.link/PRMLNK'}"));
         Robolectric.addPendingHttpResponse(response);
         HashMap<String, String> routeParameters = new HashMap<String, String>() {
             {
@@ -128,10 +128,10 @@ public class HokoLinkGeneratorTest {
             }
         };
 
-        Hoko.deeplinking().generateHokolink(HokoDeeplink.deeplink("store/:language_code/product/:product_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
+        Hoko.deeplinking().generateSmartlink(HokoDeeplink.deeplink("store/:language_code/product/:product_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
             @Override
-            public void onLinkGenerated(String hokolink) {
-                HokoLinkGeneratorTest.this.hokolink = hokolink;
+            public void onLinkGenerated(String smartlink) {
+                HokoLinkGeneratorTest.this.smartlink = smartlink;
                 lock.countDown();
             }
 
@@ -143,7 +143,7 @@ public class HokoLinkGeneratorTest {
         });
         lock.await();
         assertThat(this.exception).isInstanceOf(HokoNullDeeplinkException.class);
-        assertThat(this.hokolink).isNull();
+        assertThat(this.smartlink).isNull();
     }
 
     @Test
@@ -151,7 +151,7 @@ public class HokoLinkGeneratorTest {
         lock = new CountDownLatch(1);
         HttpResponseFactory factory = new DefaultHttpResponseFactory();
         HttpResponse response = factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null), null);
-        response.setEntity(new StringEntity("{omnilink: 'http://hoko.link/PRMLNK'}"));
+        response.setEntity(new StringEntity("{smartlink: 'http://hoko.link/PRMLNK'}"));
         Robolectric.addPendingHttpResponse(response);
         HashMap<String, String> routeParameters = new HashMap<String, String>() {
             {
@@ -167,10 +167,10 @@ public class HokoLinkGeneratorTest {
             }
         };
 
-        Hoko.deeplinking().generateHokolink(HokoDeeplink.deeplink("store/:language_code/collection/:collection_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
+        Hoko.deeplinking().generateSmartlink(HokoDeeplink.deeplink("store/:language_code/collection/:collection_id", routeParameters, queryParameters), new HokoLinkGenerationListener() {
             @Override
-            public void onLinkGenerated(String hokolink) {
-                HokoLinkGeneratorTest.this.hokolink = hokolink;
+            public void onLinkGenerated(String smartlink) {
+                HokoLinkGeneratorTest.this.smartlink = smartlink;
                 lock.countDown();
             }
 
@@ -182,7 +182,7 @@ public class HokoLinkGeneratorTest {
         });
         lock.await();
         assertThat(this.exception).isInstanceOf(HokoRouteNotMappedException.class);
-        assertThat(this.hokolink).isNull();
+        assertThat(this.smartlink).isNull();
     }
 
 }

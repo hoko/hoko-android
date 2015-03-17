@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.hokolinks.utils.HokoDateUtils;
 import com.hokolinks.utils.HokoUtils;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.HokoNetworking;
 import com.hokolinks.utils.networking.async.HokoHttpRequest;
 
@@ -23,9 +24,8 @@ import java.util.List;
 public class HokoDeeplink {
 
     // Key values from incoming deeplinks
-    public static final String HokoDeeplinkLinkIdentifierKey = "hk_id";
-    //TODO change to hokolink
-    public static final String HokoDeeplinkHokolinkIdentifierKey = "hk_oid";
+    public static final String HokoDeeplinkOpenLinkIdentifierKey = "_hk_oid";
+    public static final String HokoDeeplinkSmartlinkIdentifierKey = "_hk_sid";
 
     private static final int HokoDeeplinkOpenedStatus = 3;
 
@@ -33,6 +33,7 @@ public class HokoDeeplink {
     private HashMap<String, String> mRouteParameters;
     private HashMap<String, String> mQueryParameters;
     private String mURLScheme;
+    private HashMap<String, JSONObject> mURLs;
 
     /**
      * The constructor for HokoDeeplink objects.
@@ -54,11 +55,12 @@ public class HokoDeeplink {
         mRoute = route;
         mRouteParameters = routeParameters;
         mQueryParameters = queryParameters;
+        mURLs = new HashMap<String, JSONObject>();
     }
 
     /**
      * An easy to use static function for the developer to generate their own deeplinks to
-     * generate Hokolinks afterwards.
+     * generate Smartlinks afterwards.
      *
      * @param route           A route in route format.
      * @param routeParameters A HashMap where the keys are the route components and the values are
@@ -78,6 +80,37 @@ public class HokoDeeplink {
         return null;
     }
 
+    public void addURL(String url, HokoDeeplinkPlatform platform) {
+        try {
+            JSONObject urlJSON = new JSONObject();
+            urlJSON.put("link", url);
+            mURLs.put(stringForPlatform(platform), urlJSON);
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+    }
+
+    private String stringForPlatform(HokoDeeplinkPlatform platform) {
+        switch (platform) {
+            case IPHONE:
+                return "iphone";
+            case IPAD:
+                return "ipad";
+            case IOS_UNIVERSAL:
+                return "ios";
+            case ANDROID:
+                return "android";
+            case WEB:
+                return "web";
+            default:
+                return null;
+        }
+    }
+
+    public boolean hasURLs() {
+        return mURLs.size() > 0;
+    }
+
     /**
      * This function serves the purpose of communicating to the Hoko backend service that a given
      * inbound deeplink object was opened either through the notification id or through the
@@ -88,14 +121,29 @@ public class HokoDeeplink {
      * @param user    A user object.
      */
     public void post(Context context, String token, HokoUser user) {
-        //TODO Change to hokolink
-        if (isHokolink()) {
+        if (isSmartlink()) {
             HokoNetworking.getNetworking().addRequest(
                     new HokoHttpRequest(HokoHttpRequest.HokoNetworkOperationType.POST,
-                            "omnilinks/" + getHokolinkIdentifier() + "/open", token,
-                            hokolinkJSON(context, user).toString()));
+                            "smartlinks/" + getSmartlinkIdentifier() + "/open", token,
+                            smartlinkJSON(context, user).toString()));
         }
 
+    }
+
+    private String getURL() {
+        String url = this.getRoute();
+        for (String routeParameterKey: this.getRouteParameters().keySet()) {
+            url = url.replace(":" + routeParameterKey, this.getRouteParameters().get(routeParameterKey));
+        }
+
+        if (this.getQueryParameters().size() > 0) {
+            url = url + "?";
+            for (String queryParameterKey: this.getQueryParameters().keySet()) {
+                url = url + queryParameterKey + "=" + this.getQueryParameters().get(queryParameterKey) + "&";
+            }
+            url = url.substring(url.length() - 1);
+        }
+        return url;
     }
 
     /**
@@ -107,13 +155,9 @@ public class HokoDeeplink {
     public JSONObject json() {
         try {
             JSONObject root = new JSONObject();
-            JSONObject route = new JSONObject();
-            route.putOpt("format", mRoute);
-            if (mRouteParameters != null)
-                route.putOpt("parameters", new JSONObject(mRouteParameters));
-            if (mQueryParameters != null)
-                route.putOpt("query", new JSONObject(mQueryParameters));
-            root.put("route", route);
+            root.putOpt("original_url", getURL());
+            if (mURLs.size() > 0)
+                root.putOpt("routes", new JSONObject(mURLs));
             return root;
         } catch (JSONException e) {
             return null;
@@ -139,21 +183,20 @@ public class HokoDeeplink {
     }
 
     /**
-     * Converts the HokoDeeplink into a JSONObject referring the Hokolink that was opened.
+     * Converts the HokoDeeplink into a JSONObject referring the Smartlink that was opened.
      *
      * @param context A context object.
      * @param user    A user object.
-     * @return The JSONObject representation of the Hokolink.
+     * @return The JSONObject representation of the Smartlink.
      */
-    private JSONObject hokolinkJSON(Context context, HokoUser user) {
-        //TODO change to hokolink
+    private JSONObject smartlinkJSON(Context context, HokoUser user) {
         try {
             JSONObject root = new JSONObject();
             JSONObject omnilink = new JSONObject();
-            omnilink.putOpt("omnilink_open_id", getLinkIdentifier());
+            omnilink.putOpt("smartlink_open_id", getOpenIdentifier());
             omnilink.put("opened_at", HokoDateUtils.format(new Date()));
             omnilink.put("user", user.baseJSON(context));
-            root.put("omnilink", omnilink);
+            root.put("smartlink", omnilink);
             return root;
         } catch (JSONException e) {
             return null;
@@ -187,16 +230,16 @@ public class HokoDeeplink {
         return mRoute;
     }
 
-    public String getHokolinkIdentifier() {
-        return mQueryParameters.get(HokoDeeplinkHokolinkIdentifierKey);
+    public String getSmartlinkIdentifier() {
+        return mQueryParameters.get(HokoDeeplinkSmartlinkIdentifierKey);
     }
 
-    public String getLinkIdentifier() {
-        return mQueryParameters.get(HokoDeeplinkLinkIdentifierKey);
+    public String getOpenIdentifier() {
+        return mQueryParameters.get(HokoDeeplinkOpenLinkIdentifierKey);
     }
 
-    public boolean isHokolink() {
-        return getHokolinkIdentifier() != null;
+    public boolean isSmartlink() {
+        return getSmartlinkIdentifier() != null;
     }
 
     public static boolean matchRoute(String route, HashMap<String, String> routeParameters) {

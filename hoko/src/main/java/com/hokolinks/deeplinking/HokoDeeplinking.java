@@ -134,19 +134,19 @@ public class HokoDeeplinking {
     // Link Generation
 
     /**
-     * generateHokolink(deeplink, listener) allows the app to generate Hokolinks for the
+     * generateSmartlink(deeplink, listener) allows the app to generate Smartlinks for the
      * user to share with other users, independent of the platform, users will be redirected to the
      * corresponding view. A user generated HokoDeeplink object may be passed along to generate the
      * deeplinks for all available platforms. In case the request is successful, the onLinkGenerated
-     * function will be called receiving an Hokolink (e.g. http://hoko.io/XmPle). Otherwise it will
+     * function will be called receiving an Smartlink (e.g. http://hoko.io/XmPle). Otherwise it will
      * return the cause of failure in the onError function.
      * <pre>{@code
      * HashMap<String, String> routeParameters = new HashMap<String, String>();
      * routeParameters.put("id", "30");
-     * Hoko.deeplinking().generateHokolink(HokoDeeplink
+     * Hoko.deeplinking().generateSmartlink(HokoDeeplink
      * .deeplink("products/:id", routeParameters, null), new HokoLinkGenerationListener() {
-     *      public void onLinkGenerated(String hokolink) {
-     *          shareLink(hokolink);
+     *      public void onLinkGenerated(String smartlink) {
+     *          shareLink(smartlink);
      *      }
      *      public void onError(Exception exception) {
      *          exception.printStackTrace();
@@ -156,21 +156,21 @@ public class HokoDeeplinking {
      * @param deeplink A HKDeeplink object.
      * @param listener A HokoLinkGenerationLister instance.
      */
-    public void generateHokolink(HokoDeeplink deeplink, HokoLinkGenerationListener listener) {
+    public void generateSmartlink(HokoDeeplink deeplink, HokoLinkGenerationListener listener) {
         mLinkGenerator.generateHokolink(deeplink, listener);
     }
 
     /**
-     * generateHokolink(activity, listener) allows the app to generate Hoko Hokolinks for the
+     * generateSmartlink(activity, listener) allows the app to generate Hoko Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
      * corresponding view. An activity annotated with DeeplinkRoute may be passed along to generate
      * the deeplinks for all available platforms. In case the request is successful, the
-     * onLinkGenerated function will be called receiving an hokolink (e.g. http://hoko.io/XmPle).
+     * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code
-     * Hoko.deeplinking().generateHokolink(this, new HokoLinkGenerationListener() {
-     *      public void onLinkGenerated(String hokolink) {
-     *          shareLink(hokolink);
+     * Hoko.deeplinking().generateSmartlink(this, new HokoLinkGenerationListener() {
+     *      public void onLinkGenerated(String smartlink) {
+     *          shareLink(smartlink);
      *      }
      *      public void onError(Exception exception) {
      *          exception.printStackTrace();
@@ -180,26 +180,26 @@ public class HokoDeeplinking {
      * @param activity An activity annotated with DeeplinkRoute.
      * @param listener A HokoLinkGenerationLister instance.
      */
-    public void generateHokolink(Activity activity, HokoLinkGenerationListener listener) {
+    public void generateSmartlink(Activity activity, HokoLinkGenerationListener listener) {
         HokoDeeplink deeplink = HokoAnnotationParser.deeplinkFromActivity(activity);
         if (deeplink != null) {
-            generateHokolink(deeplink, listener);
+            generateSmartlink(deeplink, listener);
         } else {
             listener.onError(new HokoLinkGenerationException());
         }
     }
 
     /**
-     * generateHokolink(fragment, listener) allows the app to generate Hoko Hokolinks for the
+     * generateSmartlink(fragment, listener) allows the app to generate Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
      * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to generate
      * the deeplinks for all available platforms. In case the request is successful, the
-     * onLinkGenerated function will be called receiving an hokolink (e.g. http://hoko.io/XmPle).
+     * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code
-     * Hoko.deeplinking().generateHokolink(this, new HokoLinkGenerationListener() {
-     *      public void onLinkGenerated(String hokolink) {
-     *          shareLink(hokolink);
+     * Hoko.deeplinking().generateSmartlink(this, new HokoLinkGenerationListener() {
+     *      public void onLinkGenerated(String smartlink) {
+     *          shareLink(smartlink);
      *      }
      *      public void onError(Exception exception) {
      *          exception.printStackTrace();
@@ -209,10 +209,10 @@ public class HokoDeeplinking {
      * @param fragment A fragment annotated with DeeplinkRoute.
      * @param listener A HokoLinkGenerationLister instance.
      */
-    public void generateHokolink(Fragment fragment, HokoLinkGenerationListener listener) {
+    public void generateSmartlink(Fragment fragment, HokoLinkGenerationListener listener) {
         HokoDeeplink deeplink = HokoAnnotationParser.deeplinkFromFragment(fragment);
         if (deeplink != null) {
-            generateHokolink(deeplink, listener);
+            generateSmartlink(deeplink, listener);
         } else {
             listener.onError(new HokoLinkGenerationException());
         }
