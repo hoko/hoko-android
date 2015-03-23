@@ -11,10 +11,10 @@ jdk:
 sudo: false
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
 after_success:
-  - .buildscript/deploy_snapshot.sh
+- ".buildscript/deploy_snapshot.sh"
 env:
   global:
-  - secure: UujOFfmTmKqzih/PK/a09APXrOi6UHyl+ZkSwT0/nJSZ8X12ccQVEqtcLFPliaVcoeEzRA2XUw7YSeA1kTmywj4EdcmB7pSbNwxplVw9uX/PH8RPenZ8ubQUCpxQwSLZPWHcNHjOT/t7Lif+Q5J5k6b45ImBhPd+B5RB5PIEauQ=
-  - secure: HPS6il+HO3c6bg1aVr5E7CCCzdRM5OSFmeJ5kficct646RedWKH3NmPW2SZvkrNKpTEJR1t01pHCB6hmego8F4WZxwcm31E3ilC4CKoUTjwLiy4RllM5Q8fTlqZWkIzEdEzBHSvxZBCXnaZoI6AFJmZuepiFexVv12v0G3BhBSE=
+  - secure: FY6yhksJt5q+K3nNY2cFkwFXHd+WSxX/WKls86oa8ui0Qe2PWf2ygLfC5GeJz3Cl5SjpITVqYXnk9T2zcU/24dCE1FldKVYbMvhfBlDGEKHpt97TSm/Byko4PchXzjc4Lp+IKX8jGS/kyiwepUGSwXBIpjj/oyG5loTQG3uVGak=
+  - secure: QtAl+t87ayhDznLfKFHJHlfeMt8fvD4OvTID8CQJF797bpQxcFJc14bvf7rFNckOtI91niCKRSiXTTgeIwyYkrZPHv+T46ZJ8axzrC6Tsjt/dQ2FwyGR92X8SC0hVddlYMfP52l2vDNx2RX6q5gehSCtjMx1RUzBKEFcu+2O4Ws=
