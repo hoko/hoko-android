@@ -1,0 +1,179 @@
+package com.hokolinks.model;
+
+import android.content.Context;
+
+import com.hokolinks.analytics.UserAccountType;
+import com.hokolinks.analytics.UserGender;
+import com.hokolinks.utils.DateUtils;
+import com.hokolinks.utils.Utils;
+import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.networking.Networking;
+import com.hokolinks.utils.networking.async.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * User is the representation of a User, with a few properties to allow user segmentation
+ * on the Hoko platform. There are 2 kinds of users: anonymous and identified.
+ * Anonymous users have no attributes are exist solely for the purpose of tracking individual users.
+ * Identified users have attributes which can later be used for segmentation in Smartlink
+ * redirection.
+ * <p>
+ * When identifying a user with an identifier it will associated the previous anonymous user
+ * (in case it exists) the new user being created. This helps with dealing with duplicate users
+ * especially when applications have Onboarding and Logged in contexts, where it is actually the
+ * same user.
+ */
+public class User implements Serializable {
+
+    // Key for the saving/loading the current user from file.
+    private static final String HokoUserCurrentUserKey = "current_user";
+
+    private String mIdentifier;
+    private boolean mAnonymous;
+    private UserAccountType mAccountType;
+    private String mName;
+    private String mEmail;
+    private Date mBirthDate;
+    private UserGender mGender;
+    private String mPreviousIdentifier;
+    private float mTimezoneOffset;
+
+    /**
+     * This constructs an anonymous User with an automatically generated identifier and no
+     * attributes.
+     */
+    public User() {
+        this(null, UserAccountType.NONE, null, null, null, UserGender.UNKNOWN, null);
+    }
+
+    /**
+     * This constructs an identified User with the given attributes.
+     * The previous identifier serves the purpose of merging the previous anonymous user data with
+     * the User object being initialized here. This will also retrieve the current timezone.
+     *
+     * @param identifier         A unique identifier for users of the application.
+     * @param accountType        The login system user to identify this user.
+     * @param name               The name of the user.
+     * @param email              The user's email address.
+     * @param birthDate          The user's birth date.
+     * @param gender             The user's gender.
+     * @param previousIdentifier The previous identifier in case the previous user was anonymous.
+     */
+    public User(String identifier, UserAccountType accountType, String name, String email,
+                Date birthDate, UserGender gender, String previousIdentifier) {
+        if (identifier != null) {
+            mIdentifier = identifier;
+            mAccountType = accountType;
+            mName = name;
+            mEmail = email;
+            mBirthDate = birthDate;
+            mGender = gender;
+            mPreviousIdentifier = previousIdentifier;
+            mAnonymous = false;
+        } else {
+            mIdentifier = Utils.generateUUID();
+            mAnonymous = true;
+            mAccountType = UserAccountType.NONE;
+            mGender = UserGender.UNKNOWN;
+        }
+        mTimezoneOffset = getCurrentTimezoneOffset();
+    }
+
+    /**
+     * Retrieves the current timezone offset from UTC in hour units.
+     * E.g. UTC-01:00 = -1, UTC+05:45 = 5.75
+     *
+     * @return The timezone offset from UTC in hour units.
+     */
+    public static float getCurrentTimezoneOffset() {
+        return TimeZone.getDefault().getRawOffset() / (1000.0f * 60 * 60);
+    }
+
+    /**
+     * Retrieves the current user from the filesystem. This avoids identification calls where
+     * the user might already be logged in. Is merely here to help avoid unnecessary steps and
+     * communication overhead.
+     *
+     * @param context A context object.
+     * @return The current User.
+     */
+    public static User currentUser(Context context) {
+        return (User) Utils.loadFromFile(HokoUserCurrentUserKey, context);
+    }
+
+    public String getIdentifier() {
+        return mIdentifier;
+    }
+
+    public boolean isAnonymous() {
+        return mAnonymous;
+    }
+
+    /**
+     * Is a counterpart to the currentUser(...) method, saving a given User object to the
+     * filesystem to be later loaded with the currentUser(...) method.
+     *
+     * @param context A context object.
+     */
+    public void save(Context context) {
+        Utils.saveToFile(this, HokoUserCurrentUserKey, context);
+    }
+
+    /**
+     * This function serves the purpose of communicating to the Hoko backend service that a given
+     * User has been identified.
+     *
+     * @param context A context object.
+     * @param token The Hoko API Token.
+     */
+    public void post(String token, Context context) {
+        Networking.getNetworking().addRequest(
+                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST, "users", token,
+                        json(context).toString()));
+    }
+
+    /**
+     * Converts all the User information into a JSONObject to be sent to the Hoko backend
+     * service.
+     *
+     * @param context A context object.
+     * @return The JSONObject representation of User.
+     */
+    public JSONObject json(Context context) {
+        try {
+            JSONObject rootObject = new JSONObject();
+            rootObject.put("user", baseJSON(context));
+            return rootObject;
+        } catch (JSONException e) {
+            Log.e(e);
+        }
+        return null;
+    }
+
+    public JSONObject baseJSON(Context context) {
+        try {
+            JSONObject userObject = new JSONObject();
+            userObject.put("timestamp", DateUtils.format(new Date()));
+            userObject.put("timezone_offset", mTimezoneOffset);
+            userObject.put("identifier", mIdentifier);
+            userObject.put("anonymous", mAnonymous);
+            userObject.put("account_type", mAccountType.ordinal());
+            userObject.putOpt("name", mName);
+            userObject.putOpt("email", mEmail);
+            userObject.putOpt("birth_date", DateUtils.formatDate(mBirthDate));
+            userObject.put("gender", mGender.ordinal());
+            userObject.putOpt("device", Device.json(context));
+            userObject.putOpt("previous_identifier", mPreviousIdentifier);
+            return userObject;
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+}
