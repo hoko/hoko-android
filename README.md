@@ -22,15 +22,12 @@ To integrate Hoko in your app, just follow the 4 simple steps below after adding
 
 ## Add Hoko to your project
 
-1. Download the [Hoko SDK](https://github.com/hokolinks/hoko-android/archive/master.zip).
-2. Be sure your project includes the `Android Support Library v4` and the `Google Play Services` if you want to use the push notifications module.
+1. Add Hoko to your `gradle.build` file.
 
 ```java
 // Build.gradle
 dependencies {
-	compile fileTree(include: ['*.jar'], dir: 'libs')
-	compile 'com.google.android.gms:play-services:6.5.87'
-	compile 'com.android.support:support-v4:21.0.3'
+	compile 'com.hokolinks:hoko:1.1.3'
 }
 ```
 
