@@ -49,21 +49,12 @@ public void onCreate() {
 
 To register a URL Scheme on your application you must add `HokoActivity` to your `AndroidManifest.xml`, making sure to replace your `URL scheme` with an appropriate scheme in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 
-To make sure your application receives notifications from the `Hoko` service, you have to add the boilerplate code to your `AndroidManifest.xml` as well.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="===YOUR.PACKAGE.NAME===">
 
-	<!-- Required permissions for push notifications and Hoko integration -->
-	<permission
-		android:name="===YOUR.PACKAGE.NAME===.permission.C2D_MESSAGE"
-		android:protectionLevel="signature" />
-
-	<uses-permission android:name="===YOUR.PACKAGE.NAME===.permission.C2D_MESSAGE" />
-	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
@@ -86,23 +77,12 @@ To make sure your application receives notifications from the `Hoko` service, yo
 			<category android:name="android.intent.category.BROWSABLE" />
 			</intent-filter>
 		</activity>
-		<meta-data
-			android:name="com.google.android.gms.version"
-			android:value="@integer/google_play_services_version" />
-            		
-		<!--Hoko notification receiver -->
-		<receiver
-			android:name="com.hoko.pushnotifications.HokoNotificationReceiver"
-			android:permission="com.google.android.c2dm.permission.SEND"> 
-			<intent-filter>
-				<action android:name="com.google.android.c2dm.intent.RECEIVE" />
-				<category android:name="===YOUR.PACKAGE.NAME===" />
-			</intent-filter>
-		</receiver>
-		<service
-			android:name="com.hoko.pushnotifications.HokoNotificationHandler"
-			android:exported="true" />
-		<!-- End of Hoko Code -->
+		<receiver android:name="com.hokolinks.deeplinking.DeferredDeeplinkingBroadcastReceiver"
+            		android:exported="true">
+        		 <intent-filter>
+                		<action android:name="com.android.vending.INSTALL_REFERRER" />
+            		</intent-filter>
+        	</receiver>
 		
 	</application>
 </manifest>
