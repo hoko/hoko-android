@@ -41,12 +41,9 @@ In your `Application` subclass setup the Hoko Framework in the `onCreate(...)` m
 @Override
 public void onCreate() {
 	super.onCreate();
-	Hoko.setup(this, "YOUR-APP-TOKEN", "YOUR-GCM-TOKEN");
+	Hoko.setup(this, "YOUR-APP-TOKEN");
 }
 ```
-
-
-Where your `Google Cloud Messaging Token` is the `Project Number` generated when a Google API aplication is registered on the [Google Developer Console](https://code.google.com/apis/console/).
 
 ### 2. Setting up the AndroidManifest.xml
 
