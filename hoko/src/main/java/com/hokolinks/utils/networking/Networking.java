@@ -33,7 +33,7 @@ public class Networking {
     private static final String HokoNetworkingHttpTasksFilename = "http_tasks";
 
     // Configuration of the Networking
-    private static final int HokoNetworkingFlushTimerInterval = 10000; // in millis
+    private static final int HokoNetworkingFlushTimerInterval = 30000; // in millis
     private static final int HokoNetworkingHttpTasksNumberOfRetries = 3;
 
     // Static class to avoid duplication of Networking instances

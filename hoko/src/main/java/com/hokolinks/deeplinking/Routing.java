@@ -73,6 +73,17 @@ public class Routing {
      * @param fragment An annotated fragment object.
      * @return true if it could inject the values, false otherwise.
      */
+    public boolean inject(android.app.Fragment fragment) {
+        return AnnotationParser.inject(fragment);
+    }
+
+    /**
+     * Injects an fragment object with the deeplink values from its Bundle.
+     * This is done by the use of Hoko annotations on the class and on its fields.
+     *
+     * @param fragment An annotated fragment object.
+     * @return true if it could inject the values, false otherwise.
+     */
     public boolean inject(Fragment fragment) {
         return AnnotationParser.inject(fragment);
     }
@@ -100,14 +111,15 @@ public class Routing {
 
     /**
      * Open URL serves the purpose of opening a deeplink from within the HokoActivity.
-     * This function will redirect the deeplink to a given DeeplinkRoute or DeeplinkFragment
-     * Activity in case it finds a match. Falls back to the default route or doesn't do anything
-     * if a default route does not exist.
+     * This function will redirect the deeplink to a given DeeplinkRoute or
+     * DeeplinkFragmentActivity Activity in case it finds a match. Falls back to the default route
+     * or doesn't do anything if a default route does not exist.
      *
      * @param urlString The deeplink.
      * @return true if it can open the deeplink, false otherwise.
      */
     public boolean openURL(String urlString) {
+        Log.d("Opening Deeplink " + urlString);
         URL url = new URL(urlString);
         return handleOpenURL(url);
     }
@@ -122,6 +134,7 @@ public class Routing {
     private boolean handleOpenURL(URL url) {
         Intent intent = intentForURL(url);
         if (intent != null) {
+            Log.d("with intent " + intent.toString());
             openIntent(intent);
             return true;
         }

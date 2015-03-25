@@ -10,10 +10,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import com.hokolinks.Hoko;
-import com.hokolinks.deeplinking.annotations.DeeplinkDefaultRoute;
-import com.hokolinks.deeplinking.annotations.DeeplinkFragment;
-import com.hokolinks.deeplinking.annotations.DeeplinkQueryParameter;
 import com.hokolinks.deeplinking.annotations.DeeplinkRoute;
+import com.hokolinks.deeplinking.annotations.DeeplinkDefaultRoute;
+import com.hokolinks.deeplinking.annotations.DeeplinkFragmentActivity;
+import com.hokolinks.deeplinking.annotations.DeeplinkQueryParameter;
 import com.hokolinks.deeplinking.annotations.DeeplinkRouteParameter;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.Route;
@@ -41,7 +41,8 @@ public class AnnotationParser {
      * @return The route string.
      */
     public static String routeFromClass(Class classObject) {
-        DeeplinkRoute annotation = (DeeplinkRoute) classObject.getAnnotation(DeeplinkRoute.class);
+        DeeplinkRoute annotation = (DeeplinkRoute) classObject
+                .getAnnotation(DeeplinkRoute.class);
         if (annotation != null && annotation.value().compareTo(DeeplinkRoute.noValue) != 0) {
             return annotation.value();
         }
@@ -189,6 +190,30 @@ public class AnnotationParser {
     }
 
     /**
+     * Injects route parameters on to the fields of an fragment instance, from inbound arguments.
+     * Uses a route to map parameters to keys and then to the correct fields on the fragment
+     * object.
+     *
+     * @param fragment An annotated fragment.
+     * @return true in case it injected values, false otherwise.
+     */
+    public static boolean inject(android.app.Fragment fragment) {
+        if (fragment.getArguments() == null)
+            return false;
+
+        String route = fragment.getArguments().getString(Route.HokoRouteBundleKey);
+        if (route == null)
+            return false;
+
+        Bundle routeParametersBundle = fragment.getArguments()
+                .getBundle(Route.HokoRouteRouteParametersBundleKey);
+        Bundle queryParametersBundle = fragment.getArguments()
+                .getBundle(Route.HokoRouteQueryParametersBundleKey);
+
+        return inject(fragment, route, routeParametersBundle, queryParametersBundle);
+    }
+
+    /**
      * Injects a FragmentActivity with a possible deeplinkable fragment, its route parameters and
      * its query parameters.
      *
@@ -201,30 +226,40 @@ public class AnnotationParser {
     private static boolean injectFragment(FragmentActivity activity, String route,
                                           Bundle routeParametersBundle,
                                           Bundle queryParametersBundle) {
-        DeeplinkFragment deeplinkFragmentAnnotation =
+        DeeplinkFragmentActivity deeplinkFragmentActivityAnnotation =
                 getFragmentAnnotationFromClass(activity.getClass());
 
-        if (deeplinkFragmentAnnotation == null
-                || deeplinkFragmentAnnotation.fragments().length == 0)
+        if (deeplinkFragmentActivityAnnotation == null
+                || deeplinkFragmentActivityAnnotation.fragments().length == 0)
             return false;
 
-        Class[] fragmentClasses = deeplinkFragmentAnnotation.fragments();
+        Class[] fragmentClasses = deeplinkFragmentActivityAnnotation.fragments();
         Class<?> fragmentClass = findFragmentForRoute(route, fragmentClasses);
 
         if (fragmentClass == null)
             return false;
 
         try {
-            Fragment fragment = (Fragment) fragmentClass.getDeclaredConstructor().newInstance();
             Bundle bundle = new Bundle();
             bundle.putString(Route.HokoRouteBundleKey, route);
             bundle.putBundle(Route.HokoRouteRouteParametersBundleKey, routeParametersBundle);
             bundle.putBundle(Route.HokoRouteQueryParametersBundleKey, queryParametersBundle);
-            fragment.setArguments(bundle);
-            FragmentManager fragmentManager = activity.getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(deeplinkFragmentAnnotation.id(), fragment).commit();
-            return true;
+            if (fragmentClass == Fragment.class) {
+                Fragment fragment = (Fragment) fragmentClass.getDeclaredConstructor().newInstance();
+                fragment.setArguments(bundle);
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(deeplinkFragmentActivityAnnotation.id(), fragment).commit();
+                return true;
+            } else if (fragmentClass == android.app.Fragment.class) {
+                android.app.Fragment fragment = (android.app.Fragment) fragmentClass
+                        .getDeclaredConstructor().newInstance();
+                fragment.setArguments(bundle);
+                android.app.FragmentManager fragmentManager = activity.getFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(deeplinkFragmentActivityAnnotation.id(), fragment).commit();
+                return true;
+            }
         } catch (Exception e) {
             Log.e(e);
         }
@@ -433,9 +468,10 @@ public class AnnotationParser {
      * @param activityName The activityName.
      */
     private static void parseFragmentActivity(Class classObject, String activityName) {
-        DeeplinkFragment deeplinkFragmentAnnotation = getFragmentAnnotationFromClass(classObject);
-        if (deeplinkFragmentAnnotation != null) {
-            Class[] fragmentClasses = deeplinkFragmentAnnotation.fragments();
+        DeeplinkFragmentActivity deeplinkFragmentActivityAnnotation =
+                getFragmentAnnotationFromClass(classObject);
+        if (deeplinkFragmentActivityAnnotation != null) {
+            Class[] fragmentClasses = deeplinkFragmentActivityAnnotation.fragments();
             for (Class fragmentClass : fragmentClasses) {
                 mapClassToDeeplink(activityName, fragmentClass, false, false);
             }
@@ -469,13 +505,13 @@ public class AnnotationParser {
     }
 
     /**
-     * Retrieves the DeeplinkFragment annotation from a given class.
+     * Retrieves the DeeplinkFragmentActivity annotation from a given class.
      *
      * @param classObject The class object.
-     * @return The DeeplinkFragment annotation found, null otherwise.
+     * @return The DeeplinkFragmentActivity annotation found, null otherwise.
      */
-    private static DeeplinkFragment getFragmentAnnotationFromClass(Class classObject) {
-        return (DeeplinkFragment) classObject.getAnnotation(DeeplinkFragment.class);
+    private static DeeplinkFragmentActivity getFragmentAnnotationFromClass(Class classObject) {
+        return (DeeplinkFragmentActivity) classObject.getAnnotation(DeeplinkFragmentActivity.class);
     }
 
     /**

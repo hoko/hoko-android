@@ -71,8 +71,25 @@ public class Deeplinking {
     }
 
     /**
-     * inject(fragment) should be called on your DeeplinkRoute fragment' onCreateView(...) method.
-     * It will try to map the current deeplink to annotated DeeplinkRouteParameters or
+     * inject(fragment) should be called on your DeeplinkRoute fragment' onCreateView(...)
+     * method. It will try to map the current deeplink to annotated DeeplinkRouteParameters or
+     * DeeplinkQueryParameters, on that particular fragment instance.
+     * In case it is not possible to map a deeplink or one does not exist, this function will return
+     * false.
+     * <pre>{@code
+     * Hoko.deeplinking().inject(this);
+     * }</pre>
+     *
+     * @param fragment Your fragment instance.
+     * @return true in case of success, false in case of failure or non-existent deeplink.
+     */
+    public boolean inject(android.app.Fragment fragment) {
+        return mRouting.inject(fragment);
+    }
+
+    /**
+     * inject(fragment) should be called on your DeeplinkRoute fragment' onCreateView(...)
+     * method. It will try to map the current deeplink to annotated DeeplinkRouteParameters or
      * DeeplinkQueryParameters, on that particular fragment instance.
      * In case it is not possible to map a deeplink or one does not exist, this function will return
      * false.
@@ -163,8 +180,8 @@ public class Deeplinking {
     /**
      * generateSmartlink(activity, listener) allows the app to generate Hoko Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An activity annotated with DeeplinkRoute may be passed along to generate
-     * the deeplinks for all available platforms. In case the request is successful, the
+     * corresponding view. An activity annotated with DeeplinkRoute may be passed along to
+     * generate the deeplinks for all available platforms. In case the request is successful, the
      * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code
@@ -192,8 +209,8 @@ public class Deeplinking {
     /**
      * generateSmartlink(fragment, listener) allows the app to generate Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to generate
-     * the deeplinks for all available platforms. In case the request is successful, the
+     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to
+     * generate the deeplinks for all available platforms. In case the request is successful, the
      * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
      * <pre>{@code

@@ -142,6 +142,7 @@ public class Route {
      */
     public Intent getIntent(URL url) {
         Intent intent = new Intent(mContext, getActivityClass());
+
         Bundle mainBundle = new Bundle();
 
         mainBundle.putString(HokoRouteBundleKey, this.getRoute());
@@ -171,6 +172,7 @@ public class Route {
         // Flags for Deeplinking
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
         return intent;
     }
