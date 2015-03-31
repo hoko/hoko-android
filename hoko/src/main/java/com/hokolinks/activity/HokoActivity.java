@@ -8,7 +8,7 @@ import com.hokolinks.Hoko;
 
 /**
  * HokoActivity serves the purpose of receiving incoming deeplinking intents and forwarding them to
- * the HokoDeeplinking module where it will be parsed and start the associated activity.
+ * the Deeplinking module where it will be parsed and start the associated activity.
  */
 @SuppressLint("Registered")
 public class HokoActivity extends Activity {
