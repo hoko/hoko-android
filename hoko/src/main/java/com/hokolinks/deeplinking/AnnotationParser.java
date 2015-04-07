@@ -1,5 +1,6 @@
 package com.hokolinks.deeplinking;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -197,6 +198,7 @@ public class AnnotationParser {
      * @param fragment An annotated fragment.
      * @return true in case it injected values, false otherwise.
      */
+    @TargetApi(11)
     public static boolean inject(android.app.Fragment fragment) {
         if (fragment.getArguments() == null)
             return false;
