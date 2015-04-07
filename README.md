@@ -27,7 +27,7 @@ To integrate Hoko in your app, just follow the 4 simple steps below after adding
 ```java
 // Build.gradle
 dependencies {
-	compile 'com.hokolinks:hoko:1.1.3'
+	compile 'com.hokolinks:hoko:1.2.1@aar'
 }
 ```
 
