@@ -20,5 +20,5 @@ after_success:
 - "./gradlew clean build uploadArchives"
 env:
   global:
-  - secure: eO2RkmjQaobre5/QnjFzKYhyS1pJ1cwQoSSU2I5UP0qRh3sJM6tkj+VM3ssVIw2/Pz9hxU96p5gC2Mwj+VlMr+GvATtH9yvuFMcIiZRmnWWO4rtNGljbcQMawg4tkZe/OmtZf5+iouOXQMwtp2+UqYK1PYHI8PfYPipiWiD15jk=
-  - secure: TLeb3YY9ueEAX5LTcuu0FFk/thQQHrmN/WWCJBmkEtNQa0ITXOAgRfuAOlWqH8zKs9VQWYeO7bpknDQXDl3VDHpHjqGSmw3+MCawaFCaEl0CUysMQCTOBNyPgkiuNIbOluekulO3ULFEvvd9S+EERDcS8jm2eNP9673uMRmtqfE=
+  - secure: CRG7/tJYa23bUD/uc0Ex/mVL7PEZYOJzO7lxYLSDpnJVEnv8rnG5IOmzYLmuUA4pIBQFSkUGqC1tCh6gqzOJogUNc46HzJziNHdBjuN8eQuF5DQ0hy9KLQCFXWAyW0qi9tyehSAkLxRYtWmfZTDo/P6LfESW7LRYgxo1N+pxTvM=
+  - secure: hY1l1fAv5LXGP+1o/TJLEuLn6VFHbsg5pC3E5TyKu9HrnvjboqdMOdUMMRv4+t8Sl+gYLo2YEPNIDQgVVKoCvyow/Cupm6NGXIeROXxzg/WUK+95VyllMAXUaOwZXeH6ZPai/inXpX3jEYrha42xj9QiM4s/U1i+1wf4l+dlQH8=
