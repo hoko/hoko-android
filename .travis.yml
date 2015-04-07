@@ -23,7 +23,7 @@ cache:
     - $HOME/.m2
 
 after_success:
-- ".buildscript/deploy_snapshot.sh"
+- "./gradlew clean build uploadArchives"
 env:
   global:
   - secure: FY6yhksJt5q+K3nNY2cFkwFXHd+WSxX/WKls86oa8ui0Qe2PWf2ygLfC5GeJz3Cl5SjpITVqYXnk9T2zcU/24dCE1FldKVYbMvhfBlDGEKHpt97TSm/Byko4PchXzjc4Lp+IKX8jGS/kyiwepUGSwXBIpjj/oyG5loTQG3uVGak=
