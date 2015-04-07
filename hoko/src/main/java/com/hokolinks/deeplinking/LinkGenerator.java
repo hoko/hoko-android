@@ -32,7 +32,7 @@ public class LinkGenerator {
      * @param deeplink A user generated deeplink or an annotation based deeplink.
      * @param listener A LinkGenerationListener instance.
      */
-    public void generateHokolink(Deeplink deeplink, LinkGenerationListener listener) {
+    public void generateSmartlink(Deeplink deeplink, LinkGenerationListener listener) {
         if (deeplink == null) {
             listener.onError(new NullDeeplinkException());
         } else if (!Hoko.deeplinking().routing().routeExists(deeplink.getRoute())) {

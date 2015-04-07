@@ -246,14 +246,14 @@ public class AnnotationParser {
             bundle.putString(Route.HokoRouteBundleKey, route);
             bundle.putBundle(Route.HokoRouteRouteParametersBundleKey, routeParametersBundle);
             bundle.putBundle(Route.HokoRouteQueryParametersBundleKey, queryParametersBundle);
-            if (fragmentClass == Fragment.class) {
+            if (Fragment.class.isAssignableFrom(fragmentClass)) {
                 Fragment fragment = (Fragment) fragmentClass.getDeclaredConstructor().newInstance();
                 fragment.setArguments(bundle);
                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                 fragmentManager.beginTransaction()
                         .replace(deeplinkFragmentActivityAnnotation.id(), fragment).commit();
                 return true;
-            } else if (fragmentClass == android.app.Fragment.class) {
+            } else if (android.app.Fragment.class.isAssignableFrom(fragmentClass)) {
                 android.app.Fragment fragment = (android.app.Fragment) fragmentClass
                         .getDeclaredConstructor().newInstance();
                 fragment.setArguments(bundle);

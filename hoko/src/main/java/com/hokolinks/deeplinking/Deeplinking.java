@@ -174,7 +174,7 @@ public class Deeplinking {
      * @param listener A HokoLinkGenerationLister instance.
      */
     public void generateSmartlink(Deeplink deeplink, LinkGenerationListener listener) {
-        mLinkGenerator.generateHokolink(deeplink, listener);
+        mLinkGenerator.generateSmartlink(deeplink, listener);
     }
 
     /**
