@@ -7,7 +7,7 @@
 
 SLUG="hokolinks/hoko-android"
 JDK="oraclejdk8"
-BRANCH="master"
+BRANCH="gradle"
 
 set -e
 
