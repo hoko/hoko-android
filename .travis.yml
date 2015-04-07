@@ -1,30 +1,24 @@
 language: android
-
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-22.0.1
-    - android-22
-    - extra-google-google_play_services
-    - extra-android-m2repository
-    - extra-android-support
-    - extra-google-m2repository
-
+  - tools
+  - platform-tools
+  - build-tools-22.0.1
+  - android-22
+  - extra-google-google_play_services
+  - extra-android-m2repository
+  - extra-android-support
+  - extra-google-m2repository
 notifications:
   email: false
-
-script: ./gradlew assemble testDebug
-
+script: "./gradlew assemble testDebug"
 sudo: false
-
 cache:
   directories:
-    - $HOME/.m2
-
+  - "$HOME/.m2"
 after_success:
 - "./gradlew clean build uploadArchives"
 env:
   global:
-  - secure: FY6yhksJt5q+K3nNY2cFkwFXHd+WSxX/WKls86oa8ui0Qe2PWf2ygLfC5GeJz3Cl5SjpITVqYXnk9T2zcU/24dCE1FldKVYbMvhfBlDGEKHpt97TSm/Byko4PchXzjc4Lp+IKX8jGS/kyiwepUGSwXBIpjj/oyG5loTQG3uVGak=
-  - secure: QtAl+t87ayhDznLfKFHJHlfeMt8fvD4OvTID8CQJF797bpQxcFJc14bvf7rFNckOtI91niCKRSiXTTgeIwyYkrZPHv+T46ZJ8axzrC6Tsjt/dQ2FwyGR92X8SC0hVddlYMfP52l2vDNx2RX6q5gehSCtjMx1RUzBKEFcu+2O4Ws=
+  - secure: eO2RkmjQaobre5/QnjFzKYhyS1pJ1cwQoSSU2I5UP0qRh3sJM6tkj+VM3ssVIw2/Pz9hxU96p5gC2Mwj+VlMr+GvATtH9yvuFMcIiZRmnWWO4rtNGljbcQMawg4tkZe/OmtZf5+iouOXQMwtp2+UqYK1PYHI8PfYPipiWiD15jk=
+  - secure: TLeb3YY9ueEAX5LTcuu0FFk/thQQHrmN/WWCJBmkEtNQa0ITXOAgRfuAOlWqH8zKs9VQWYeO7bpknDQXDl3VDHpHjqGSmw3+MCawaFCaEl0CUysMQCTOBNyPgkiuNIbOluekulO3ULFEvvd9S+EERDcS8jm2eNP9673uMRmtqfE=
