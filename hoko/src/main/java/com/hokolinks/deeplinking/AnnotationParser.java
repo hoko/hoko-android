@@ -595,9 +595,7 @@ public class AnnotationParser {
             for (ActivityInfo activityInfo : activityInfoList) {
                 activitiesList.add(activityInfo.name);
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            HokoLog.e(e);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             HokoLog.e(e);
         }
         return activitiesList;

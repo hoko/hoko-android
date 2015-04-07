@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply from: 'gradle-maven-push.gradle'
-apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 22
