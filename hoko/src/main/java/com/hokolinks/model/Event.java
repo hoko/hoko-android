@@ -1,7 +1,7 @@
 package com.hokolinks.model;
 
 import com.hokolinks.utils.DateUtils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +46,7 @@ public class Event {
             jsonObject.putOpt("created_at", DateUtils.format(mCreatedAt));
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }

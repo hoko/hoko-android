@@ -3,7 +3,7 @@ package com.hokolinks.model;
 import android.content.Context;
 
 import com.hokolinks.utils.DateUtils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -108,7 +108,7 @@ public class Session {
             jsonObject.put("session", sessionJsonObject);
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }

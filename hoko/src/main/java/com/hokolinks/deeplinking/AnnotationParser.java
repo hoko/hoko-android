@@ -18,7 +18,7 @@ import com.hokolinks.deeplinking.annotations.DeeplinkRouteParameter;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.Route;
 import com.hokolinks.model.exceptions.ActivityNotDeeplinkableException;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -80,12 +80,12 @@ public class AnnotationParser {
             HashMap<String, String> routeParameters = getRouteParametersFromInstance(object);
             HashMap<String, String> queryParameters = getQueryParametersFromInstance(object);
             if (routeParameters == null) {
-                Log.e(new ActivityNotDeeplinkableException(object.getClass().getName()));
+                HokoLog.e(new ActivityNotDeeplinkableException(object.getClass().getName()));
                 return null;
             }
             return Deeplink.deeplink(route, routeParameters, queryParameters);
         } else {
-            Log.e(new ActivityNotDeeplinkableException(object.getClass().getName()));
+            HokoLog.e(new ActivityNotDeeplinkableException(object.getClass().getName()));
         }
         return null;
     }
@@ -261,7 +261,7 @@ public class AnnotationParser {
                 return true;
             }
         } catch (Exception e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
 
         return false;
@@ -359,7 +359,7 @@ public class AnnotationParser {
             returnValue = true;
         } catch (IllegalAccessException e) {
             if (logError)
-                Log.e(e);
+                HokoLog.e(e);
             returnValue = false;
         } finally {
             field.setAccessible(accessible);
@@ -419,7 +419,7 @@ public class AnnotationParser {
                 }
             }
         } catch (IllegalAccessException e) {
-            Log.e(e);
+            HokoLog.e(e);
             returnValue = null;
         } finally {
             field.setAccessible(accessible);
@@ -455,7 +455,7 @@ public class AnnotationParser {
                 Class classObject = Class.forName(activityName);
                 mapClassToDeeplink(activityName, classObject, true, true);
             } catch (ClassNotFoundException e) {
-                Log.e(e);
+                HokoLog.e(e);
             }
         }
     }
@@ -594,9 +594,9 @@ public class AnnotationParser {
                 activitiesList.add(activityInfo.name);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(e);
+            HokoLog.e(e);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return activitiesList;
     }

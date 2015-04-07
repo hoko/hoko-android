@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.hokolinks.utils.DateUtils;
 import com.hokolinks.utils.Utils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -86,7 +86,7 @@ public class Deeplink {
             urlJSON.put("link", url);
             mURLs.put(stringForPlatform(platform), urlJSON);
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
     }
 
@@ -121,7 +121,12 @@ public class Deeplink {
      * @param user    A user object.
      */
     public void post(Context context, String token, User user) {
-        if (isSmartlink()) {
+        if (isPushNotification()) {
+            Networking.getNetworking().addRequest(
+                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                            "notifications/" + getOpenIdentifier() + "/open", token,
+                            notificationJSON().toString()));
+        } else if (isSmartlink()) {
             Networking.getNetworking().addRequest(
                     new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
                             "smartlinks/" + getSmartlinkIdentifier() + "/open", token,
@@ -242,6 +247,10 @@ public class Deeplink {
 
     public boolean isSmartlink() {
         return getSmartlinkIdentifier() != null;
+    }
+
+    public boolean isPushNotification() {
+        return getSmartlinkIdentifier() == null && getOpenIdentifier() != null;
     }
 
     public static boolean matchRoute(String route, HashMap<String, String> routeParameters) {

@@ -6,7 +6,7 @@ import com.hokolinks.model.Device;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycle;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycleCallback;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.async.HttpRequest;
 import com.hokolinks.utils.networking.async.HttpRequestCallback;
 
@@ -108,7 +108,7 @@ public class Networking {
      */
     public void addRequest(HttpRequest httpRequest) {
         if (httpRequest.getNumberOfRetries() < HokoNetworkingHttpTasksNumberOfRetries) {
-            Log.d("Adding request to queue");
+            HokoLog.d("Adding request to queue");
             mHttpTasks.add(httpRequest);
         }
         saveTasks();
@@ -126,7 +126,7 @@ public class Networking {
             service.execute(httpRequest.toRunnable(new HttpRequestCallback() {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
-                    Log.d("Success " + jsonObject.toString());
+                    HokoLog.d("Success " + jsonObject.toString());
                     mHttpTasks.remove(httpRequest);
                     saveTasks();
                 }

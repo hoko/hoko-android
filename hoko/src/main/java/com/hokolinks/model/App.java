@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -13,7 +14,7 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 
 import com.hokolinks.utils.Utils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -43,7 +44,7 @@ public class App {
             int stringId = context.getApplicationInfo().labelRes;
             return context.getString(stringId);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
             return null;
         }
     }
@@ -58,7 +59,7 @@ public class App {
         try {
             return context.getPackageName();
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
             return null;
         }
     }
@@ -75,7 +76,7 @@ public class App {
                     context.getPackageName(), 0);
             return packageInfo.versionName;
         } catch (Exception exception) {
-            Log.e(exception);
+            HokoLog.e(exception);
         }
         return null;
 
@@ -93,7 +94,7 @@ public class App {
                     context.getPackageName(), 0);
             return String.valueOf(packageInfo.versionCode);
         } catch (Exception exception) {
-            Log.e(exception);
+            HokoLog.e(exception);
         }
         return null;
     }
@@ -149,9 +150,15 @@ public class App {
             drawable = context.getResources().getDrawable(iconResId);
             return drawable;
         } catch (Exception e) {
-            Log.e(e);
+            HokoLog.e(e);
             return null;
         }
+    }
+
+    @TargetApi(15)
+    public static Bitmap getIconBitmapForNotification(Context context) {
+        Bitmap iconBitmap = BitmapFactory.decodeResource(context.getResources(), getIcon(context));
+        return Bitmap.createScaledBitmap(iconBitmap, context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_width), context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_height), true);
     }
 
     /**
@@ -190,7 +197,7 @@ public class App {
             jsonObject.putOpt("build", getVersionCode(context));
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }
@@ -207,7 +214,7 @@ public class App {
             jsonObject.putOpt("icon", getBase64Icon(context));
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }
@@ -247,7 +254,7 @@ public class App {
             Field debugField = buildConfigClass.getDeclaredField("DEBUG");
             return debugField.getBoolean(null);
         } catch (Exception e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return false;
     }

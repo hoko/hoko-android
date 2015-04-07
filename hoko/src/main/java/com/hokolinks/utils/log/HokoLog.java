@@ -4,7 +4,7 @@ package com.hokolinks.utils.log;
  * A wrapper around Android's Log class.
  * It has a verbose property to determine whether to print messages and exceptions or not.
  */
-public class Log {
+public class HokoLog {
     /**
      * The Log TAG
      */
@@ -75,7 +75,7 @@ public class Log {
     }
 
     public static void setVerbose(boolean verbose) {
-        Log.mVerbose = verbose;
+        HokoLog.mVerbose = verbose;
     }
 
 }

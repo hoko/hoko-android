@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -125,17 +125,17 @@ public class Route {
         try {
             return Class.forName(mActivityClassName);
         } catch (ClassNotFoundException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }
 
     /**
      * Generates an Intent out of mapping URL information with the Route object.
-     * The intent has 2 bundles, a route parameters bundle which contains a HashMap<String, String>
-     * of key value pairs and a query parameters bundle which also contains a
-     * HashMap<String, String> of key value pairs. The function also sets a few flags for better
-     * deeplinking experience.
+     * The intent has 2 bundles, a route parameters bundle which contains a
+     * HashMap&lt;String, String&gt; of key value pairs and a query parameters bundle which also
+     * contains a HashMap&lt;String, String&gt; of key value pairs. The function also sets a few
+     * flags for better deeplinking experience.
      *
      * @param url A URL instance coming from a deeplink.
      * @return The generated intent.

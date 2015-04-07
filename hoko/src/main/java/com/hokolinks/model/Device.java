@@ -11,7 +11,7 @@ import android.view.WindowManager;
 
 import com.hokolinks.utils.DateUtils;
 import com.hokolinks.utils.Utils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +29,7 @@ public class Device {
 
     // Shared preferences keys
     private static final String HokoDeviceUUIDKey = "UUID";
+    private static final String HokoDevicePushTokenKey = "PushToken";
 
     // String values for connectivity state
     private static final String HokoDeviceConnectivityWifi = "Wifi";
@@ -182,6 +183,26 @@ public class Device {
     }
 
     /**
+     * Returns the device's push token from the Hoko SharedPreferences.
+     *
+     * @param context A context object.
+     * @return The device's push token.
+     */
+    public static String getPushToken(Context context) {
+        return Utils.getString(HokoDevicePushTokenKey, context);
+    }
+
+    /**
+     * Sets the device's push token into the Hoko SharedPreferences.
+     *
+     * @param token   The device's push token
+     * @param context A context object.
+     */
+    public static void setPushToken(String token, Context context) {
+        Utils.saveString(token, HokoDevicePushTokenKey, context);
+    }
+
+    /**
      * Converts all the Device information into a JSONObject to be sent to the Hoko backend
      * service.
      *
@@ -203,10 +224,11 @@ public class Device {
             jsonObject.putOpt("carrier", getCarrier(context));
             jsonObject.putOpt("internet_connectivity", getInternetConnectivity(context));
             jsonObject.putOpt("uid", getDeviceID(context));
+            jsonObject.putOpt("token", getPushToken(context));
             jsonObject.putOpt("application", App.json(context));
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }

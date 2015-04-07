@@ -6,7 +6,7 @@ import com.hokolinks.analytics.UserAccountType;
 import com.hokolinks.analytics.UserGender;
 import com.hokolinks.utils.DateUtils;
 import com.hokolinks.utils.Utils;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -151,7 +151,7 @@ public class User implements Serializable {
             rootObject.put("user", baseJSON(context));
             return rootObject;
         } catch (JSONException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }

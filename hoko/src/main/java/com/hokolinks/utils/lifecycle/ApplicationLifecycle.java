@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.hokolinks.activity.HokoActivity;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class ApplicationLifecycle {
         try {
             registerActivityLifecycle(context);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
     }
 

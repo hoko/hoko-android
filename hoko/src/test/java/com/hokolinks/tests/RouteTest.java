@@ -7,7 +7,9 @@ import com.hokolinks.model.Route;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Created by ivanbruel on 10/03/15.
  */
 @Config(manifest=Config.NONE)
+@RunWith(RobolectricTestRunner.class)
 public class RouteTest {
 
     @BeforeClass
@@ -56,6 +59,7 @@ public class RouteTest {
         JSONObject expectedJSON = new JSONObject();
         JSONObject expectedJSONRoute = new JSONObject();
         expectedJSONRoute.put("device", Device.getVendor() + " " + Device.getModel());
+        expectedJSONRoute.put("build", "0");
         expectedJSONRoute.put("path", "product/:product_id/price/:price/open");
         expectedJSON.put("route", expectedJSONRoute);
 

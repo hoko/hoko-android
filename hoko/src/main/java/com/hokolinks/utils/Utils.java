@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,12 +42,12 @@ public class Utils {
                     == PackageManager.PERMISSION_GRANTED) {
                 return true;
             } else {
-                Log.e("Requesting permission " + permission
+                HokoLog.e("Requesting permission " + permission
                         + " but it is not on the AndroidManifest.xml");
                 return false;
             }
         } catch (Exception e) {
-            Log.e(e);
+            HokoLog.e(e);
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class Utils {
             editor.putString(key, string);
             editor.apply();
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
     }
 
@@ -86,7 +86,7 @@ public class Utils {
                             Context.MODE_PRIVATE);
             return sharedPreferences.getString(key, null);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
             return null;
         }
     }
@@ -106,9 +106,9 @@ public class Utils {
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
         } catch (IOException e) {
-            Log.e(e);
+            HokoLog.e(e);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
     }
 
@@ -128,11 +128,11 @@ public class Utils {
             objectInputStream.close();
             return object;
         } catch (IOException e) {
-            Log.e(e);
+            HokoLog.e(e);
         } catch (ClassNotFoundException e) {
-            Log.e(e);
+            HokoLog.e(e);
         } catch (NullPointerException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
         return null;
     }

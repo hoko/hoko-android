@@ -3,6 +3,8 @@
 .project
 .settings
 eclipsebin
+local.properties
+.gradle
 
 # Ant
 bin

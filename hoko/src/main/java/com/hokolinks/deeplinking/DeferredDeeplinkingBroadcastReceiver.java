@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.hokolinks.Hoko;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -24,11 +24,11 @@ public class DeferredDeeplinkingBroadcastReceiver extends BroadcastReceiver {
             referrer = URLDecoder.decode(referrer, "UTF-8");
             Uri uri = Uri.parse("http://fakepath.com/query?" + referrer);
             String deeplink = uri.getQueryParameter("utm_content");
-            Log.d("Opening deferred deeplink " + deeplink);
+            HokoLog.d("Opening deferred deeplink " + deeplink);
 
             Hoko.deeplinking().openURL(deeplink);
         } catch (IOException e) {
-            Log.e(e);
+            HokoLog.e(e);
         }
 
 

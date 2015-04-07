@@ -11,7 +11,7 @@ import com.hokolinks.model.Route;
 import com.hokolinks.model.URL;
 import com.hokolinks.model.exceptions.DuplicateRouteException;
 import com.hokolinks.model.exceptions.MultipleDefaultRoutesException;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class Routing {
                          HashMap<String, Field> routeParameters,
                          HashMap<String, Field> queryParameters) {
         if (route != null && routeExists(route))
-            Log.e(new DuplicateRouteException(route));
+            HokoLog.e(new DuplicateRouteException(route));
         else
             addNewRoute(new Route(URL.sanitizeURL(route), activityClassName,
                     routeParameters, queryParameters, mContext));
@@ -119,7 +119,7 @@ public class Routing {
      * @return true if it can open the deeplink, false otherwise.
      */
     public boolean openURL(String urlString) {
-        Log.d("Opening Deeplink " + urlString);
+        HokoLog.d("Opening Deeplink " + urlString);
         URL url = new URL(urlString);
         return handleOpenURL(url);
     }
@@ -134,7 +134,7 @@ public class Routing {
     private boolean handleOpenURL(URL url) {
         Intent intent = intentForURL(url);
         if (intent != null) {
-            Log.d("with intent " + intent.toString());
+            HokoLog.d("with intent " + intent.toString());
             openIntent(intent);
             return true;
         }
@@ -189,7 +189,7 @@ public class Routing {
             if (mDefaultRoute == null) {
                 mDefaultRoute = route;
             } else {
-                Log.e(new MultipleDefaultRoutesException(route.getActivityClassName()));
+                HokoLog.e(new MultipleDefaultRoutesException(route.getActivityClassName()));
             }
         } else {
             if (route.isValid()) {

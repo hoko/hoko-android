@@ -1,6 +1,6 @@
 package com.hokolinks.utils.versionchecker;
 
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.async.HttpRequest;
 import com.hokolinks.utils.networking.async.HttpRequestCallback;
 import com.hokolinks.utils.networking.async.NetworkAsyncTask;
@@ -61,7 +61,7 @@ public class VersionChecker {
 
             @Override
             public void onFailure(Exception e) {
-                Log.e(e);
+                HokoLog.e(e);
             }
 
         })).execute();

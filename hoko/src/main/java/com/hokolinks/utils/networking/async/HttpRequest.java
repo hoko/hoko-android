@@ -4,7 +4,7 @@ import android.net.http.AndroidHttpClient;
 
 import com.hokolinks.Hoko;
 import com.hokolinks.model.exceptions.HokoException;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -77,6 +77,7 @@ public class HttpRequest implements Serializable {
     /**
      * Generates the full URL, merging the endpoint, version, path and format.
      *
+     * @param path The path component.
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
@@ -150,7 +151,7 @@ public class HttpRequest implements Serializable {
                             break;
                     }
                 } catch (IOException e) {
-                    Log.e(e);
+                    HokoLog.e(e);
                     if (httpCallback != null)
                         httpCallback.onFailure(e);
                 }
@@ -217,7 +218,7 @@ public class HttpRequest implements Serializable {
             get.setHeader("Authorization", "Token " + getToken());
             get.setHeader("Hoko-SDK-Version", Hoko.VERSION);
         }
-        Log.d("GETing to " + getUrl());
+        HokoLog.d("GETing to " + getUrl());
         HttpResponse httpResponse = httpClient.execute(get);
         handleHttpResponse(httpResponse, httpCallback);
 
@@ -244,7 +245,7 @@ public class HttpRequest implements Serializable {
 
         put.setEntity(new StringEntity(getParameters()));
 
-        Log.d("PUTing to " + getUrl() + " " + getParameters());
+        HokoLog.d("PUTing to " + getUrl() + " " + getParameters());
         HttpResponse httpResponse = httpClient.execute(put);
         handleHttpResponse(httpResponse, httpCallback);
 
@@ -271,7 +272,7 @@ public class HttpRequest implements Serializable {
 
         post.setEntity(new StringEntity(getParameters()));
 
-        Log.d("POSTing to " + getUrl() + " " + getParameters());
+        HokoLog.d("POSTing to " + getUrl() + " " + getParameters());
         HttpResponse httpResponse = httpClient.execute(post);
         handleHttpResponse(httpResponse, httpCallback);
 
@@ -302,7 +303,7 @@ public class HttpRequest implements Serializable {
         }
         if (httpResponse.getStatusLine().getStatusCode() >= 300) {
             HokoException exception = HokoException.serverException(jsonResponse);
-            Log.e(exception);
+            HokoLog.e(exception);
             if (httpCallback != null) {
                 httpCallback.onFailure(exception);
             }

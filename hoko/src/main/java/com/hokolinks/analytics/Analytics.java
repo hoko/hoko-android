@@ -4,13 +4,14 @@ import android.content.Context;
 
 import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.Device;
 import com.hokolinks.model.Event;
 import com.hokolinks.model.Session;
 import com.hokolinks.model.User;
 import com.hokolinks.model.exceptions.IgnoringKeyEventException;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycle;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycleCallback;
-import com.hokolinks.utils.log.Log;
+import com.hokolinks.utils.log.HokoLog;
 
 import java.util.Date;
 
@@ -111,6 +112,18 @@ public class Analytics implements Handler {
         }
     }
 
+    /**
+     * A semi-private API used by Hoko Push Notifications module to set the push-token to the user
+     * object and to the HokoDevice instance.
+     *
+     * @param pushToken The push notification token string.
+     */
+    public void setPushToken(String pushToken) {
+        Device.setPushToken(pushToken, mContext);
+        if (mUser != null)
+            mUser.post(mToken, mContext);
+    }
+
     // Events
 
     /**
@@ -146,7 +159,7 @@ public class Analytics implements Handler {
         if (mSession != null) {
             mSession.trackKeyEvent(event);
         } else {
-            Log.e(new IgnoringKeyEventException(event));
+            HokoLog.e(new IgnoringKeyEventException(event));
         }
     }
 
