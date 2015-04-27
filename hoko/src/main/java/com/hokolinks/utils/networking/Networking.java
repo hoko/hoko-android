@@ -39,6 +39,7 @@ public class Networking {
     // Static class to avoid duplication of Networking instances
     private static Networking mInstance;
 
+
     private Context mContext;
     private List<HttpRequest> mHttpTasks;
     private Timer mTimer;
@@ -83,6 +84,10 @@ public class Networking {
      */
     public static Networking getNetworking() {
         return mInstance;
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     //Tasks

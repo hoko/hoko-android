@@ -8,6 +8,9 @@ import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.exceptions.LinkGenerationException;
+import com.hokolinks.utils.Utils;
+import com.hokolinks.utils.networking.Networking;
+import com.hokolinks.utils.networking.async.HttpRequest;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -18,6 +21,8 @@ import java.util.HashMap;
  */
 public class Deeplinking {
 
+    private static final String HokoDeeplinkingIsNotFirstRun = "isNotFirstRun";
+    private static final String HokoDeeplinkingInstallPath = "apps/install";
     private Routing mRouting;
     private Handling mHandling;
     private LinkGenerator mLinkGenerator;
@@ -26,10 +31,11 @@ public class Deeplinking {
         mRouting = new Routing(token, context);
         mHandling = new Handling();
         mLinkGenerator = new LinkGenerator(token);
+
+        this.triggerInstall(context, token);
     }
 
     // Map Routes
-
     /**
      * Maps a route to an activity class and its fields as route parameters or query parameters.
      *
@@ -242,6 +248,16 @@ public class Deeplinking {
 
     Handling handling() {
         return mHandling;
+    }
+
+    private void triggerInstall(Context context, String token) {
+        if (Utils.getString(HokoDeeplinkingIsNotFirstRun, context) == null) {
+            Utils.saveString(HokoDeeplinkingIsNotFirstRun, HokoDeeplinkingIsNotFirstRun, context);
+            Networking.getNetworking().addRequest(
+                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                            HttpRequest.getURLFromPath(HokoDeeplinkingInstallPath), token, null));
+        }
+
     }
 
 }

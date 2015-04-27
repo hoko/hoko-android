@@ -135,22 +135,26 @@ public class Device {
      * @return The current internet connectivity of the device.
      */
     public static String getInternetConnectivity(Context context) {
-        if (Utils.hasPermission(Manifest.permission.ACCESS_NETWORK_STATE, context)) {
-            ConnectivityManager connManager = (ConnectivityManager) context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mWifi = connManager
-                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            NetworkInfo mNetwork = connManager
-                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (mWifi.isConnected()) {
-                return HokoDeviceConnectivityWifi;
-            } else if (mNetwork.isConnected()) {
-                return HokoDeviceConnectivityCellular;
+        try {
+            if (Utils.hasPermission(Manifest.permission.ACCESS_NETWORK_STATE, context)) {
+                ConnectivityManager connManager = (ConnectivityManager) context
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo mWifi = connManager
+                        .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                NetworkInfo mNetwork = connManager
+                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                if (mWifi != null && mWifi.isConnected()) {
+                    return HokoDeviceConnectivityWifi;
+                } else if (mNetwork != null && mNetwork.isConnected()) {
+                    return HokoDeviceConnectivityCellular;
+                } else {
+                    return HokoDeviceConnectivityNoConnectivity;
+                }
             } else {
-                return HokoDeviceConnectivityNoConnectivity;
+                return HokoDeviceConnectivityNoPermission;
             }
-        } else {
-            return HokoDeviceConnectivityNoPermission;
+        } catch (Exception e) {
+            return HokoDeviceConnectivityNoConnectivity;
         }
     }
 

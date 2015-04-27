@@ -32,6 +32,8 @@ import java.util.Arrays;
 public class App {
 
     private static final String HokoAppIconKey = "HokoAppIconKey";
+    private static final String HokoAppEnvironmentDebug = "debug";
+    private static final String HokoAppEnvironmentRelease = "release";
 
     /**
      * Returns the name of the application Hoko is being run on.
@@ -259,5 +261,8 @@ public class App {
         return false;
     }
 
+    public static String getEnvironment(Context context) {
+        return isDebug(context) ? HokoAppEnvironmentDebug : HokoAppEnvironmentRelease;
+    }
 
 }

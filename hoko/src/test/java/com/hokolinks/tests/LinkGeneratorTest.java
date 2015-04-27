@@ -44,12 +44,7 @@ public class LinkGeneratorTest {
     @BeforeClass
     public static void setUp() throws IOException {
         Hoko.setVerbose(false);
-        /*HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
-        HttpResponseFactory factory = new DefaultHttpResponseFactory();
-        HttpResponse response = factory.newHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, null), null);
-        response.setEntity(new StringEntity("{omnilink: 'http://hoko.link/PRMLNK'}"));
-        Mockito.when(mockHttpClient.execute(Mockito.any(HttpUriRequest.class)))
-                    .thenReturn(response);*/
+
         Hoko.setup(Robolectric.application, "API");
         Hoko.deeplinking().routing().mapRoute("store/:language_code/product/:product_id", null, new HashMap<String, Field>() {
             {

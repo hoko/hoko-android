@@ -1,26 +1,11 @@
 package com.hokolinks.utils.networking.async;
 
-import android.net.http.AndroidHttpClient;
-
 import com.hokolinks.Hoko;
+import com.hokolinks.model.App;
 import com.hokolinks.model.exceptions.HokoException;
 import com.hokolinks.utils.log.HokoLog;
+import com.hokolinks.utils.networking.Networking;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,10 +14,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 /**
  * HttpRequest is a savable model around HttpRequests.
@@ -43,7 +29,7 @@ public class HttpRequest implements Serializable {
 
     // Constants
     private static final int HokoNetworkingTaskTimeout = 15000; // millis
-    //private static final String HokoNetworkingTaskEndpoint = "http://192.168.1.10:3000";
+    //private static final String HokoNetworkingTaskEndpoint = "http://5db55475.ngrok.com";
     private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
     private static final String HokoNetworkingTaskVersion = "v1";
     private static final String HokoNetworkingTaskFormat = "json";
@@ -159,47 +145,18 @@ public class HttpRequest implements Serializable {
         };
     }
 
-    /**
-     * Creates an HttpParams object with the proper timeouts on the connection and socket.
-     *
-     * @return HttpParams with timeouts.
-     */
-    private HttpParams getHttpParams() {
-        HttpParams httpParameters = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParameters, HokoNetworkingTaskTimeout);
-        HttpConnectionParams.setSoTimeout(httpParameters, HokoNetworkingTaskTimeout);
-
-        return httpParameters;
-    }
-
-    /**
-     * HttpsClient constructor to allow HTTPS through CloudFlare.
-     *
-     * @param httpParams The params for the HttpsClient
-     * @return The HttpClient.
-     */
-    private HttpClient getHttpsClient(HttpParams httpParams) {
-        HostnameVerifier hostnameVerifier =
-                org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-
-        DefaultHttpClient client = httpParams != null ? new DefaultHttpClient(httpParams)
-                : new DefaultHttpClient();
-
-        if (HokoNetworkingTaskEndpoint.startsWith("https")) {
-
-            SchemeRegistry registry = new SchemeRegistry();
-            SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
-            socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-            registry.register(new Scheme("https", socketFactory, 443));
-            SingleClientConnManager mgr = new SingleClientConnManager(client.getParams(), registry);
-
-            DefaultHttpClient httpClient = new DefaultHttpClient(mgr, client.getParams());
-
-            HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
-
-            return httpClient;
-        } else {
-            return client;
+    private void applyHeaders(HttpURLConnection connection, boolean postOrPut) {
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+        if (postOrPut) {
+            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+        }
+        if (getToken() != null) {
+            connection.setRequestProperty("Authorization", "Token " + getToken());
+            connection.setRequestProperty("Hoko-SDK-Version", Hoko.VERSION);
+            if (Networking.getNetworking() != null)
+                connection.setRequestProperty("Hoko-SDK-Env",
+                        App.getEnvironment(Networking.getNetworking().getContext()));
         }
     }
 
@@ -210,18 +167,12 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performGET(HttpRequestCallback httpCallback) throws IOException {
-        HttpClient httpClient = getHttpsClient(null);
-        HttpGet get = new HttpGet(getUrl());
-        get.setHeader("Accept", "application/json");
-        get.setHeader("Accept-Encoding", "gzip, deflate");
-        if (getToken() != null) {
-            get.setHeader("Authorization", "Token " + getToken());
-            get.setHeader("Hoko-SDK-Version", Hoko.VERSION);
-        }
-        HokoLog.d("GETing to " + getUrl());
-        HttpResponse httpResponse = httpClient.execute(get);
-        handleHttpResponse(httpResponse, httpCallback);
-
+        URL url = new URL(getUrl());
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        applyHeaders(connection, false);
+        HokoLog.d("GET from " + getUrl());
+        handleHttpResponse(connection, httpCallback);
     }
 
     /**
@@ -231,24 +182,20 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performPUT(HttpRequestCallback httpCallback) throws IOException {
-        HttpClient httpClient = getHttpsClient(getHttpParams());
-        HttpPut put = new HttpPut(getUrl());
-
-        put.setHeader("Accept-Encoding", "gzip, deflate");
-        put.setHeader("Accept", "application/json");
-        put.setHeader("Content-Type", "application/json");
-
-        if (getToken() != null) {
-            put.setHeader("Authorization", "Token " + getToken());
-            put.setHeader("Hoko-SDK-Version", Hoko.VERSION);
+        URL url = new URL(getUrl());
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PUT");
+        applyHeaders(connection, true);
+        if (getParameters() != null) {
+            connection.setDoOutput(true);
+            OutputStreamWriter outputStreamWriter =
+                    new OutputStreamWriter(connection.getOutputStream());
+            outputStreamWriter.write(getParameters());
+            outputStreamWriter.flush();
+            outputStreamWriter.close();
         }
-
-        put.setEntity(new StringEntity(getParameters()));
-
-        HokoLog.d("PUTing to " + getUrl() + " " + getParameters());
-        HttpResponse httpResponse = httpClient.execute(put);
-        handleHttpResponse(httpResponse, httpCallback);
-
+        HokoLog.d("PUT to " + getUrl());
+        handleHttpResponse(connection, httpCallback);
     }
 
     /**
@@ -258,39 +205,41 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performPOST(HttpRequestCallback httpCallback) throws IOException {
-        HttpClient httpClient = getHttpsClient(getHttpParams());
-        HttpPost post = new HttpPost(getUrl());
-
-        post.setHeader("Accept-Encoding", "gzip, deflate");
-        post.setHeader("Accept", "application/json");
-        post.setHeader("Content-Type", "application/json");
-
-        if (getToken() != null) {
-            post.setHeader("Authorization", "Token " + getToken());
-            post.setHeader("Hoko-SDK-Version", Hoko.VERSION);
+        URL url = new URL(getUrl());
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        applyHeaders(connection, true);
+        if (getParameters() != null) {
+            connection.setDoOutput(true);
+            OutputStreamWriter outputStreamWriter =
+                    new OutputStreamWriter(connection.getOutputStream());
+            outputStreamWriter.write(getParameters());
+            outputStreamWriter.flush();
+            outputStreamWriter.close();
         }
+        HokoLog.d("POST to " + getUrl());
 
-        post.setEntity(new StringEntity(getParameters()));
-
-        HokoLog.d("POSTing to " + getUrl() + " " + getParameters());
-        HttpResponse httpResponse = httpClient.execute(post);
-        handleHttpResponse(httpResponse, httpCallback);
-
+        handleHttpResponse(connection, httpCallback);
     }
 
     /**
      * The HttpResponse handler, tries to parse the response into json, checks the status code and
      * throws exceptions accordingly. Will also use the callback to notify of the response given.
      *
-     * @param httpResponse The HttpResponse object coming from a GET/POST/PUT.
+     * @param connection The HttpURLConnection object coming from a GET/POST/PUT URL connection.
      * @param httpCallback The HttpRequestCallback object.
      * @throws IOException Throws an IOException in case of a network problem.
      */
-    private void handleHttpResponse(HttpResponse httpResponse, HttpRequestCallback httpCallback)
+    private void handleHttpResponse(HttpURLConnection connection, HttpRequestCallback httpCallback)
             throws IOException {
-        InputStream gzipedInputStream =
-                AndroidHttpClient.getUngzippedContent(httpResponse.getEntity());
-        String response = convertStreamToString(gzipedInputStream);
+        InputStream input = connection.getErrorStream();
+        if (input == null) {
+            input = connection.getInputStream();
+        }
+        if ("gzip".equals(connection.getContentEncoding())) {
+            input = new GZIPInputStream(input);
+        }
+        String response = convertStreamToString(input);
         JSONObject jsonResponse;
         try {
             jsonResponse = new JSONObject(response);
@@ -301,7 +250,7 @@ public class HttpRequest implements Serializable {
                 jsonResponse = new JSONObject();
             }
         }
-        if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+        if (connection.getResponseCode() >= 300) {
             HokoException exception = HokoException.serverException(jsonResponse);
             HokoLog.e(exception);
             if (httpCallback != null) {
@@ -320,7 +269,7 @@ public class HttpRequest implements Serializable {
         String line;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
