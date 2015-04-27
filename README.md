@@ -63,7 +63,7 @@ To register a URL Scheme on your application you must add `HokoActivity` to your
 		<!-- Your other activities go here -->
 		<!-- Start of Hoko Code -->
 		<activity
-			android:name="com.hoko.activity.HokoActivity"
+			android:name="com.hokolinks.activity.HokoActivity"
 			android:alwaysRetainTaskState="true"
 			android:launchMode="singleTask"
 			android:noHistory="true"
