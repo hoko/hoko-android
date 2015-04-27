@@ -1,11 +1,14 @@
 package com.hokolinks.tests;
 
+import com.hokolinks.BuildConfig;
 import com.hokolinks.deeplinking.Handling;
 import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.model.Deeplink;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.Date;
@@ -17,7 +20,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 /**
  * Created by ivanbruel on 10/03/15.
  */
-@Config(manifest=Config.NONE)
+@Config(constants = BuildConfig.class, emulateSdk = 21)
+@RunWith(RobolectricGradleTestRunner.class)
 public class HandlingTest {
 
     /** Countdown latch */

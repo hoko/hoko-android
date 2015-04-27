@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
@@ -76,8 +77,13 @@ public class HttpRequest implements Serializable {
         return mOperationType;
     }
 
-    public String getUrl() {
-        return mUrl;
+    public URL getUrl() {
+        try {
+            return new URL(mUrl);
+        } catch (MalformedURLException e) {
+            HokoLog.e(e);
+        }
+        return null;
     }
 
     public String getToken() {
@@ -167,7 +173,7 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performGET(HttpRequestCallback httpCallback) throws IOException {
-        URL url = new URL(getUrl());
+        URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         applyHeaders(connection, false);
@@ -182,7 +188,7 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performPUT(HttpRequestCallback httpCallback) throws IOException {
-        URL url = new URL(getUrl());
+        URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("PUT");
         applyHeaders(connection, true);
@@ -205,7 +211,7 @@ public class HttpRequest implements Serializable {
      * @throws IOException  Throws an IOException in case of a network problem.
      */
     private void performPOST(HttpRequestCallback httpCallback) throws IOException {
-        URL url = new URL(getUrl());
+        URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         applyHeaders(connection, true);
