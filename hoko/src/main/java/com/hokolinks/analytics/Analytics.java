@@ -4,16 +4,9 @@ import android.content.Context;
 
 import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.model.Deeplink;
-import com.hokolinks.model.Device;
-import com.hokolinks.model.Event;
 import com.hokolinks.model.Session;
-import com.hokolinks.model.User;
-import com.hokolinks.model.exceptions.IgnoringKeyEventException;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycle;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycleCallback;
-import com.hokolinks.utils.log.HokoLog;
-
-import java.util.Date;
 
 /**
  * The Analytics module provides all the necessary APIs to manage user and application behavior.
@@ -24,7 +17,6 @@ public class Analytics implements Handler {
 
     private Context mContext;
     private String mToken;
-    private User mUser;
     private Session mSession;
 
     /**
@@ -38,129 +30,7 @@ public class Analytics implements Handler {
     public Analytics(String token, Context context) {
         mContext = context;
         mToken = token;
-        mUser = User.currentUser(context);
-        if (mUser == null) {
-            identifyUser();
-        } else {
-            mUser.post(mToken, mContext);
-        }
         registerApplicationLifecycleCallbacks();
-    }
-
-    // User Identification
-
-    /**
-     * identifyUser() should be called if you have no information about the user. (e.g. your app has
-     * no login whatsoever) or if the application's user has logged out of his account.
-     * <pre>{@code
-     * Hoko.analytics().identifyUser();
-     * }</pre>
-     */
-    public void identifyUser() {
-        if (mUser == null || !mUser.isAnonymous()) {
-            endCurrentSession();
-            mUser = new User();
-            mUser.save(mContext);
-            mUser.post(mToken, mContext);
-        }
-    }
-
-    /**
-     * identifyUser(identifier, accountType) should be called when you can identify the user with a
-     * unique identifier and a given account type.
-     * <pre>{@code
-     * Hoko.analytics().identifyUser("john.doe@email.com",
-     *Analytics.UserAccountType.DEFAULT);
-     * }</pre>
-     *
-     * @param identifier  A unique identifier for the user in the scope of your application.
-     * @param accountType The account type in which the user fits.
-     */
-    public void identifyUser(String identifier, UserAccountType accountType) {
-        identifyUser(identifier, accountType, null, null, null, UserGender.UNKNOWN);
-    }
-
-    /**
-     * identifyUser(identifier, accountType) should be called when you can identify the user with
-     * a unique identifier, a given account type, and a few attributes which help to segment users
-     * in the Hoko service.
-     * <pre>{@code
-     * Hoko.analytics().identifyUser("john.doe", Analytics.UserAccountType.GITHUB,
-     * "John Doe", "john.doe@email.com", new Date(), Analytics.UserGender.MALE);
-     * }</pre>
-     *
-     * @param identifier  A unique identifier for the user in the scope of your application.
-     * @param accountType The account type in which the user fits.
-     * @param name        The user's name.
-     * @param email       The user's email address.
-     * @param birthDate   The user's date of birth.
-     * @param gender      The user's gender (Male/Female/Unknown).
-     */
-    public void identifyUser(String identifier, UserAccountType accountType, String name,
-                             String email, Date birthDate, UserGender gender) {
-        if (mUser != null || !identifier.equalsIgnoreCase(mUser.getIdentifier())) {
-            String previousIdentifier = mUser.isAnonymous() ? mUser.getIdentifier() : null;
-            mUser = new User(identifier, accountType, null, email, birthDate, gender,
-                    previousIdentifier);
-            mUser.save(mContext);
-            mUser.post(mToken, mContext);
-            if (previousIdentifier == null) {
-                endCurrentSession();
-            } else if (mSession != null) {
-                mSession.setUser(mUser);
-            }
-        }
-    }
-
-    /**
-     * A semi-private API used by Hoko Push Notifications module to set the push-token to the user
-     * object and to the HokoDevice instance.
-     *
-     * @param pushToken The push notification token string.
-     */
-    public void setPushToken(String pushToken) {
-        Device.setPushToken(pushToken, mContext);
-        if (mUser != null)
-            mUser.post(mToken, mContext);
-    }
-
-    // Events
-
-    /**
-     * trackKeyEvent(eventName) unlike common analytics events should be used only on conversion or
-     * key metrics (e.g. in-app purchase, retail sales, referrals, etc). This will lead to better
-     * conversion and engagement tracking of your users through the Push Notifications and
-     * Deeplinking campaigns.
-     * <pre>{@code
-     * Hoko.analytics().trackKeyEvent("purchasedPremium");
-     * }</pre>
-     *
-     * @param eventName A name to identify uniquely the key event that occurred.
-     */
-    public void trackKeyEvent(String eventName) {
-        trackKeyEvent(eventName, 0);
-    }
-
-    /**
-     * trackKeyEvent: unlike common analytics events should be used only on conversion or key
-     * metrics (e.g. in-app purchase, retail sales, referrals, etc). This will lead to better
-     * conversion and engagement tracking of your users through the Push Notifications and
-     * Deeplinking campaigns.
-     * <pre>{@code
-     * Hoko.analytics().trackKeyEvent("purchasedPremium", 29.99);
-     * }</pre>
-     *
-     * @param eventName A name to identify uniquely the key event that occurred.
-     * @param amount    A number that represents a possible sale (e.g. in-app, retail, etc) in
-     *                  currency value.
-     */
-    public void trackKeyEvent(String eventName, double amount) {
-        Event event = new Event(eventName, amount);
-        if (mSession != null) {
-            mSession.trackKeyEvent(event);
-        } else {
-            HokoLog.e(new IgnoringKeyEventException(event));
-        }
     }
 
     // Session
@@ -190,8 +60,8 @@ public class Analytics implements Handler {
     @Override
     public void handle(Deeplink deeplink) {
         endCurrentSession();
-        mSession = new Session(mUser, deeplink);
-        deeplink.post(mContext, mToken, mUser);
+        mSession = new Session(deeplink);
+        deeplink.post(mContext, mToken);
     }
 
     // Application Lifecycle

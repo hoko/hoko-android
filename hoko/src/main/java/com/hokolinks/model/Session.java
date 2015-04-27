@@ -7,13 +7,10 @@ import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * The Session class serves the purpose of starting and tracking a deeplinking session.
@@ -26,39 +23,17 @@ public class Session {
     private Deeplink mDeeplink;
     private Date mStartedAt;
     private Date mEndedAt;
-    private User mUser;
-    private List<Event> mKeyEvents;
 
     /**
      * A Session is created by providing a User and a Deeplink object. It will then
      * set the startedAt date as the current date and create an empty list of HokoEvents to
      * track in the future.
      *
-     * @param user     A User instance.
      * @param deeplink A Deeplink instance.
      */
-    public Session(User user, Deeplink deeplink) {
-        mUser = user;
+    public Session(Deeplink deeplink) {
         mDeeplink = deeplink;
         mStartedAt = new Date();
-        mKeyEvents = new ArrayList<Event>();
-    }
-
-    public User getUser() {
-        return mUser;
-    }
-
-    public void setUser(User user) {
-        this.mUser = user;
-    }
-
-    /**
-     * Tracks a Key Event on a particular Session.
-     *
-     * @param event A Event instance.
-     */
-    public void trackKeyEvent(Event event) {
-        mKeyEvents.add(event);
     }
 
     /**
@@ -98,8 +73,7 @@ public class Session {
             JSONObject sessionJsonObject = new JSONObject();
             sessionJsonObject.putOpt("started_at", DateUtils.format(mStartedAt));
             sessionJsonObject.putOpt("duration", getDuration());
-            sessionJsonObject.putOpt("user", mUser.json(context).getJSONObject("user"));
-            sessionJsonObject.putOpt("key_events", eventsJSON());
+            sessionJsonObject.putOpt("device", Device.json(context));
             sessionJsonObject.putOpt(Deeplink.HokoDeeplinkOpenLinkIdentifierKey,
                     mDeeplink.getOpenIdentifier());
             sessionJsonObject.putOpt(Deeplink.HokoDeeplinkSmartlinkIdentifierKey,
@@ -112,19 +86,5 @@ public class Session {
         }
         return null;
     }
-
-    /**
-     * Creates a JSONArray out of the JSON representation of a list of HokoEvents.
-     *
-     * @return A JSONArray containing HokoEvents in JSON format.
-     */
-    private JSONArray eventsJSON() {
-        JSONArray jsonArray = new JSONArray();
-        for (Event event : mKeyEvents) {
-            jsonArray.put(event.json());
-        }
-        return jsonArray;
-    }
-
 
 }

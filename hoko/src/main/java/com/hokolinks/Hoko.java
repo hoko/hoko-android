@@ -8,7 +8,6 @@ import com.hokolinks.deeplinking.Deeplinking;
 import com.hokolinks.model.App;
 import com.hokolinks.model.exceptions.SetupCalledMoreThanOnceException;
 import com.hokolinks.model.exceptions.SetupNotCalledYetException;
-import com.hokolinks.pushnotifications.PushNotifications;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.versionchecker.VersionChecker;
@@ -20,10 +19,7 @@ import com.hokolinks.utils.versionchecker.VersionChecker;
  * With the Hoko framework you can map routes to your activities, add handlers that trigger when
  * deeplinks are the point of entry to your application.
  *
- * Hoko includes three separate modules:
  * - Deeplinking - handles every incoming deeplink, so long as it has been mapped
- * - Analytics - handles the tracking of users and events to allow creation and evaluation of
- * campaigns
  *
  * You should setup Hoko on your Application's onCreate(...), by calling
  * Hoko.setup(this, "YOUR-API-TOKEN")
@@ -38,13 +34,12 @@ public class Hoko {
     // Private modules
     private Deeplinking mDeeplinking;
     private Analytics mAnalytics;
-    private PushNotifications mPushNotifications;
 
     // Private variables
     private boolean mDebugMode;
 
     // Private initializer
-    private Hoko(Context context, String token, String gcmSenderId, boolean debugMode) {
+    private Hoko(Context context, String token, boolean debugMode) {
         mDebugMode = debugMode;
 
         Networking.setupNetworking(context);
@@ -52,8 +47,6 @@ public class Hoko {
         mDeeplinking = new Deeplinking(token, context);
         mAnalytics = new Analytics(token, context);
         mDeeplinking.addHandler(mAnalytics);
-        if (gcmSenderId != null)
-            mPushNotifications = new PushNotifications(context, gcmSenderId);
     }
 
     // Setup
@@ -74,30 +67,9 @@ public class Hoko {
      * @param token   Hoko service API key.
      */
     public static void setup(Context context, String token) {
-        setup(context, token, null);
+        setup(context, token);
     }
 
-    /**
-     * Setups all the Hoko module instances, logging and asynchronous networking queues.
-     * Setting up with a token will make sure you can take full advantage of the Hoko service,
-     * as you will be able to track everything through manual or automatic Analytics, which will
-     * be shown on your Hoko dashboards.
-     * The Google Cloud Messaging token is required to send the push notification token
-     * to the Hoko service and to receive push notifications from campaigns.
-     * This will also trigger the debug mode if you are running with a BuildConfig.DEBUG = true.
-     * If you want to force the debug mode manually use the setup(context, token, gcmSenderId, debugMode)
-     * call.
-     * <pre>{@code
-     * Hoko.setup(this, "YOUR-API-TOKEN", "YOUR-GCM-TOKEN");
-     * }</pre>
-     *
-     * @param context  Your application context.
-     * @param token    Hoko service API key.
-     * @param gcmSenderId The Google Cloud Messaging Sender Id.
-     */
-    public static void setup(Context context, String token, String gcmSenderId) {
-        setup(context, token, gcmSenderId, App.isDebug(context));
-    }
 
     /**
      * Setups all the Hoko module instances, logging and asynchronous networking queues.
@@ -112,12 +84,11 @@ public class Hoko {
      *
      * @param context   Your application context.
      * @param token     Hoko service API key.
-     * @param gcmSenderId The Google Cloud Messaging Sender Id.
      * @param debugMode Toggle debug mode manually.
      */
-    public static void setup(Context context, String token, String gcmSenderId, boolean debugMode) {
+    public static void setup(Context context, String token, boolean debugMode) {
         if (mInstance == null) {
-            mInstance = new Hoko(context, token, gcmSenderId, debugMode);
+            mInstance = new Hoko(context, token, debugMode);
             AnnotationParser.parseActivities(context);
             if (debugMode) {
                 App.postIcon(token, context);
@@ -145,37 +116,6 @@ public class Hoko {
         }
         return mInstance.mDeeplinking;
     }
-
-    /**
-     * The Analytics module provides all the necessary APIs to manage user and application
-     * behavior.
-     * Users should be identified to this module, as well as key events (e.g. sales, referrals, etc)
-     * in order to track campaign value and allow user segmentation.
-     *
-     * @return A reference to the Analytics instance.
-     */
-    public static Analytics analytics() {
-        if (mInstance == null) {
-            HokoLog.e(new SetupNotCalledYetException());
-            return null;
-        }
-        return mInstance.mAnalytics;
-    }
-
-    /**
-     * The HokoPushNotifications module provides all the necessary APIs to manage push notifications generated
-     * by the Hoko service.
-     *
-     * @return A reference to the HokoPushNotifications instance.
-     */
-    public static PushNotifications pushNotifications() {
-        if (mInstance == null) {
-            HokoLog.e(new SetupNotCalledYetException());
-            return null;
-        }
-        return mInstance.mPushNotifications;
-    }
-
 
     // Logging
 
