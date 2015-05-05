@@ -2,8 +2,8 @@ package com.hokolinks.tests;
 
 import com.hokolinks.BuildConfig;
 import com.hokolinks.deeplinking.Handling;
-import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.DeeplinkCallback;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +17,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-/**
- * Created by ivanbruel on 10/03/15.
- */
 @Config(constants = BuildConfig.class, emulateSdk = 21)
 @RunWith(RobolectricGradleTestRunner.class)
 public class HandlingTest {
@@ -45,9 +42,9 @@ public class HandlingTest {
 
         Handling handling = new Handling();
 
-        handling.addHandler(new Handler() {
+        handling.addHandler(new DeeplinkCallback() {
             @Override
-            public void handle(Deeplink deeplink) {
+            public void deeplinkOpened(Deeplink deeplink) {
                 HandlingTest.this.deeplink = deeplink;
                 lock.countDown();
             }
@@ -132,9 +129,9 @@ public class HandlingTest {
 
         handling.addHandler(handler);
 
-        handling.addHandler(new Handler() {
+        handling.addHandler(new DeeplinkCallback() {
             @Override
-            public void handle(Deeplink deeplink) {
+            public void deeplinkOpened(Deeplink deeplink) {
                 HandlingTest.this.deeplink = deeplink;
                 lock.countDown();
             }
@@ -183,16 +180,16 @@ public class HandlingTest {
 
         handling.addHandler(handler);
 
-        handling.addHandler(new Handler() {
+        handling.addHandler(new DeeplinkCallback() {
             @Override
-            public void handle(Deeplink deeplink) {
+            public void deeplinkOpened(Deeplink deeplink) {
                 HandlingTest.this.deeplink = deeplink;
                 HandlingTest.this.timestamp = new Date();
                 lock.countDown();
                 try {
                     Thread.sleep(1);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
@@ -213,7 +210,7 @@ public class HandlingTest {
 
     }
 
-    private class TestHandler implements Handler {
+    private class TestHandler implements DeeplinkCallback {
 
         public Date timestamp;
         public Deeplink deeplink;
@@ -225,14 +222,14 @@ public class HandlingTest {
         }
 
         @Override
-        public void handle(Deeplink deeplink) {
+        public void deeplinkOpened(Deeplink deeplink) {
             this.deeplink = deeplink;
             this.timestamp = new Date();
             this.lock.countDown();
             try {
                 Thread.sleep(1);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }

@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.exceptions.LinkGenerationException;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.networking.Networking;
@@ -28,8 +28,8 @@ public class Deeplinking {
     private LinkGenerator mLinkGenerator;
 
     public Deeplinking(String token, Context context) {
-        mRouting = new Routing(token, context);
         mHandling = new Handling();
+        mRouting = new Routing(token, context, mHandling);
         mLinkGenerator = new LinkGenerator(token);
 
         this.triggerInstall(context, token);
@@ -122,36 +122,40 @@ public class Deeplinking {
         return mRouting.openURL(urlString);
     }
 
+    public void mapRoute(String route, DeeplinkCallback callback) {
+        mRouting.mapRoute(route, callback);
+    }
+
     // Handlers
 
     /**
-     * With addHandler: you can add an object which implements the Handler interface to be
+     * With addHandler() you can add an object which implements the Handler interface to be
      * called every time your application opens a deeplink. This allows you to track incoming
      * deeplinks outside of the deeplinking targets.
      * <pre>{@code
-     * Hoko.deeplinking().addHandler(new Handler() {
-     *      public void handle(Deeplink deeplink) {
+     * Hoko.deeplinking().addHandler(new DeeplinkCallback() {
+     *      public void deeplinkOpened(Deeplink deeplink) {
      *          Log.d("HOKO", deeplink.toString());
      *      }});
      * }</pre>
      *
-     * @param handler An object which implements the Handler interface.
+     * @param callback An object which implements the DeeplinkCallback interface.
      */
-    public void addHandler(Handler handler) {
-        mHandling.addHandler(handler);
+    public void addHandler(DeeplinkCallback callback) {
+        mHandling.addHandler(callback);
     }
 
     /**
-     * With removeHandler: you can remove a previously added Handler object.
+     * With removeHandler() you can remove a previously added Handler object.
      * <pre>{@code
      * Hoko.deeplinking().removeHandler(analyticsHandler);
      * }</pre>
      *
-     * @param handler An object which implements the Handler interface.
+     * @param callback An object which implements the DeeplinkCallback interface.
      * @return true if the handler was removed, false otherwise.
      */
-    public boolean removeHandler(Handler handler) {
-        return mHandling.removeHandler(handler);
+    public boolean removeHandler(DeeplinkCallback callback) {
+        return mHandling.removeHandler(callback);
     }
 
     // Link Generation

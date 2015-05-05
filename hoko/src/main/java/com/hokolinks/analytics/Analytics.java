@@ -2,8 +2,8 @@ package com.hokolinks.analytics;
 
 import android.content.Context;
 
-import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.Session;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycle;
 import com.hokolinks.utils.lifecycle.ApplicationLifecycleCallback;
@@ -13,7 +13,7 @@ import com.hokolinks.utils.lifecycle.ApplicationLifecycleCallback;
  * Users should be identified to this module, as well as key events (e.g. sales, referrals, etc)
  * in order to track campaign value and allow user segmentation.
  */
-public class Analytics implements Handler {
+public class Analytics implements DeeplinkCallback {
 
     private Context mContext;
     private String mToken;
@@ -50,7 +50,7 @@ public class Analytics implements Handler {
     // Handler Interface
 
     /**
-     * Handler Interface implementation, receives a handle(deeplink) call from the
+     * DeeplinkCallback Interface implementation, receives a deeplinkOpened(deeplink) call from the
      * Deeplinking module. This will render the previous session as "ended" and will start a new
      * deeplinking session taking basis the inbound deeplink. Will also notify the Hoko backend that
      * a deeplink was opened.
@@ -58,7 +58,7 @@ public class Analytics implements Handler {
      * @param deeplink The deeplink object.
      */
     @Override
-    public void handle(Deeplink deeplink) {
+    public void deeplinkOpened(Deeplink deeplink) {
         endCurrentSession();
         mSession = new Session(deeplink);
         deeplink.post(mContext, mToken);

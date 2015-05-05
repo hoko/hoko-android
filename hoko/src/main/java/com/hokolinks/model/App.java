@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -130,7 +129,7 @@ public class App {
             Drawable drawable;
             //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
             if (android.os.Build.VERSION.SDK_INT >= 15) {
-                ArrayList<Integer> densities = new ArrayList<Integer>(
+                ArrayList<Integer> densities = new ArrayList<>(
                         Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
                                 DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
                 //Build.VERSION_CODES.JELLY_BEAN
@@ -144,23 +143,19 @@ public class App {
                     densities.add(0, 640);
                 }
                 for (int density : densities) {
+                    //noinspection deprecation
                     drawable = context.getResources().getDrawableForDensity(iconResId, density);
                     if (drawable != null)
                         return drawable;
                 }
             }
+            //noinspection deprecation
             drawable = context.getResources().getDrawable(iconResId);
             return drawable;
         } catch (Exception e) {
             HokoLog.e(e);
             return null;
         }
-    }
-
-    @TargetApi(15)
-    public static Bitmap getIconBitmapForNotification(Context context) {
-        Bitmap iconBitmap = BitmapFactory.decodeResource(context.getResources(), getIcon(context));
-        return Bitmap.createScaledBitmap(iconBitmap, context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_width), context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_height), true);
     }
 
     /**
@@ -230,13 +225,17 @@ public class App {
      */
     public static void postIcon(String token, Context context) {
         String previousAppIcon = Utils.getString(HokoAppIconKey, context);
-        String iconJson = iconJSON(context).toString();
-        String iconJsonMD5 = Utils.md5FromString(iconJson);
+        JSONObject iconJson = iconJSON(context);
+        if (iconJson != null) {
+            String iconJsonString = iconJson.toString();
+            String iconJsonMD5 = Utils.md5FromString(iconJsonString);
 
-        if (previousAppIcon == null || previousAppIcon.compareTo(iconJsonMD5) != 0) {
-            Utils.saveString(iconJsonMD5, HokoAppIconKey, context);
-            Networking.getNetworking().addRequest(new HttpRequest(HttpRequest
-                    .HokoNetworkOperationType.POST, "icons", token, iconJson));
+            if (previousAppIcon == null ||
+                    (iconJsonMD5 != null && previousAppIcon.compareTo(iconJsonMD5) != 0)) {
+                Utils.saveString(iconJsonMD5, HokoAppIconKey, context);
+                Networking.getNetworking().addRequest(new HttpRequest(HttpRequest
+                        .HokoNetworkOperationType.POST, "icons", token, iconJsonString));
+            }
         }
     }
 
@@ -251,18 +250,64 @@ public class App {
      */
     public static boolean isDebug(Context context) {
         try {
-            String buildConfigClassName = context.getPackageName() + ".BuildConfig";
-            Class buildConfigClass = Class.forName(buildConfigClassName);
-            Field debugField = buildConfigClass.getDeclaredField("DEBUG");
-            return debugField.getBoolean(null);
+            Class buildConfigClass = getBuildConfigClass(context);
+            if (buildConfigClass != null) {
+                Field debugField = buildConfigClass.getDeclaredField("DEBUG");
+                return debugField.getBoolean(null);
+            }
         } catch (Exception e) {
             HokoLog.e(e);
         }
         return false;
     }
 
+    /**
+     * Returns the environment with regards of finding DEBUG inside a BuildConfig.
+     *
+     * @param context A context object.
+     * @return The environment string.
+     */
     public static String getEnvironment(Context context) {
         return isDebug(context) ? HokoAppEnvironmentDebug : HokoAppEnvironmentRelease;
     }
 
+    /**
+     * Retrieves the BuildConfig class from a given context.
+     * Will try to get it from the context's package name, otherwise it will go through the
+     * package hierarchy trying to find a BuildConfig class.
+     *
+     * @param context A context object.
+     * @return A Class object or null.
+     */
+    private static Class<?> getBuildConfigClass(Context context) {
+        Class<?> klass = getBuildConfigClassFromPackage(context.getPackageName(), false);
+        if (klass == null) {
+            klass = getBuildConfigClassFromPackage(context.getClass().getPackage().getName(), true);
+        }
+        return klass;
+    }
+
+    /**
+     * Retrieves the BuildConfig class from a package name.
+     * Will try to get it from the supplied package name, if the class is not found, depending on
+     * the traverse value it will try to recursively find the class on the package hierarchy.
+     *
+     * @param packageName The package name.
+     * @param traverse    true if it should traver the package hierarchy, false otherwise.
+     * @return A Class object or null.
+     */
+    private static Class<?> getBuildConfigClassFromPackage(String packageName, boolean traverse) {
+        try {
+            return Class.forName(packageName + ".BuildConfig");
+        } catch (ClassNotFoundException e) {
+            if (traverse) {
+                int indexOfLastDot = packageName.lastIndexOf('.');
+                if (indexOfLastDot != -1) {
+                    return getBuildConfigClassFromPackage(packageName.substring(0, indexOfLastDot),
+                            true);
+                }
+            }
+            return null;
+        }
+    }
 }

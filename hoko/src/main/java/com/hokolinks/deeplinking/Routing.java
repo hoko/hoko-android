@@ -2,12 +2,14 @@ package com.hokolinks.deeplinking;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.hokolinks.Hoko;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.DeeplinkCallback;
+import com.hokolinks.model.IntentRouteImpl;
 import com.hokolinks.model.Route;
+import com.hokolinks.model.RouteImpl;
 import com.hokolinks.model.URL;
 import com.hokolinks.model.exceptions.DuplicateRouteException;
 import com.hokolinks.model.exceptions.MultipleDefaultRoutesException;
@@ -27,11 +29,26 @@ public class Routing {
     private Route mDefaultRoute;
     private String mToken;
     private Context mContext;
+    private Handling mHandling;
 
-    public Routing(String token, Context context) {
+    public Routing(String token, Context context, Handling handling) {
         mToken = token;
         mContext = context;
-        mRoutes = new ArrayList<Route>();
+        mHandling = handling;
+        mRoutes = new ArrayList<>();
+    }
+
+    /**
+     * Maps a route with a route format to a callback.
+     *
+     * @param route    The route in route format.
+     * @param callback A DeeplinkCallback object
+     */
+    public void mapRoute(String route, DeeplinkCallback callback) {
+        if (route != null && routeExists(route))
+            HokoLog.e(new DuplicateRouteException(route));
+        else
+            addNewRoute(new RouteImpl(URL.sanitizeURL(route), callback));
     }
 
     /**
@@ -51,7 +68,7 @@ public class Routing {
         if (route != null && routeExists(route))
             HokoLog.e(new DuplicateRouteException(route));
         else
-            addNewRoute(new Route(URL.sanitizeURL(route), activityClassName,
+            addNewRoute(new IntentRouteImpl(URL.sanitizeURL(route), activityClassName,
                     routeParameters, queryParameters, mContext));
     }
 
@@ -132,51 +149,49 @@ public class Routing {
      * @return true in case in opened the activity, false otherwise.
      */
     private boolean handleOpenURL(URL url) {
-        Intent intent = intentForURL(url);
-        if (intent != null) {
-            HokoLog.d("with intent " + intent.toString());
-            openIntent(intent);
+        Route route = routeForURL(url);
+        if (route != null) {
+            route.execute(url);
+            notifyHandler(route, url);
             return true;
         }
         return false;
     }
 
     /**
-     * This function maps a URL object to an Intent through the use of the mapped HokoRoutes.
-     * Will fallback to the default route if possible, or will return null in case it does not
-     * exist.
+     * This function will try to find a Route object matching the deeplink found.
      *
      * @param url A URL object.
-     * @return true in case the Intent was created, false otherwise.
+     * @return Route found
      */
-    public Intent intentForURL(URL url) {
+    public Route routeForURL(URL url) {
         for (Route route : mRoutes) {
-            HashMap<String, String> routeParameters = url.matchesWithRoute(route);
-            if (routeParameters != null) {
-                Deeplink deeplink = new Deeplink(url.getScheme(), route.getRoute(),
-                        routeParameters, url.getQueryParameters());
-                Hoko.deeplinking().handling().handle(deeplink);
-                return route.getIntent(url);
+            if (url.matchesWithRoute(route) != null) {
+                return route;
             }
         }
 
         if (mDefaultRoute != null) {
-            Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
-                    url.getQueryParameters());
-            Hoko.deeplinking().handling().handle(deeplink);
-            return mDefaultRoute.getIntent(url);
+            return mDefaultRoute;
         }
         return null;
     }
 
-    /**
-     * Utility function to start an activity with a given intent.
-     *
-     * @param intent The intent to start the activity.
-     */
-    private void openIntent(Intent intent) {
-        mContext.startActivity(intent);
+    private void notifyHandler(Route route, URL url) {
+        if (route == mDefaultRoute) {
+            Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
+                    url.getQueryParameters());
+            mHandling.handle(deeplink);
+        } else {
+            HashMap<String, String> routeParameters = url.matchesWithRoute(route);
+            if (routeParameters != null) {
+                Deeplink deeplink = new Deeplink(url.getScheme(), route.getRoute(),
+                        routeParameters, url.getQueryParameters());
+                mHandling.handle(deeplink);
+            }
+        }
     }
+
 
     /**
      * Function to add a new Route to the routes list (or as a default route).
@@ -184,18 +199,39 @@ public class Routing {
      *
      * @param route A Route object.
      */
-    private void addNewRoute(Route route) {
+    private void addNewRoute(RouteImpl route) {
         if (route.getRoute() == null || route.getRoute().length() == 0) {
             if (mDefaultRoute == null) {
                 mDefaultRoute = route;
             } else {
-                HokoLog.e(new MultipleDefaultRoutesException(route.getActivityClassName()));
+                HokoLog.e(new MultipleDefaultRoutesException(route.getClass().getCanonicalName()));
             }
         } else {
-            if (route.isValid()) {
-                mRoutes.add(route);
+            mRoutes.add(route);
+            if (Hoko.isDebugMode())
+                route.post(mToken, mContext);
+
+        }
+    }
+
+    /**
+     * Function to add a new Route to the routes list (or as a default route).
+     * It also checks if the route is valid or not.
+     *
+     * @param intentRoute A Route object.
+     */
+    private void addNewRoute(IntentRouteImpl intentRoute) {
+        if (intentRoute.getRoute() == null || intentRoute.getRoute().length() == 0) {
+            if (mDefaultRoute == null) {
+                mDefaultRoute = intentRoute;
+            } else {
+                HokoLog.e(new MultipleDefaultRoutesException(intentRoute.getActivityClassName()));
+            }
+        } else {
+            if (intentRoute.isValid()) {
+                mRoutes.add(intentRoute);
                 if (Hoko.isDebugMode())
-                    route.post(mToken);
+                    intentRoute.post(mToken, mContext);
             }
         }
     }

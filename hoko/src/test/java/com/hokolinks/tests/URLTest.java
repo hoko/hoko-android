@@ -2,7 +2,7 @@ package com.hokolinks.tests;
 
 
 import com.hokolinks.BuildConfig;
-import com.hokolinks.model.Route;
+import com.hokolinks.model.IntentRouteImpl;
 import com.hokolinks.model.URL;
 
 import org.junit.Test;
@@ -51,10 +51,10 @@ public class URLTest {
     }
 
     public void testRouteMatched() {
-        Route route = new Route("param/:param/other_param/:other_param", null, null, null, null);
+        IntentRouteImpl intentRoute = new IntentRouteImpl("param/:param/other_param/:other_param", null, null, null, null);
         URL url = new URL("hoko://param/1/other_param/2?test=1&q_param=2&string=hi+there");
 
-        HashMap<String, String> routeParameters =  url.matchesWithRoute(route);
+        HashMap<String, String> routeParameters = url.matchesWithRoute(intentRoute);
 
         HashMap<String, String> expectedRouteParameters = new HashMap<String, String>() {
             {
@@ -67,19 +67,19 @@ public class URLTest {
     }
 
     public void testRouteNotMatched() {
-        Route route = new Route("param/:param/other_param/:other_param/something", null, null, null, null);
+        IntentRouteImpl intentRoute = new IntentRouteImpl("param/:param/other_param/:other_param/something", null, null, null, null);
         URL url = new URL("hoko://param/1/other_param/2?test=1&q_param=2&string=hi+there");
 
-        HashMap<String, String> routeParameters =  url.matchesWithRoute(route);
+        HashMap<String, String> routeParameters = url.matchesWithRoute(intentRoute);
 
         assertThat(routeParameters).isNullOrEmpty();
     }
 
     public void testRouteNotMatchedExtraParameter() {
-        Route route = new Route("param/:param/other_param/:other_param", null, null, null, null);
+        IntentRouteImpl intentRoute = new IntentRouteImpl("param/:param/other_param/:other_param", null, null, null, null);
         URL url = new URL("hoko://param/1/other_param/2/50?test=1&q_param=2&string=hi+there");
 
-        HashMap<String, String> routeParameters =  url.matchesWithRoute(route);
+        HashMap<String, String> routeParameters = url.matchesWithRoute(intentRoute);
 
         assertThat(routeParameters).isNullOrEmpty();
     }
