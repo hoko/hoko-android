@@ -32,7 +32,7 @@ public class HttpRequest implements Serializable {
     private static final int HokoNetworkingTaskTimeout = 15000; // millis
     //private static final String HokoNetworkingTaskEndpoint = "http://5db55475.ngrok.com";
     private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
-    private static final String HokoNetworkingTaskVersion = "v1";
+    private static final String HokoNetworkingTaskVersion = "v2";
     private static final String HokoNetworkingTaskFormat = "json";
 
     // Properties
@@ -152,6 +152,8 @@ public class HttpRequest implements Serializable {
     }
 
     private void applyHeaders(HttpURLConnection connection, boolean postOrPut) {
+        connection.setConnectTimeout(HokoNetworkingTaskTimeout);
+        connection.setReadTimeout(HokoNetworkingTaskTimeout);
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
         if (postOrPut) {

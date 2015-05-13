@@ -127,11 +127,7 @@ public class Utils {
             Object object = objectInputStream.readObject();
             objectInputStream.close();
             return object;
-        } catch (IOException e) {
-            HokoLog.e(e);
-        } catch (ClassNotFoundException e) {
-            HokoLog.e(e);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             HokoLog.e(e);
         }
         return null;

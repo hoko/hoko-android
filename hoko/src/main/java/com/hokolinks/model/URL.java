@@ -59,6 +59,9 @@ public class URL {
         for (int index = 0; index < pathComponents.size(); index++) {
             String pathComponent = pathComponents.get(index);
             String routeComponent = routeComponents.get(index);
+            if (pathComponent == null || routeComponent == null) {
+                return null;
+            }
             if (routeComponent.startsWith(":")) {
                 routeParameters.put(routeComponent.substring(1), pathComponent);
             } else if (routeComponent.compareToIgnoreCase(pathComponent) != 0) {

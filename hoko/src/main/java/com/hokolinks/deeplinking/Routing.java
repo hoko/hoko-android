@@ -136,6 +136,9 @@ public class Routing {
      * @return true if it can open the deeplink, false otherwise.
      */
     public boolean openURL(String urlString) {
+        if (urlString == null) {
+            return false;
+        }
         HokoLog.d("Opening Deeplink " + urlString);
         URL url = new URL(urlString);
         return handleOpenURL(url);

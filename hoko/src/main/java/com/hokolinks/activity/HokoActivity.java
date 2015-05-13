@@ -16,6 +16,7 @@ public class HokoActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        finish();
         Hoko.deeplinking().openURL(getIntent().getData().toString());
     }
 }
