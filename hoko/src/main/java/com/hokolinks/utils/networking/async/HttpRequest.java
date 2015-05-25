@@ -29,11 +29,11 @@ import java.util.zip.GZIPInputStream;
 public class HttpRequest implements Serializable {
 
     // Constants
-    private static final int HokoNetworkingTaskTimeout = 15000; // millis
-    //private static final String HokoNetworkingTaskEndpoint = "http://5db55475.ngrok.com";
-    private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
-    private static final String HokoNetworkingTaskVersion = "v2";
-    private static final String HokoNetworkingTaskFormat = "json";
+    private static final int TASK_TIMEOUT = 15000; // millis
+    //private static final String TASK_ENDPOINT = "https://api.hokolinks.com";
+    private static final String TASK_ENDPOINT = "http://192.168.10.192:3000";
+    private static final String TASK_VERSION = "v2";
+    private static final String TASK_FORMAT = "json";
 
     // Properties
     private HokoNetworkOperationType mOperationType;
@@ -68,8 +68,8 @@ public class HttpRequest implements Serializable {
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
-        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "."
-                + HokoNetworkingTaskFormat;
+        return TASK_ENDPOINT + "/" + TASK_VERSION + "/" + path + "."
+                + TASK_FORMAT;
     }
 
     // Property Gets
@@ -152,8 +152,8 @@ public class HttpRequest implements Serializable {
     }
 
     private void applyHeaders(HttpURLConnection connection, boolean postOrPut) {
-        connection.setConnectTimeout(HokoNetworkingTaskTimeout);
-        connection.setReadTimeout(HokoNetworkingTaskTimeout);
+        connection.setConnectTimeout(TASK_TIMEOUT);
+        connection.setReadTimeout(TASK_TIMEOUT);
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
         if (postOrPut) {

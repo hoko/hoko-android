@@ -24,9 +24,10 @@ import java.util.UUID;
 public class Utils {
 
     // Hoko folder name
-    private static final String HokoUtilsFolderName = "hoko";
+    private static final String FOLDER_NAME = "hoko";
     // Hoko SharedPreferences key
-    private static final String HokoUtilsSharedPreferencesKey = "com.hoko";
+    private static final String SHARED_PREFERENCES_STRING_KEY = "com.hoko.string";
+    private static final String SHARED_PREFERENCES_BOOLEAN_KEY = "com.hoko.boolean";
 
     /**
      * Checks where the application has a given permission granted on the AndroidManifest.xml file.
@@ -62,11 +63,10 @@ public class Utils {
     public static void saveString(String string, String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                    context.getSharedPreferences(SHARED_PREFERENCES_STRING_KEY,
                             Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(key, string);
-            editor.apply();
+            editor.putString(key, string).apply();
         } catch (NullPointerException e) {
             HokoLog.e(e);
         }
@@ -82,12 +82,62 @@ public class Utils {
     public static String getString(String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                    context.getSharedPreferences(SHARED_PREFERENCES_STRING_KEY,
                             Context.MODE_PRIVATE);
             return sharedPreferences.getString(key, null);
         } catch (NullPointerException e) {
             HokoLog.e(e);
             return null;
+        }
+    }
+
+    /**
+     * Saves a boolean to the SharedPreferences with a given key.
+     *
+     * @param value   The boolean to be saved.
+     * @param key     The key associated to the boolean value.
+     * @param context A context object.
+     */
+    public static void saveBoolean(boolean value, String key, Context context) {
+        try {
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
+                            Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(key, value).apply();
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+        }
+    }
+
+    /**
+     * Loads a boolean from the SharedPreferences with a given key.
+     *
+     * @param key     The key associated to the boolean value.
+     * @param context A context object.
+     * @return The boolean in case it exists, false otherwise.
+     */
+    public static boolean getBoolean(String key, Context context) {
+        try {
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
+                            Context.MODE_PRIVATE);
+            return sharedPreferences.getBoolean(key, false);
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
+            return false;
+        }
+    }
+
+    public static void clearBooleans(Context context) {
+        try {
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
+                            Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear().apply();
+        } catch (NullPointerException e) {
+            HokoLog.e(e);
         }
     }
 
@@ -164,7 +214,7 @@ public class Utils {
      * @return The File.
      */
     private static File fileFromFilename(String filename, Context context) {
-        File directory = context.getDir(HokoUtilsFolderName, Context.MODE_PRIVATE);
+        File directory = context.getDir(FOLDER_NAME, Context.MODE_PRIVATE);
         return new File(directory, filename);
     }
 

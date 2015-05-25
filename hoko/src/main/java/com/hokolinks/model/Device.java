@@ -25,17 +25,16 @@ import java.util.Locale;
 public class Device {
 
     // Platform name
-    private static final String HokoDevicePlatform = "Android";
+    private static final String PLATFORM = "Android";
 
     // Shared preferences keys
-    private static final String HokoDeviceUUIDKey = "UUID";
-    private static final String HokoDevicePushTokenKey = "PushToken";
+    private static final String UUID_KEY = "UUID";
 
     // String values for connectivity state
-    private static final String HokoDeviceConnectivityWifi = "Wifi";
-    private static final String HokoDeviceConnectivityCellular = "Cellular";
-    private static final String HokoDeviceConnectivityNoConnectivity = "No Connectivity";
-    private static final String HokoDeviceConnectivityNoPermission = "No Permission";
+    private static final String CONNECTIVITY_WIFI = "Wifi";
+    private static final String CONNECTIVITY_CELLULAR = "Cellular";
+    private static final String CONNECTIVITY_NO_CONNECTIVITY = "No Connectivity";
+    private static final String CONNECTIVITY_NO_PERMISSION = "No Permission";
 
     /**
      * Returns the vendor of the device Hoko is being run on.
@@ -52,7 +51,7 @@ public class Device {
      * @return The Android platform.
      */
     public static String getPlatform() {
-        return HokoDevicePlatform;
+        return PLATFORM;
     }
 
     /**
@@ -144,17 +143,17 @@ public class Device {
                 NetworkInfo mNetwork = connManager
                         .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
                 if (mWifi != null && mWifi.isConnected()) {
-                    return HokoDeviceConnectivityWifi;
+                    return CONNECTIVITY_WIFI;
                 } else if (mNetwork != null && mNetwork.isConnected()) {
-                    return HokoDeviceConnectivityCellular;
+                    return CONNECTIVITY_CELLULAR;
                 } else {
-                    return HokoDeviceConnectivityNoConnectivity;
+                    return CONNECTIVITY_NO_CONNECTIVITY;
                 }
             } else {
-                return HokoDeviceConnectivityNoPermission;
+                return CONNECTIVITY_NO_PERMISSION;
             }
         } catch (Exception e) {
-            return HokoDeviceConnectivityNoConnectivity;
+            return CONNECTIVITY_NO_CONNECTIVITY;
         }
     }
 
@@ -166,8 +165,8 @@ public class Device {
      */
     public static boolean hasInternetConnectivity(Context context) {
         String internetConnectivity = getInternetConnectivity(context);
-        return internetConnectivity.equals(HokoDeviceConnectivityCellular)
-                || internetConnectivity.equals(HokoDeviceConnectivityWifi);
+        return internetConnectivity.equals(CONNECTIVITY_CELLULAR)
+                || internetConnectivity.equals(CONNECTIVITY_WIFI);
     }
 
     /**
@@ -178,32 +177,12 @@ public class Device {
      * @return The one-time generated device ID.
      */
     public static synchronized String getDeviceID(Context context) {
-        String uid = Utils.getString(HokoDeviceUUIDKey, context);
+        String uid = Utils.getString(UUID_KEY, context);
         if (uid == null) {
             uid = Utils.generateUUID();
-            Utils.saveString(uid, HokoDeviceUUIDKey, context);
+            Utils.saveString(uid, UUID_KEY, context);
         }
         return uid;
-    }
-
-    /**
-     * Returns the device's push token from the Hoko SharedPreferences.
-     *
-     * @param context A context object.
-     * @return The device's push token.
-     */
-    public static String getPushToken(Context context) {
-        return Utils.getString(HokoDevicePushTokenKey, context);
-    }
-
-    /**
-     * Sets the device's push token into the Hoko SharedPreferences.
-     *
-     * @param token   The device's push token
-     * @param context A context object.
-     */
-    public static void setPushToken(String token, Context context) {
-        Utils.saveString(token, HokoDevicePushTokenKey, context);
     }
 
     /**
@@ -228,7 +207,6 @@ public class Device {
             jsonObject.putOpt("carrier", getCarrier(context));
             jsonObject.putOpt("internet_connectivity", getInternetConnectivity(context));
             jsonObject.putOpt("uid", getDeviceID(context));
-            jsonObject.putOpt("token", getPushToken(context));
             jsonObject.putOpt("application", App.json(context));
             return jsonObject;
         } catch (JSONException e) {

@@ -3,6 +3,7 @@ package com.hokolinks.model;
 
 import android.content.Context;
 
+import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
 
@@ -44,9 +45,12 @@ public abstract class Route {
      * @param token The Hoko API Token.
      */
     public void post(String token, Context context) {
-        Networking.getNetworking().addRequest(
-                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST, "routes", token,
-                        getJSON(context).toString()));
+        if (!hasBeenPosted(context)) {
+            Utils.saveBoolean(true, mRoute, context);
+            Networking.getNetworking().addRequest(
+                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST, "routes", token,
+                            getJSON(context).toString()));
+        }
     }
 
     /**
@@ -68,6 +72,10 @@ public abstract class Route {
         } catch (JSONException e) {
             return new JSONObject();
         }
+    }
+
+    private boolean hasBeenPosted(Context context) {
+        return Utils.getBoolean(mRoute, context);
     }
 
 }

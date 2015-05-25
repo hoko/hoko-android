@@ -30,11 +30,11 @@ import java.util.concurrent.Executors;
 public class Networking {
 
     // Filename to save the http tasks to storage
-    private static final String HokoNetworkingHttpTasksFilename = "http_tasks";
+    private static final String HTTP_TASKS_FILENAME = "http_tasks";
 
     // Configuration of the Networking
-    private static final int HokoNetworkingFlushTimerInterval = 30000; // in millis
-    private static final int HokoNetworkingHttpTasksNumberOfRetries = 3;
+    private static final int FLUSH_TIMER_INTERVAL = 30000; // in millis
+    private static final int HTTP_TASKS_NUMBER_OF_RETRIES = 3;
 
     // Static class to avoid duplication of Networking instances
     private static Networking mInstance;
@@ -54,7 +54,7 @@ public class Networking {
         mContext = context;
         try {
             mHttpTasks = (List<HttpRequest>)
-                    Utils.loadFromFile(HokoNetworkingHttpTasksFilename, context);
+                    Utils.loadFromFile(HTTP_TASKS_FILENAME, context);
         } catch (ClassCastException e) {
             mHttpTasks = new ArrayList<HttpRequest>();
         }
@@ -112,7 +112,7 @@ public class Networking {
      * @param httpRequest A HttpRequest object.
      */
     public void addRequest(HttpRequest httpRequest) {
-        if (httpRequest.getNumberOfRetries() < HokoNetworkingHttpTasksNumberOfRetries) {
+        if (httpRequest.getNumberOfRetries() < HTTP_TASKS_NUMBER_OF_RETRIES) {
             HokoLog.d("Adding request to queue");
             mHttpTasks.add(httpRequest);
         }
@@ -156,7 +156,7 @@ public class Networking {
      * Saves all the current http requests to file, guaranteeing persistence.
      */
     private void saveTasks() {
-        Utils.saveToFile(mHttpTasks, HokoNetworkingHttpTasksFilename, mContext);
+        Utils.saveToFile(mHttpTasks, HTTP_TASKS_FILENAME, mContext);
     }
 
     //Timer
@@ -176,7 +176,7 @@ public class Networking {
                 stopFlushTimer();
                 flush();
             }
-        }, HokoNetworkingFlushTimerInterval);
+        }, FLUSH_TIMER_INTERVAL);
     }
 
     /**

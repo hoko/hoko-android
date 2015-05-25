@@ -11,17 +11,9 @@ import java.util.regex.Pattern;
 
 public class VersionChecker {
 
-    private static final String HokoVersionCheckerGitHubApi =
+    private static final String GITHUB_API =
             "https://api.github.com/repos/hokolinks/hoko-android/releases?per_page=1";
-    private static final String HokoVersionCheckerGitHubVersionName = "tag_name";
-    private static VersionChecker mInstance;
-
-    public static VersionChecker getInstance() {
-        if (mInstance == null) {
-            mInstance = new VersionChecker();
-        }
-        return mInstance;
-    }
+    private static final String GITHUB_VERISON_KEY = "tag_name";
 
     private static boolean requiresUpdate(String currentVersion, String githubVersion) {
         String normalisedCurrentVersion = normalisedVersion(currentVersion);
@@ -45,11 +37,11 @@ public class VersionChecker {
 
     public void checkForNewVersion(final String currentVersion) {
         new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
-                HokoVersionCheckerGitHubApi, null, null).toRunnable(new HttpRequestCallback() {
+                GITHUB_API, null, null).toRunnable(new HttpRequestCallback() {
 
             @Override
             public void onSuccess(JSONObject jsonObject) {
-                String versionName = jsonObject.optString(HokoVersionCheckerGitHubVersionName);
+                String versionName = jsonObject.optString(GITHUB_VERISON_KEY);
                 if (versionName != null) {
                     String versionNumber = versionName.replace("v", "");
                     if (requiresUpdate(currentVersion, versionNumber)) {

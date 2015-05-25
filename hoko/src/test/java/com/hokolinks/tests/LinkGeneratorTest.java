@@ -12,9 +12,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Created by ivanbruel on 16/03/15.
- */
 //@Config(constants = BuildConfig.class, emulateSdk = 21)
 //@RunWith(RobolectricGradleTestRunner.class)
 //@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })

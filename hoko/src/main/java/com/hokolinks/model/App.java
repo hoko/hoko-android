@@ -15,9 +15,8 @@ import java.lang.reflect.Field;
  */
 public class App {
 
-    private static final String HokoAppIconKey = "HokoAppIconKey";
-    private static final String HokoAppEnvironmentDebug = "debug";
-    private static final String HokoAppEnvironmentRelease = "release";
+    private static final String ENVIRONMENT_DEBUG = "debug";
+    private static final String ENVIRONMENT_RELEASE = "release";
 
     /**
      * Returns the name of the application Hoko is being run on.
@@ -135,7 +134,7 @@ public class App {
      * @return The environment string.
      */
     public static String getEnvironment(Context context) {
-        return isDebug(context) ? HokoAppEnvironmentDebug : HokoAppEnvironmentRelease;
+        return isDebug(context) ? ENVIRONMENT_DEBUG : ENVIRONMENT_RELEASE;
     }
 
     /**

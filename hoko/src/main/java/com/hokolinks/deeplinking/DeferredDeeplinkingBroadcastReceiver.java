@@ -11,11 +11,8 @@ import com.hokolinks.utils.log.HokoLog;
 import java.io.IOException;
 import java.net.URLDecoder;
 
-/**
- * Created by ivanbruel on 23/03/15.
- */
-public class DeferredDeeplinkingBroadcastReceiver extends BroadcastReceiver {
 
+public class DeferredDeeplinkingBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

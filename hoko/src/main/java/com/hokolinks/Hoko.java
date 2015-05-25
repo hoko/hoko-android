@@ -8,6 +8,7 @@ import com.hokolinks.deeplinking.Deeplinking;
 import com.hokolinks.model.App;
 import com.hokolinks.model.exceptions.SetupCalledMoreThanOnceException;
 import com.hokolinks.model.exceptions.SetupNotCalledYetException;
+import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.versionchecker.VersionChecker;
@@ -26,7 +27,9 @@ import com.hokolinks.utils.versionchecker.VersionChecker;
  */
 public class Hoko {
 
-    public static final String VERSION = "1.2.2";
+    public static final String VERSION = "2.0";
+
+    private static final String PREVIOUS_VERSION_KEY = "version";
 
     // Static Instance
     private static Hoko mInstance;
@@ -67,7 +70,7 @@ public class Hoko {
      * @param token   Hoko service API key.
      */
     public static void setup(Context context, String token) {
-        setup(context, token);
+        setup(context, token, App.isDebug(context));
     }
 
 
@@ -89,11 +92,9 @@ public class Hoko {
     public static void setup(Context context, String token, boolean debugMode) {
         if (mInstance == null) {
             mInstance = new Hoko(context, token, debugMode);
+            mInstance.checkVersions(context);
             AnnotationParser.parseActivities(context);
-            if (debugMode) {
-                App.postIcon(token, context);
-                VersionChecker.getInstance().checkForNewVersion(VERSION);
-            }
+
         } else {
             HokoLog.e(new SetupCalledMoreThanOnceException());
         }
@@ -142,6 +143,24 @@ public class Hoko {
             return false;
         }
         return mInstance.mDebugMode;
+    }
+
+    /**
+     * Checks for new SDK version on GITHUB, also checks for which version was previously installed,
+     * and in case its different it will reset the routes that were previously posted, to allow new
+     * routes to be posted.
+     *
+     * @param context A context object.
+     */
+    private void checkVersions(Context context) {
+        if (mDebugMode) {
+            new VersionChecker().checkForNewVersion(VERSION);
+        }
+        String previousVersion = Utils.getString(PREVIOUS_VERSION_KEY, context);
+        Utils.saveString(VERSION, PREVIOUS_VERSION_KEY, context);
+        if (previousVersion != null && !VERSION.equals(previousVersion)) {
+            Utils.clearBooleans(context);
+        }
     }
 
 }

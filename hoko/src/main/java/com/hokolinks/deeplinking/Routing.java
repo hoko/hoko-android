@@ -153,9 +153,9 @@ public class Routing {
      */
     private boolean handleOpenURL(URL url) {
         Route route = routeForURL(url);
+        notifyHandler(route, url);
         if (route != null) {
             route.execute(url);
-            notifyHandler(route, url);
             return true;
         }
         return false;
@@ -181,7 +181,7 @@ public class Routing {
     }
 
     private void notifyHandler(Route route, URL url) {
-        if (route == mDefaultRoute) {
+        if (route == null || route == mDefaultRoute) {
             Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
                     url.getQueryParameters());
             mHandling.handle(deeplink);

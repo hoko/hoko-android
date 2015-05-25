@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
+import com.hokolinks.deeplinking.listeners.SmartlinkResolveListener;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.exceptions.LinkGenerationException;
@@ -21,17 +22,18 @@ import java.util.HashMap;
  */
 public class Deeplinking {
 
-    private static final String HokoDeeplinkingIsNotFirstRun = "isNotFirstRun";
-    private static final String HokoDeeplinkingInstallPath = "apps/install";
+    private static final String IS_NOT_FIRST_RUN = "isNotFirstRun";
+    private static final String INSTALL_PATH = "apps/install";
     private Routing mRouting;
     private Handling mHandling;
     private LinkGenerator mLinkGenerator;
+    private Resolver mResolver;
 
     public Deeplinking(String token, Context context) {
         mHandling = new Handling();
         mRouting = new Routing(token, context, mHandling);
         mLinkGenerator = new LinkGenerator(token);
-
+        mResolver = new Resolver(token);
         this.triggerInstall(context, token);
     }
 
@@ -120,6 +122,26 @@ public class Deeplinking {
      */
     public boolean openURL(String urlString) {
         return mRouting.openURL(urlString);
+    }
+
+    /**
+     * openSmartlink(smartlink) should be called when a Smartlink needs to be resolved into a
+     * deeplink to open the correct view. e.g. Opening a Smartlink from a push notification.
+     *
+     * @param smartlink A smartlink string.
+     */
+    public void openSmartlink(String smartlink) {
+        mResolver.resolveSmartlink(smartlink, new SmartlinkResolveListener() {
+            @Override
+            public void onLinkResolved(String deeplink) {
+                openURL(deeplink);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     public void mapRoute(String route, DeeplinkCallback callback) {
@@ -255,11 +277,11 @@ public class Deeplinking {
     }
 
     private void triggerInstall(Context context, String token) {
-        if (Utils.getString(HokoDeeplinkingIsNotFirstRun, context) == null) {
-            Utils.saveString(HokoDeeplinkingIsNotFirstRun, HokoDeeplinkingIsNotFirstRun, context);
+        if (Utils.getString(IS_NOT_FIRST_RUN, context) == null) {
+            Utils.saveString(IS_NOT_FIRST_RUN, IS_NOT_FIRST_RUN, context);
             Networking.getNetworking().addRequest(
                     new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                            HttpRequest.getURLFromPath(HokoDeeplinkingInstallPath), token, null));
+                            HttpRequest.getURLFromPath(INSTALL_PATH), token, null));
         }
 
     }
