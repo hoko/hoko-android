@@ -19,11 +19,10 @@ public class DeferredDeeplinkingBroadcastReceiver extends BroadcastReceiver {
         String referrer = intent.getExtras().getString("referrer");
         try {
             referrer = URLDecoder.decode(referrer, "UTF-8");
-            Uri uri = Uri.parse("http://fakepath.com/query?" + referrer);
-            String deeplink = uri.getQueryParameter("utm_content");
-            HokoLog.d("Opening deferred deeplink " + deeplink);
+            Uri uri = Uri.parse(referrer);
+            HokoLog.d("Opening deferred deeplink " + uri.toString());
 
-            Hoko.deeplinking().openURL(deeplink);
+            Hoko.deeplinking().openDeferredURL(uri.toString());
         } catch (IOException e) {
             HokoLog.e(e);
         }

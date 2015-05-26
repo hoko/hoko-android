@@ -9,9 +9,12 @@ import com.hokolinks.deeplinking.listeners.SmartlinkResolveListener;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.exceptions.LinkGenerationException;
-import com.hokolinks.utils.Utils;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -22,19 +25,19 @@ import java.util.HashMap;
  */
 public class Deeplinking {
 
-    private static final String IS_NOT_FIRST_RUN = "isNotFirstRun";
-    private static final String INSTALL_PATH = "apps/install";
+    private static final String INSTALL_PATH = "installs/android";
     private Routing mRouting;
     private Handling mHandling;
     private LinkGenerator mLinkGenerator;
     private Resolver mResolver;
+    private String mToken;
 
     public Deeplinking(String token, Context context) {
+        mToken = token;
         mHandling = new Handling();
         mRouting = new Routing(token, context, mHandling);
         mLinkGenerator = new LinkGenerator(token);
         mResolver = new Resolver(token);
-        this.triggerInstall(context, token);
     }
 
     // Map Routes
@@ -122,6 +125,25 @@ public class Deeplinking {
      */
     public boolean openURL(String urlString) {
         return mRouting.openURL(urlString);
+    }
+
+    /**
+     * openDeferredURL(urlString) is called when DeferredDeeplinkingBroadcastReceiver receives a
+     * deeplink Intent from Google Play.
+     *
+     * @param urlString The url passed on the intent.
+     */
+    public void openDeferredURL(String urlString) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("deeplink", urlString);
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+        Networking.getNetworking().addRequest(
+                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                        HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
+        mRouting.openURL(urlString);
     }
 
     /**
@@ -274,16 +296,6 @@ public class Deeplinking {
 
     Handling handling() {
         return mHandling;
-    }
-
-    private void triggerInstall(Context context, String token) {
-        if (Utils.getString(IS_NOT_FIRST_RUN, context) == null) {
-            Utils.saveString(IS_NOT_FIRST_RUN, IS_NOT_FIRST_RUN, context);
-            Networking.getNetworking().addRequest(
-                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                            HttpRequest.getURLFromPath(INSTALL_PATH), token, null));
-        }
-
     }
 
 }

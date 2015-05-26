@@ -24,7 +24,6 @@ import java.util.List;
 public class Deeplink {
 
     // Key values from incoming deeplinks
-    public static final String HokoDeeplinkOpenLinkIdentifierKey = "_hk_oid";
     public static final String HokoDeeplinkSmartlinkIdentifierKey = "_hk_sid";
 
     private String mRoute;
@@ -189,8 +188,7 @@ public class Deeplink {
         try {
             JSONObject root = new JSONObject();
             JSONObject omnilink = new JSONObject();
-            omnilink.putOpt(HokoDeeplinkOpenLinkIdentifierKey, getOpenIdentifier());
-            omnilink.put("opened_at", DateUtils.format(new Date()));
+            omnilink.put("created_at", DateUtils.format(new Date()));
             omnilink.put("device", Device.json(context));
             root.put("smartlink", omnilink);
             return root;
@@ -227,10 +225,6 @@ public class Deeplink {
 
     public String getSmartlinkIdentifier() {
         return mQueryParameters.get(HokoDeeplinkSmartlinkIdentifierKey);
-    }
-
-    public String getOpenIdentifier() {
-        return mQueryParameters.get(HokoDeeplinkOpenLinkIdentifierKey);
     }
 
     public boolean isSmartlink() {

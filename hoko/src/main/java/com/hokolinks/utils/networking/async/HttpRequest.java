@@ -30,8 +30,7 @@ public class HttpRequest implements Serializable {
 
     // Constants
     private static final int TASK_TIMEOUT = 15000; // millis
-    //private static final String TASK_ENDPOINT = "https://api.hokolinks.com";
-    private static final String TASK_ENDPOINT = "http://192.168.10.192:3000";
+    private static final String TASK_ENDPOINT = "https://api.hokolinks.com";
     private static final String TASK_VERSION = "v2";
     private static final String TASK_FORMAT = "json";
 

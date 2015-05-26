@@ -2,7 +2,6 @@ package com.hokolinks;
 
 import android.content.Context;
 
-import com.hokolinks.analytics.Analytics;
 import com.hokolinks.deeplinking.AnnotationParser;
 import com.hokolinks.deeplinking.Deeplinking;
 import com.hokolinks.model.App;
@@ -29,14 +28,14 @@ public class Hoko {
 
     public static final String VERSION = "2.0";
 
-    private static final String PREVIOUS_VERSION_KEY = "version";
+    private static final String PREVIOUS_HOKO_VERSION_KEY = "hokoVersion";
+    private static final String PREVIOUS_APP_VERSION_KEY = "appVersion";
 
     // Static Instance
     private static Hoko mInstance;
 
     // Private modules
     private Deeplinking mDeeplinking;
-    private Analytics mAnalytics;
 
     // Private variables
     private boolean mDebugMode;
@@ -48,8 +47,6 @@ public class Hoko {
         Networking.setupNetworking(context);
 
         mDeeplinking = new Deeplinking(token, context);
-        mAnalytics = new Analytics(token, context);
-        mDeeplinking.addHandler(mAnalytics);
     }
 
     // Setup
@@ -57,7 +54,7 @@ public class Hoko {
     /**
      * Setups all the Hoko module instances, logging and asynchronous networking queues.
      * Setting up with a token will make sure you can take full advantage of the Hoko service,
-     * as you will be able to track everything through manual or automatic Analytics, which will
+     * as you will be able to track everything through automatic Analytics, which will
      * be shown on your Hoko dashboards.
      * This will also trigger the debug mode if you are running with a BuildConfig.DEBUG = true.
      * If you want to force the debug mode manually use the setup(context, token, debugMode)
@@ -77,7 +74,7 @@ public class Hoko {
     /**
      * Setups all the Hoko module instances, logging and asynchronous networking queues.
      * Setting up with a token will make sure you can take full advantage of the Hoko service,
-     * as you will be able to track everything through manual or automatic Analytics, which will
+     * as you will be able to track everything through automatic Analytics, which will
      * be shown on your Hoko dashboards.
      * Also sets the debug mode manually. Debug mode serves the purpose of uploading the app icon
      * and the mapped HokoRoutes to the Hoko backend service.
@@ -156,9 +153,16 @@ public class Hoko {
         if (mDebugMode) {
             new VersionChecker().checkForNewVersion(VERSION);
         }
-        String previousVersion = Utils.getString(PREVIOUS_VERSION_KEY, context);
-        Utils.saveString(VERSION, PREVIOUS_VERSION_KEY, context);
-        if (previousVersion != null && !VERSION.equals(previousVersion)) {
+
+        String previousHokoVersion = Utils.getString(PREVIOUS_HOKO_VERSION_KEY, context);
+        Utils.saveString(VERSION, PREVIOUS_HOKO_VERSION_KEY, context);
+
+        String previousAppVersion = Utils.getString(PREVIOUS_APP_VERSION_KEY, context);
+        String currentAppVersion = App.getVersionCode(context);
+        Utils.saveString(currentAppVersion, PREVIOUS_APP_VERSION_KEY, context);
+
+        if ((previousHokoVersion != null && !VERSION.equals(previousHokoVersion) ||
+                (previousAppVersion != null && !previousAppVersion.equals(currentAppVersion)))) {
             Utils.clearBooleans(context);
         }
     }

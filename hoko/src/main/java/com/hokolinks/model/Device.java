@@ -2,22 +2,14 @@ package com.hokolinks.model;
 
 import android.Manifest;
 import android.content.Context;
-import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.telephony.TelephonyManager;
-import android.view.Display;
-import android.view.WindowManager;
 
-import com.hokolinks.utils.DateUtils;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Device is a helper class to get all the necessary information of the user's Device.
@@ -70,61 +62,6 @@ public class Device {
      */
     public static String getSystemVersion() {
         return String.valueOf(android.os.Build.VERSION.SDK_INT);
-    }
-
-    /**
-     * Returns the system language of the device Hoko is being run on.
-     *
-     * @return The system language of the device.
-     */
-    public static String getSystemLanguage() {
-        return Locale.getDefault().getLanguage();
-    }
-
-    /**
-     * Returns the system locale of the device Hoko is being run on.
-     *
-     * @return The system locale of the device.
-     */
-    public static String getLocale() {
-        return Locale.getDefault().toString();
-    }
-
-    /**
-     * Returns the screen size of the device Hoko is being run on.
-     *
-     * @param context A context object.
-     * @return The screen size of the device.
-     */
-    public static String getScreenSize(Context context) {
-        try {
-            WindowManager windowManager = (WindowManager) context
-                    .getSystemService(Context.WINDOW_SERVICE);
-            Display display = windowManager.getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            int width = size.x;
-            int height = size.y;
-            return height + "x" + width;
-        } catch (Exception e) {
-            return "0x0";
-        }
-    }
-
-    /**
-     * Returns the carrier network of the device Hoko is being run on.
-     *
-     * @param context A context object.
-     * @return The carrier network of the device.
-     */
-    public static String getCarrier(Context context) {
-        try {
-            TelephonyManager telephonyManager = ((TelephonyManager) context
-                    .getSystemService(Context.TELEPHONY_SERVICE));
-            return telephonyManager.getNetworkOperatorName();
-        } catch (Exception e) {
-            return "Unknown Carrier";
-        }
     }
 
     /**
@@ -195,19 +132,11 @@ public class Device {
     public static JSONObject json(Context context) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.putOpt("timestamp", DateUtils.format(new Date()));
             jsonObject.putOpt("vendor", getVendor());
             jsonObject.putOpt("platform", getPlatform());
             jsonObject.putOpt("model", getModel());
             jsonObject.putOpt("system_version", getSystemVersion());
-            jsonObject.putOpt("system_language", getSystemLanguage());
-            jsonObject.putOpt("locale", getLocale());
-            //jsonObject.putOpt("device_name", getDeviceName()) Not available on Android
-            jsonObject.putOpt("screen_size", getScreenSize(context));
-            jsonObject.putOpt("carrier", getCarrier(context));
-            jsonObject.putOpt("internet_connectivity", getInternetConnectivity(context));
             jsonObject.putOpt("uid", getDeviceID(context));
-            jsonObject.putOpt("application", App.json(context));
             return jsonObject;
         } catch (JSONException e) {
             HokoLog.e(e);

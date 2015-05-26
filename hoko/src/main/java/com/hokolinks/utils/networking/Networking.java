@@ -41,7 +41,7 @@ public class Networking {
 
 
     private Context mContext;
-    private List<HttpRequest> mHttpTasks;
+    final private List<HttpRequest> mHttpTasks;
     private Timer mTimer;
 
     /**
@@ -52,15 +52,17 @@ public class Networking {
     @SuppressWarnings("unchecked")
     private Networking(Context context) {
         mContext = context;
+        List<HttpRequest> httpTasks = null;
         try {
-            mHttpTasks = (List<HttpRequest>)
+            httpTasks = (List<HttpRequest>)
                     Utils.loadFromFile(HTTP_TASKS_FILENAME, context);
         } catch (ClassCastException e) {
-            mHttpTasks = new ArrayList<HttpRequest>();
+            httpTasks = new ArrayList<HttpRequest>();
         }
-        if (mHttpTasks == null) {
-            mHttpTasks = new ArrayList<HttpRequest>();
+        if (httpTasks == null) {
+            httpTasks = new ArrayList<HttpRequest>();
         }
+        mHttpTasks = httpTasks;
         flush();
         registerActivityLifecycleCallbacks();
     }
@@ -114,9 +116,17 @@ public class Networking {
     public void addRequest(HttpRequest httpRequest) {
         if (httpRequest.getNumberOfRetries() < HTTP_TASKS_NUMBER_OF_RETRIES) {
             HokoLog.d("Adding request to queue");
-            mHttpTasks.add(httpRequest);
+            synchronized (mHttpTasks) {
+                mHttpTasks.add(httpRequest);
+            }
         }
         saveTasks();
+    }
+
+    private void removeRequest(HttpRequest httpRequest) {
+        synchronized (mHttpTasks) {
+            mHttpTasks.remove(httpRequest);
+        }
     }
 
     /**
@@ -126,23 +136,24 @@ public class Networking {
      */
     private void executeTasks() {
         ExecutorService service = Executors.newFixedThreadPool(1);
+        synchronized (mHttpTasks) {
+            for (final HttpRequest httpRequest : mHttpTasks) {
+                service.execute(httpRequest.toRunnable(new HttpRequestCallback() {
+                    @Override
+                    public void onSuccess(JSONObject jsonObject) {
+                        HokoLog.d("Success " + jsonObject.toString());
+                        removeRequest(httpRequest);
+                        saveTasks();
+                    }
 
-        for (final HttpRequest httpRequest : mHttpTasks) {
-            service.execute(httpRequest.toRunnable(new HttpRequestCallback() {
-                @Override
-                public void onSuccess(JSONObject jsonObject) {
-                    HokoLog.d("Success " + jsonObject.toString());
-                    mHttpTasks.remove(httpRequest);
-                    saveTasks();
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    httpRequest.incrementNumberOfRetries();
-                    mHttpTasks.remove(httpRequest);
-                    addRequest(httpRequest);
-                }
-            }));
+                    @Override
+                    public void onFailure(Exception e) {
+                        httpRequest.incrementNumberOfRetries();
+                        removeRequest(httpRequest);
+                        addRequest(httpRequest);
+                    }
+                }));
+            }
         }
         service.execute(new Runnable() {
             @Override

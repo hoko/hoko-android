@@ -184,12 +184,14 @@ public class Routing {
         if (route == null || route == mDefaultRoute) {
             Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
                     url.getQueryParameters());
+            deeplink.post(mContext, mToken);
             mHandling.handle(deeplink);
         } else {
             HashMap<String, String> routeParameters = url.matchesWithRoute(route);
             if (routeParameters != null) {
                 Deeplink deeplink = new Deeplink(url.getScheme(), route.getRoute(),
                         routeParameters, url.getQueryParameters());
+                deeplink.post(mContext, mToken);
                 mHandling.handle(deeplink);
             }
         }

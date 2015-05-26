@@ -8,7 +8,6 @@ import com.hokolinks.model.DeeplinkCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.Date;
@@ -17,8 +16,8 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-@Config(constants = BuildConfig.class, emulateSdk = 21)
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(HokoGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class HandlingTest {
 
     /** Countdown latch */

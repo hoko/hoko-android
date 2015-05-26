@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -18,8 +17,8 @@ import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-@Config(constants = BuildConfig.class, emulateSdk = 21)
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(HokoGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class IntentRouteTest {
 
     @BeforeClass
@@ -56,10 +55,9 @@ public class IntentRouteTest {
 
         JSONObject expectedJSON = new JSONObject();
         JSONObject expectedJSONRoute = new JSONObject();
-        expectedJSONRoute.put("build", "1");
+        expectedJSONRoute.put("build", "0");
         expectedJSONRoute.put("device", Device.getVendor() + " " + Device.getModel());
         expectedJSONRoute.put("path", "product/:product_id/price/:price/open");
-        expectedJSONRoute.put("version", "1.0");
         expectedJSON.put("route", expectedJSONRoute);
 
         assertThat(intentRoute.getJSON(RuntimeEnvironment.application).toString()).isEqualTo(expectedJSON.toString());

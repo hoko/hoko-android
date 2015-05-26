@@ -7,15 +7,14 @@ import com.hokolinks.model.URL;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-@Config(constants = BuildConfig.class, emulateSdk = 21)
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(HokoGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class URLTest {
 
     @Test
