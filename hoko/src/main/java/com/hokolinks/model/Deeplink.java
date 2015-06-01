@@ -160,6 +160,18 @@ public class Deeplink {
         return url;
     }
 
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("route", getRoute());
+            jsonObject.put("routeParameters", new JSONObject(mRouteParameters));
+            jsonObject.put("queryParameters", new JSONObject(mQueryParameters));
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+        return jsonObject;
+    }
+
     /**
      * Converts all the Deeplink information into a JSONObject to be sent to the Hoko backend
      * service.
