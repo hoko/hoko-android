@@ -52,7 +52,7 @@ public class Deeplink {
         mRoute = route;
         mRouteParameters = routeParameters;
         mQueryParameters = queryParameters;
-        mURLs = new HashMap<String, JSONObject>();
+        mURLs = new HashMap<>();
     }
 
     /**
@@ -160,6 +160,11 @@ public class Deeplink {
         return url;
     }
 
+    /**
+     * Serves the purpose of returning a Deeplink in JSON form (useful for PhoneGap SDK)
+     *
+     * @return Deeplink in JSON form.
+     */
     public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -199,10 +204,10 @@ public class Deeplink {
     private JSONObject smartlinkJSON(Context context) {
         try {
             JSONObject root = new JSONObject();
-            JSONObject omnilink = new JSONObject();
-            omnilink.put("created_at", DateUtils.format(new Date()));
-            omnilink.put("device", Device.json(context));
-            root.put("smartlink", omnilink);
+            JSONObject smartlink = new JSONObject();
+            smartlink.put("created_at", DateUtils.format(new Date()));
+            smartlink.put("device", Device.json(context));
+            root.put("smartlink", smartlink);
             return root;
         } catch (JSONException e) {
             return null;

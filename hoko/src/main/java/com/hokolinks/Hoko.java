@@ -1,16 +1,21 @@
 package com.hokolinks;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.hokolinks.deeplinking.AnnotationParser;
 import com.hokolinks.deeplinking.Deeplinking;
-import com.hokolinks.model.App;
+import com.hokolinks.model.Device;
 import com.hokolinks.model.exceptions.SetupCalledMoreThanOnceException;
 import com.hokolinks.model.exceptions.SetupNotCalledYetException;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.versionchecker.VersionChecker;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Hoko is an easy-to-use Framework to handle Deeplinking and the Analytics around it.
@@ -27,9 +32,6 @@ import com.hokolinks.utils.versionchecker.VersionChecker;
 public class Hoko {
 
     public static final String VERSION = "2.0";
-
-    private static final String PREVIOUS_HOKO_VERSION_KEY = "hokoVersion";
-    private static final String PREVIOUS_APP_VERSION_KEY = "appVersion";
 
     // Static Instance
     private static Hoko mInstance;
@@ -50,44 +52,32 @@ public class Hoko {
     }
 
     // Setup
-
     /**
      * Setups all the Hoko module instances, logging and asynchronous networking queues.
      * Setting up with a token will make sure you can take full advantage of the Hoko service,
      * as you will be able to track everything through automatic Analytics, which will
      * be shown on your Hoko dashboards.
-     * This will also trigger the debug mode if you are running with a BuildConfig.DEBUG = true.
-     * If you want to force the debug mode manually use the setup(context, token, debugMode)
-     * call.
-     * <pre>{@code
-     * Hoko.setup(this, "YOUR-API-TOKEN");
-     * }</pre>
-     *
-     * @param context Your application context.
-     * @param token   Hoko service API key.
-     */
-    public static void setup(Context context, String token) {
-        setup(context, token, App.isDebug(context));
-    }
-
-
-    /**
-     * Setups all the Hoko module instances, logging and asynchronous networking queues.
-     * Setting up with a token will make sure you can take full advantage of the Hoko service,
-     * as you will be able to track everything through automatic Analytics, which will
-     * be shown on your Hoko dashboards.
-     * Also sets the debug mode manually. Debug mode serves the purpose of uploading the app icon
-     * and the mapped HokoRoutes to the Hoko backend service.
+     * Also sets the debug mode for the devices set.  Debug mode serves the purpose of uploading
+     * the mapped Routes to the Hoko backend service.
      * <pre>{@code
      * Hoko.setup(this, "YOUR-API-TOKEN", true);
      * }</pre>
      *
      * @param context   Your application context.
      * @param token     Hoko service API key.
-     * @param debugMode Toggle debug mode manually.
+     * @param testDevices Toggle debug mode manually.
      */
-    public static void setup(Context context, String token, boolean debugMode) {
+    public static void setup(Context context, String token, String... testDevices) {
         if (mInstance == null) {
+            List<String> testDevicesList = new ArrayList<>(Arrays.asList(testDevices));
+            boolean debugMode = testDevicesList.contains(Device.getDeviceID(context));
+            if (!debugMode) {
+                testDevicesList.add(Device.getDeviceID(context));
+                String testDevicesString = Utils.joinComponentsByString(testDevicesList, "\", \"");
+                Log.d(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
+                        "make sure to setup the SDK with \nHoko.setup(this, \"" + token +
+                        "\", \"" + testDevicesString + "\")");
+            }
             mInstance = new Hoko(context, token, debugMode);
             mInstance.checkVersions(context);
             AnnotationParser.parseActivities(context);
@@ -152,18 +142,6 @@ public class Hoko {
     private void checkVersions(Context context) {
         if (mDebugMode) {
             new VersionChecker().checkForNewVersion(VERSION);
-        }
-
-        String previousHokoVersion = Utils.getString(PREVIOUS_HOKO_VERSION_KEY, context);
-        Utils.saveString(VERSION, PREVIOUS_HOKO_VERSION_KEY, context);
-
-        String previousAppVersion = Utils.getString(PREVIOUS_APP_VERSION_KEY, context);
-        String currentAppVersion = App.getVersionCode(context);
-        Utils.saveString(currentAppVersion, PREVIOUS_APP_VERSION_KEY, context);
-
-        if ((previousHokoVersion != null && !VERSION.equals(previousHokoVersion) ||
-                (previousAppVersion != null && !previousAppVersion.equals(currentAppVersion)))) {
-            Utils.clearBooleans(context);
         }
     }
 

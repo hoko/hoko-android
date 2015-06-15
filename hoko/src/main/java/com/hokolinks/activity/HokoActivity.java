@@ -19,4 +19,5 @@ public class HokoActivity extends Activity {
         finish();
         Hoko.deeplinking().openURL(getIntent().getData().toString());
     }
+
 }

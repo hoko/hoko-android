@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -27,7 +28,6 @@ public class Utils {
     private static final String FOLDER_NAME = "hoko";
     // Hoko SharedPreferences key
     private static final String SHARED_PREFERENCES_STRING_KEY = "com.hoko.string";
-    private static final String SHARED_PREFERENCES_BOOLEAN_KEY = "com.hoko.boolean";
 
     /**
      * Checks where the application has a given permission granted on the AndroidManifest.xml file.
@@ -92,56 +92,6 @@ public class Utils {
     }
 
     /**
-     * Saves a boolean to the SharedPreferences with a given key.
-     *
-     * @param value   The boolean to be saved.
-     * @param key     The key associated to the boolean value.
-     * @param context A context object.
-     */
-    public static void saveBoolean(boolean value, String key, Context context) {
-        try {
-            SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
-                            Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(key, value).apply();
-        } catch (NullPointerException e) {
-            HokoLog.e(e);
-        }
-    }
-
-    /**
-     * Loads a boolean from the SharedPreferences with a given key.
-     *
-     * @param key     The key associated to the boolean value.
-     * @param context A context object.
-     * @return The boolean in case it exists, false otherwise.
-     */
-    public static boolean getBoolean(String key, Context context) {
-        try {
-            SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
-                            Context.MODE_PRIVATE);
-            return sharedPreferences.getBoolean(key, false);
-        } catch (NullPointerException e) {
-            HokoLog.e(e);
-            return false;
-        }
-    }
-
-    public static void clearBooleans(Context context) {
-        try {
-            SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(SHARED_PREFERENCES_BOOLEAN_KEY,
-                            Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.clear().apply();
-        } catch (NullPointerException e) {
-            HokoLog.e(e);
-        }
-    }
-
-    /**
      * Saves an object to the private filesystem of the application.
      *
      * @param object   The object to be saved, needs to implement Serializable.
@@ -155,9 +105,7 @@ public class Utils {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
-        } catch (IOException e) {
-            HokoLog.e(e);
-        } catch (NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             HokoLog.e(e);
         }
     }
@@ -219,24 +167,19 @@ public class Utils {
     }
 
     /**
-     * Calculates the MD5 value of a given String object.
+     * Joins a list of strings with a given string in between.
      *
-     * @param string The string of which to get the MD5 value.
-     * @return The MD5 value.
+     * @param components A List of Strings.
+     * @param string The string to insert between components
+     * @return The joined string.
      */
-    public static String md5FromString(String string) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(string.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
+    public static String joinComponentsByString(List<String> components, String string) {
+        String result = "";
+        for (String component : components) {
+            result = result + component +
+                    (components.indexOf(component) != (components.size() - 1) ? string : "");
         }
-        return null;
+        return result;
     }
-
 
 }

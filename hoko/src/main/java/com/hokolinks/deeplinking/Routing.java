@@ -2,6 +2,7 @@ package com.hokolinks.deeplinking;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.hokolinks.Hoko;
@@ -137,6 +138,7 @@ public class Routing {
      */
     public boolean openURL(String urlString) {
         if (urlString == null) {
+            openApp();
             return false;
         }
         HokoLog.d("Opening Deeplink " + urlString);
@@ -158,7 +160,17 @@ public class Routing {
             route.execute(url);
             return true;
         }
+        openApp();
         return false;
+    }
+
+    private void openApp() {
+        Intent appIntent = mContext.getPackageManager()
+                .getLaunchIntentForPackage(mContext.getPackageName());
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        mContext.startActivity(appIntent);
     }
 
     /**

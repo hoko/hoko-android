@@ -78,6 +78,8 @@ public class URL {
      * @return A String object representing the sanitized url.
      */
     public static String sanitizeURL(String urlString) {
+        if (urlString == null)
+            return null;
         String sanitizedURLString = urlString.replaceAll("^/+", "");
         sanitizedURLString = sanitizedURLString.replaceAll("/+$", "");
         sanitizedURLString = sanitizedURLString.replaceAll("(?<!:)(/)+", "/");

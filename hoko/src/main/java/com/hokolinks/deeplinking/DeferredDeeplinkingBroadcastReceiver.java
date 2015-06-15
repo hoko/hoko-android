@@ -8,7 +8,6 @@ import android.net.Uri;
 import com.hokolinks.Hoko;
 import com.hokolinks.utils.log.HokoLog;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 
 
@@ -16,14 +15,14 @@ public class DeferredDeeplinkingBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String referrer = intent.getExtras().getString("referrer");
         try {
+            String referrer = intent.getExtras().getString("referrer");
             referrer = URLDecoder.decode(referrer, "UTF-8");
             Uri uri = Uri.parse(referrer);
             HokoLog.d("Opening deferred deeplink " + uri.toString());
 
             Hoko.deeplinking().openDeferredURL(uri.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             HokoLog.e(e);
         }
 
