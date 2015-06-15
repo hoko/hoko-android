@@ -113,4 +113,8 @@ public class URL {
             return null;
         return matchComponents(pathComponents, routeComponents);
     }
+
+    public String getURL() {
+        return mUri.toString();
+    }
 }

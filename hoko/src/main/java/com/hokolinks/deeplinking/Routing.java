@@ -195,15 +195,15 @@ public class Routing {
     private void notifyHandler(Route route, URL url) {
         if (route == null || route == mDefaultRoute) {
             Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
-                    url.getQueryParameters());
-            deeplink.post(mContext, mToken);
+                    url.getQueryParameters(), url.getURL());
+            deeplink.post(mToken);
             mHandling.handle(deeplink);
         } else {
             HashMap<String, String> routeParameters = url.matchesWithRoute(route);
             if (routeParameters != null) {
                 Deeplink deeplink = new Deeplink(url.getScheme(), route.getRoute(),
-                        routeParameters, url.getQueryParameters());
-                deeplink.post(mContext, mToken);
+                        routeParameters, url.getQueryParameters(), url.getURL());
+                deeplink.post(mToken);
                 mHandling.handle(deeplink);
             }
         }

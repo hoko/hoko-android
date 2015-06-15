@@ -17,7 +17,7 @@ public class RouteImpl extends Route {
             HashMap<String, String> routeParameters = url.matchesWithRoute(this);
             if (routeParameters != null) {
                 Deeplink deeplink = new Deeplink(url.getScheme(), this.getRoute(),
-                        routeParameters, url.getQueryParameters());
+                        routeParameters, url.getQueryParameters(), url.getURL());
                 mDeeplinkCallback.deeplinkOpened(deeplink);
             }
         }
