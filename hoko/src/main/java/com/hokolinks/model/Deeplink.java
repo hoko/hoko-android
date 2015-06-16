@@ -190,7 +190,7 @@ public class Deeplink {
     public JSONObject json() {
         try {
             JSONObject root = new JSONObject();
-            root.putOpt("original_url", getURL());
+            root.putOpt("uri", getURL());
             if (mURLs.size() > 0)
                 root.putOpt("routes", new JSONObject(mURLs));
             return root;
