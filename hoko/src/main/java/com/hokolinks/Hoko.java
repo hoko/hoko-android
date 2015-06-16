@@ -69,17 +69,9 @@ public class Hoko {
      */
     public static void setup(Context context, String token, String... testDevices) {
         if (mInstance == null) {
-            List<String> testDevicesList = new ArrayList<>(Arrays.asList(testDevices));
-            boolean debugMode = testDevicesList.contains(Device.getDeviceID(context));
-            if (!debugMode) {
-                testDevicesList.add(Device.getDeviceID(context));
-                String testDevicesString = Utils.joinComponentsByString(testDevicesList, "\", \"");
-                Log.d(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
-                        "make sure to setup the SDK with \nHoko.setup(this, \"" + token +
-                        "\", \"" + testDevicesString + "\")");
-            }
+            boolean debugMode = debugModeWithTestDevices(context, token, testDevices);
             mInstance = new Hoko(context, token, debugMode);
-            mInstance.checkVersions(context);
+            mInstance.checkVersions();
             AnnotationParser.parseActivities(context);
 
         } else {
@@ -133,13 +125,33 @@ public class Hoko {
     }
 
     /**
+     * This will check for debug mode with the device IDs specified.
+     * Will also print a description to help developer integrate easier.
+     *
+     * @param context     A context object.
+     * @param token       The Hoko token to be printed out
+     * @param testDevices An array of test devices.
+     * @return true if debug mode is active, false otherwise.
+     */
+    private static boolean debugModeWithTestDevices(Context context, String token, String... testDevices) {
+        List<String> testDevicesList = new ArrayList<>(Arrays.asList(testDevices));
+        boolean debugMode = testDevicesList.contains(Device.getDeviceID(context));
+        if (!debugMode) {
+            testDevicesList.add(Device.getDeviceID(context));
+            String testDevicesString = Utils.joinComponentsByString(testDevicesList, "\", \"");
+            Log.d(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
+                    "make sure to setup the SDK with \nHoko.setup(this, \"" + token +
+                    "\", \"" + testDevicesString + "\")");
+        }
+        return debugMode;
+    }
+
+    /**
      * Checks for new SDK version on GITHUB, also checks for which version was previously installed,
      * and in case its different it will reset the routes that were previously posted, to allow new
      * routes to be posted.
-     *
-     * @param context A context object.
      */
-    private void checkVersions(Context context) {
+    private void checkVersions() {
         if (mDebugMode) {
             new VersionChecker().checkForNewVersion(VERSION);
         }

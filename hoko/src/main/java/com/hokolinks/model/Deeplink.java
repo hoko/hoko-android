@@ -91,6 +91,12 @@ public class Deeplink {
         return true;
     }
 
+    /**
+     * Allows the developer to add a custom deeplink for a given platform.
+     *
+     * @param url      The deeplink URL to be used on the platform.
+     * @param platform The platform (from the DeeplinkPlatform enum).
+     */
     public void addURL(String url, DeeplinkPlatform platform) {
         try {
             JSONObject urlJSON = new JSONObject();
