@@ -6,9 +6,9 @@ import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.exceptions.LinkGenerationException;
 import com.hokolinks.model.exceptions.NullDeeplinkException;
 import com.hokolinks.model.exceptions.RouteNotMappedException;
+import com.hokolinks.utils.networking.async.HttpRequest;
 import com.hokolinks.utils.networking.async.HttpRequestCallback;
 import com.hokolinks.utils.networking.async.NetworkAsyncTask;
-import com.hokolinks.utils.networking.async.HttpRequest;
 
 import org.json.JSONObject;
 
@@ -51,10 +51,8 @@ public class LinkGenerator {
      */
     private void requestForSmartlink(Deeplink deeplink,
                                      final LinkGenerationListener listener) {
-        String path = deeplink.hasURLs() ? "smartlinks/create_custom"
-                : "smartlinks/create_with_template";
         new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                path, mToken, deeplink.json().toString())
+                "smartlinks/create", mToken, deeplink.json().toString())
                 .toRunnable(new HttpRequestCallback() {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
