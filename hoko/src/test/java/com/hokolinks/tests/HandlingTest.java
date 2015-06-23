@@ -57,7 +57,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }));
+        }, "hoko://product/1234?query=param"));
 
         lock.await();
 
@@ -96,7 +96,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }));
+        }, "hoko://product/1234?query=param"));
 
         lock.await();
 
@@ -144,7 +144,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }));
+        }, "hoko://product/1234?query=param"));
 
         lock.await();
 
@@ -201,7 +201,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }));
+        }, "hoko://product/1234?query=param"));
 
         lock.await();
 
