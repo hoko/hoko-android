@@ -29,14 +29,6 @@ public class URL {
         mQueryParameters = queryParameters(mUri);
     }
 
-    public String getScheme() {
-        return mScheme;
-    }
-
-    public HashMap<String, String> getQueryParameters() {
-        return mQueryParameters;
-    }
-
     /**
      * Retrieves the query parameters out of a Uri object.
      *
@@ -44,33 +36,13 @@ public class URL {
      * @return  The query parameters in HashMap form.
      */
     private static HashMap<String, String> queryParameters(Uri uri) {
-        HashMap<String, String> queryParameters = new HashMap<String, String>();
+        HashMap<String, String> queryParameters = new HashMap<>();
         Set<String> queryParameterNames = uri.getQueryParameterNames();
         for (String queryParameterName : queryParameterNames) {
             queryParameters.put(queryParameterName, uri.getQueryParameter(queryParameterName));
         }
 
         return queryParameters;
-    }
-
-    /**
-     * Tries to match a Route object to this HokURL instance.
-     * Will perform path components and route components validation and return the matched values
-     * in case it is a valid match.
-     *
-     * @param route A Route instance.
-     * @return A HashMap where the keys are route components and values are their value
-     * representation of path components.
-     */
-    public HashMap<String, String> matchesWithRoute(Route route) {
-        List<String> pathComponents = new ArrayList<String>();
-        pathComponents.add(mUri.getAuthority());
-        pathComponents.addAll(mUri.getPathSegments());
-        List<String> routeComponents = route.getComponents();
-
-        if (routeComponents == null || pathComponents.size() != routeComponents.size())
-            return null;
-        return matchComponents(pathComponents, routeComponents);
     }
 
     /**
@@ -83,10 +55,13 @@ public class URL {
      */
     private static HashMap<String, String> matchComponents(List<String> pathComponents,
                                                            List<String> routeComponents) {
-        HashMap<String, String> routeParameters = new HashMap<String, String>();
+        HashMap<String, String> routeParameters = new HashMap<>();
         for (int index = 0; index < pathComponents.size(); index++) {
             String pathComponent = pathComponents.get(index);
             String routeComponent = routeComponents.get(index);
+            if (pathComponent == null || routeComponent == null) {
+                return null;
+            }
             if (routeComponent.startsWith(":")) {
                 routeParameters.put(routeComponent.substring(1), pathComponent);
             } else if (routeComponent.compareToIgnoreCase(pathComponent) != 0) {
@@ -103,9 +78,43 @@ public class URL {
      * @return A String object representing the sanitized url.
      */
     public static String sanitizeURL(String urlString) {
+        if (urlString == null)
+            return null;
         String sanitizedURLString = urlString.replaceAll("^/+", "");
         sanitizedURLString = sanitizedURLString.replaceAll("/+$", "");
         sanitizedURLString = sanitizedURLString.replaceAll("(?<!:)(/)+", "/");
         return sanitizedURLString;
+    }
+
+    public String getScheme() {
+        return mScheme;
+    }
+
+    public HashMap<String, String> getQueryParameters() {
+        return mQueryParameters;
+    }
+
+    /**
+     * Tries to match a Route object to this URL instance.
+     * Will perform path components and route components validation and return the matched values
+     * in case it is a valid match.
+     *
+     * @param route A Route instance.
+     * @return A HashMap where the keys are route components and values are their value
+     * representation of path components.
+     */
+    public HashMap<String, String> matchesWithRoute(Route route) {
+        List<String> pathComponents = new ArrayList<>();
+        pathComponents.add(mUri.getAuthority());
+        pathComponents.addAll(mUri.getPathSegments());
+        List<String> routeComponents = route.getComponents();
+
+        if (routeComponents == null || pathComponents.size() != routeComponents.size())
+            return null;
+        return matchComponents(pathComponents, routeComponents);
+    }
+
+    public String getURL() {
+        return mUri.toString();
     }
 }

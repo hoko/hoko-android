@@ -29,11 +29,11 @@ import java.util.zip.GZIPInputStream;
 public class HttpRequest implements Serializable {
 
     // Constants
-    private static final int HokoNetworkingTaskTimeout = 15000; // millis
-    //private static final String HokoNetworkingTaskEndpoint = "http://5db55475.ngrok.com";
-    private static final String HokoNetworkingTaskEndpoint = "https://api.hokolinks.com";
-    private static final String HokoNetworkingTaskVersion = "v1";
-    private static final String HokoNetworkingTaskFormat = "json";
+    private static final int TASK_TIMEOUT = 15000; // millis
+    private static final String TASK_VERSION = "v2";
+    private static final String TASK_FORMAT = "json";
+
+    private static String mTaskEndpoint = "https://api.hokolinks.com";
 
     // Properties
     private HokoNetworkOperationType mOperationType;
@@ -41,8 +41,6 @@ public class HttpRequest implements Serializable {
     private String mToken;
     private String mParameters;
     private int mNumberOfRetries;
-
-    // Constructors
 
     /**
      * Creates a request with a type, path, token and parameters.
@@ -61,6 +59,12 @@ public class HttpRequest implements Serializable {
         mNumberOfRetries = 0;
     }
 
+    // Constructors
+
+    public static void setEndpoint(String endpoint) {
+        mTaskEndpoint = endpoint;
+    }
+
     /**
      * Generates the full URL, merging the endpoint, version, path and format.
      *
@@ -68,8 +72,8 @@ public class HttpRequest implements Serializable {
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
-        return HokoNetworkingTaskEndpoint + "/" + HokoNetworkingTaskVersion + "/" + path + "."
-                + HokoNetworkingTaskFormat;
+        return mTaskEndpoint + "/" + TASK_VERSION + "/" + path + "."
+                + TASK_FORMAT;
     }
 
     // Property Gets
@@ -152,6 +156,8 @@ public class HttpRequest implements Serializable {
     }
 
     private void applyHeaders(HttpURLConnection connection, boolean postOrPut) {
+        connection.setConnectTimeout(TASK_TIMEOUT);
+        connection.setReadTimeout(TASK_TIMEOUT);
         connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
         if (postOrPut) {

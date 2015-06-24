@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -24,9 +25,9 @@ import java.util.UUID;
 public class Utils {
 
     // Hoko folder name
-    private static final String HokoUtilsFolderName = "hoko";
+    private static final String FOLDER_NAME = "hoko";
     // Hoko SharedPreferences key
-    private static final String HokoUtilsSharedPreferencesKey = "com.hoko";
+    private static final String SHARED_PREFERENCES_STRING_KEY = "com.hoko.string";
 
     /**
      * Checks where the application has a given permission granted on the AndroidManifest.xml file.
@@ -62,11 +63,10 @@ public class Utils {
     public static void saveString(String string, String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                    context.getSharedPreferences(SHARED_PREFERENCES_STRING_KEY,
                             Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(key, string);
-            editor.apply();
+            editor.putString(key, string).apply();
         } catch (NullPointerException e) {
             HokoLog.e(e);
         }
@@ -82,7 +82,7 @@ public class Utils {
     public static String getString(String key, Context context) {
         try {
             SharedPreferences sharedPreferences =
-                    context.getSharedPreferences(HokoUtilsSharedPreferencesKey,
+                    context.getSharedPreferences(SHARED_PREFERENCES_STRING_KEY,
                             Context.MODE_PRIVATE);
             return sharedPreferences.getString(key, null);
         } catch (NullPointerException e) {
@@ -105,9 +105,7 @@ public class Utils {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(object);
             objectOutputStream.close();
-        } catch (IOException e) {
-            HokoLog.e(e);
-        } catch (NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             HokoLog.e(e);
         }
     }
@@ -127,11 +125,7 @@ public class Utils {
             Object object = objectInputStream.readObject();
             objectInputStream.close();
             return object;
-        } catch (IOException e) {
-            HokoLog.e(e);
-        } catch (ClassNotFoundException e) {
-            HokoLog.e(e);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             HokoLog.e(e);
         }
         return null;
@@ -168,29 +162,24 @@ public class Utils {
      * @return The File.
      */
     private static File fileFromFilename(String filename, Context context) {
-        File directory = context.getDir(HokoUtilsFolderName, Context.MODE_PRIVATE);
+        File directory = context.getDir(FOLDER_NAME, Context.MODE_PRIVATE);
         return new File(directory, filename);
     }
 
     /**
-     * Calculates the MD5 value of a given String object.
+     * Joins a list of strings with a given string in between.
      *
-     * @param string The string of which to get the MD5 value.
-     * @return The MD5 value.
+     * @param components A List of Strings.
+     * @param string The string to insert between components
+     * @return The joined string.
      */
-    public static String md5FromString(String string) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(string.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
+    public static String joinComponentsByString(List<String> components, String string) {
+        String result = "";
+        for (String component : components) {
+            result = result + component +
+                    (components.indexOf(component) != (components.size() - 1) ? string : "");
         }
-        return null;
+        return result;
     }
-
 
 }

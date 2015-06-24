@@ -1,39 +1,22 @@
 package com.hokolinks.model;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.util.Base64;
-import android.util.DisplayMetrics;
 
-import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
-import com.hokolinks.utils.networking.Networking;
-import com.hokolinks.utils.networking.async.HttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * App is a helper class to get all the necessary information of the Application environment.
  */
 public class App {
 
-    private static final String HokoAppIconKey = "HokoAppIconKey";
-    private static final String HokoAppEnvironmentDebug = "debug";
-    private static final String HokoAppEnvironmentRelease = "release";
+    private static final String ENVIRONMENT_DEBUG = "debug";
+    private static final String ENVIRONMENT_RELEASE = "release";
 
     /**
      * Returns the name of the application Hoko is being run on.
@@ -102,88 +85,6 @@ public class App {
     }
 
     /**
-     * Returns the icon resource id of the application Hoko is being run on.
-     *
-     * @param context A context object.
-     * @return The icon resource id of the application.
-     */
-    public static int getIcon(Context context) {
-        PackageManager manager = context.getPackageManager();
-        try {
-            ApplicationInfo appInfo = manager.getApplicationInfo(context.getPackageName(), 0);
-            return appInfo.icon;
-        } catch (Exception exception) {
-            return android.R.drawable.sym_def_app_icon;
-        }
-    }
-
-    /**
-     * Returns the icon the maximum density possible in Drawable form.
-     *
-     * @param context A context object.
-     * @return The icon drawable.
-     */
-    @TargetApi(15)
-    public static Drawable getIconDrawable(Context context) {
-        try {
-            int iconResId = getIcon(context);
-            Drawable drawable;
-            //Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1
-            if (android.os.Build.VERSION.SDK_INT >= 15) {
-                ArrayList<Integer> densities = new ArrayList<Integer>(
-                        Arrays.asList(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH,
-                                DisplayMetrics.DENSITY_MEDIUM, DisplayMetrics.DENSITY_LOW));
-                //Build.VERSION_CODES.JELLY_BEAN
-                if (Build.VERSION.SDK_INT >= 16) {
-                    //DisplayMetrics.DENSITY_XXHIGH
-                    densities.add(0, 480);
-                }
-                //Build.VERSION_CODES.JELLY_BEAN_MR2
-                if (Build.VERSION.SDK_INT >= 18) {
-                    //DisplayMetrics.DENSITY_XXXHIGH
-                    densities.add(0, 640);
-                }
-                for (int density : densities) {
-                    drawable = context.getResources().getDrawableForDensity(iconResId, density);
-                    if (drawable != null)
-                        return drawable;
-                }
-            }
-            drawable = context.getResources().getDrawable(iconResId);
-            return drawable;
-        } catch (Exception e) {
-            HokoLog.e(e);
-            return null;
-        }
-    }
-
-    @TargetApi(15)
-    public static Bitmap getIconBitmapForNotification(Context context) {
-        Bitmap iconBitmap = BitmapFactory.decodeResource(context.getResources(), getIcon(context));
-        return Bitmap.createScaledBitmap(iconBitmap, context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_width), context.getResources().getDimensionPixelOffset(android.R.dimen.notification_large_icon_height), true);
-    }
-
-    /**
-     * Returns the icon of the application in Base64 format.
-     *
-     * @param context A context object.
-     * @return The icon in Base64.
-     */
-    public static String getBase64Icon(Context context) {
-        Drawable iconDrawable = getIconDrawable(context);
-        if (iconDrawable != null) {
-            BitmapDrawable iconBitmapDrawable = ((BitmapDrawable) iconDrawable);
-            Bitmap bitmap = iconBitmapDrawable.getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-            byte[] bitmapByte = stream.toByteArray();
-
-            return Base64.encodeToString(bitmapByte, 0);
-        }
-        return null;
-    }
-
-    /**
      * Converts all the App information into a JSONObject to be sent to the Hoko backend
      * service.
      *
@@ -205,42 +106,6 @@ public class App {
     }
 
     /**
-     * Converts the icon information into a JSONObject to be sent to the Hoko backend service.
-     *
-     * @param context A context object.
-     * @return The JSONObject representation of the application icon in base64.
-     */
-    public static JSONObject iconJSON(Context context) {
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.putOpt("icon", getBase64Icon(context));
-            return jsonObject;
-        } catch (JSONException e) {
-            HokoLog.e(e);
-        }
-        return null;
-    }
-
-    /**
-     * This function serves the purpose of upload the application's icon to the Hoko backend
-     * service. Will only post if the current icon was not previously posted.
-     *
-     * @param token   The Hoko API Token.
-     * @param context A context object.
-     */
-    public static void postIcon(String token, Context context) {
-        String previousAppIcon = Utils.getString(HokoAppIconKey, context);
-        String iconJson = iconJSON(context).toString();
-        String iconJsonMD5 = Utils.md5FromString(iconJson);
-
-        if (previousAppIcon == null || previousAppIcon.compareTo(iconJsonMD5) != 0) {
-            Utils.saveString(iconJsonMD5, HokoAppIconKey, context);
-            Networking.getNetworking().addRequest(new HttpRequest(HttpRequest
-                    .HokoNetworkOperationType.POST, "icons", token, iconJson));
-        }
-    }
-
-    /**
      * Check whether the application is running in debug mode by checking the application's
      * BuildConfig static fields. This is done through reflection to avoid manually requesting the
      * developer to provide either the BuildConfig class or the actual debug variable.
@@ -251,18 +116,64 @@ public class App {
      */
     public static boolean isDebug(Context context) {
         try {
-            String buildConfigClassName = context.getPackageName() + ".BuildConfig";
-            Class buildConfigClass = Class.forName(buildConfigClassName);
-            Field debugField = buildConfigClass.getDeclaredField("DEBUG");
-            return debugField.getBoolean(null);
+            Class buildConfigClass = getBuildConfigClass(context);
+            if (buildConfigClass != null) {
+                Field debugField = buildConfigClass.getDeclaredField("DEBUG");
+                return debugField.getBoolean(null);
+            }
         } catch (Exception e) {
             HokoLog.e(e);
         }
         return false;
     }
 
+    /**
+     * Returns the environment with regards of finding DEBUG inside a BuildConfig.
+     *
+     * @param context A context object.
+     * @return The environment string.
+     */
     public static String getEnvironment(Context context) {
-        return isDebug(context) ? HokoAppEnvironmentDebug : HokoAppEnvironmentRelease;
+        return isDebug(context) ? ENVIRONMENT_DEBUG : ENVIRONMENT_RELEASE;
     }
 
+    /**
+     * Retrieves the BuildConfig class from a given context.
+     * Will try to get it from the context's package name, otherwise it will go through the
+     * package hierarchy trying to find a BuildConfig class.
+     *
+     * @param context A context object.
+     * @return A Class object or null.
+     */
+    private static Class<?> getBuildConfigClass(Context context) {
+        Class<?> klass = getBuildConfigClassFromPackage(context.getPackageName(), false);
+        if (klass == null) {
+            klass = getBuildConfigClassFromPackage(context.getClass().getPackage().getName(), true);
+        }
+        return klass;
+    }
+
+    /**
+     * Retrieves the BuildConfig class from a package name.
+     * Will try to get it from the supplied package name, if the class is not found, depending on
+     * the traverse value it will try to recursively find the class on the package hierarchy.
+     *
+     * @param packageName The package name.
+     * @param traverse    true if it should traver the package hierarchy, false otherwise.
+     * @return A Class object or null.
+     */
+    private static Class<?> getBuildConfigClassFromPackage(String packageName, boolean traverse) {
+        try {
+            return Class.forName(packageName + ".BuildConfig");
+        } catch (ClassNotFoundException e) {
+            if (traverse) {
+                int indexOfLastDot = packageName.lastIndexOf('.');
+                if (indexOfLastDot != -1) {
+                    return getBuildConfigClassFromPackage(packageName.substring(0, indexOfLastDot),
+                            true);
+                }
+            }
+            return null;
+        }
+    }
 }

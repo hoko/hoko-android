@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.hokolinks.deeplinking.listeners.Handler;
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
+import com.hokolinks.deeplinking.listeners.SmartlinkResolveListener;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.exceptions.LinkGenerationException;
-import com.hokolinks.utils.Utils;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -21,18 +25,19 @@ import java.util.HashMap;
  */
 public class Deeplinking {
 
-    private static final String HokoDeeplinkingIsNotFirstRun = "isNotFirstRun";
-    private static final String HokoDeeplinkingInstallPath = "apps/install";
+    private static final String INSTALL_PATH = "installs/android";
     private Routing mRouting;
     private Handling mHandling;
     private LinkGenerator mLinkGenerator;
+    private Resolver mResolver;
+    private String mToken;
 
     public Deeplinking(String token, Context context) {
-        mRouting = new Routing(token, context);
+        mToken = token;
         mHandling = new Handling();
+        mRouting = new Routing(token, context, mHandling);
         mLinkGenerator = new LinkGenerator(token);
-
-        this.triggerInstall(context, token);
+        mResolver = new Resolver(token);
     }
 
     // Map Routes
@@ -122,36 +127,79 @@ public class Deeplinking {
         return mRouting.openURL(urlString);
     }
 
+    /**
+     * openDeferredURL(urlString) is called when DeferredDeeplinkingBroadcastReceiver receives a
+     * deeplink Intent from Google Play.
+     *
+     * @param urlString The url passed on the intent.
+     */
+    public void openDeferredURL(String urlString) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("deeplink", urlString);
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+        Networking.getNetworking().addRequest(
+                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                        HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
+        mRouting.openURL(urlString);
+    }
+
+    /**
+     * openSmartlink(smartlink) should be called when a Smartlink needs to be resolved into a
+     * deeplink to open the correct view. e.g. Opening a Smartlink from a push notification.
+     *
+     * @param smartlink A smartlink string.
+     */
+    public void openSmartlink(String smartlink) {
+        mResolver.resolveSmartlink(smartlink, new SmartlinkResolveListener() {
+            @Override
+            public void onLinkResolved(String deeplink) {
+                openURL(deeplink);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+
+    public void mapRoute(String route, DeeplinkCallback callback) {
+        mRouting.mapRoute(route, callback);
+    }
+
     // Handlers
 
     /**
-     * With addHandler: you can add an object which implements the Handler interface to be
+     * With addHandler() you can add an object which implements the Handler interface to be
      * called every time your application opens a deeplink. This allows you to track incoming
      * deeplinks outside of the deeplinking targets.
      * <pre>{@code
-     * Hoko.deeplinking().addHandler(new Handler() {
-     *      public void handle(Deeplink deeplink) {
+     * Hoko.deeplinking().addHandler(new DeeplinkCallback() {
+     *      public void deeplinkOpened(Deeplink deeplink) {
      *          Log.d("HOKO", deeplink.toString());
      *      }});
      * }</pre>
      *
-     * @param handler An object which implements the Handler interface.
+     * @param callback An object which implements the DeeplinkCallback interface.
      */
-    public void addHandler(Handler handler) {
-        mHandling.addHandler(handler);
+    public void addHandler(DeeplinkCallback callback) {
+        mHandling.addHandler(callback);
     }
 
     /**
-     * With removeHandler: you can remove a previously added Handler object.
+     * With removeHandler() you can remove a previously added Handler object.
      * <pre>{@code
      * Hoko.deeplinking().removeHandler(analyticsHandler);
      * }</pre>
      *
-     * @param handler An object which implements the Handler interface.
+     * @param callback An object which implements the DeeplinkCallback interface.
      * @return true if the handler was removed, false otherwise.
      */
-    public boolean removeHandler(Handler handler) {
-        return mHandling.removeHandler(handler);
+    public boolean removeHandler(DeeplinkCallback callback) {
+        return mHandling.removeHandler(callback);
     }
 
     // Link Generation
@@ -248,16 +296,6 @@ public class Deeplinking {
 
     Handling handling() {
         return mHandling;
-    }
-
-    private void triggerInstall(Context context, String token) {
-        if (Utils.getString(HokoDeeplinkingIsNotFirstRun, context) == null) {
-            Utils.saveString(HokoDeeplinkingIsNotFirstRun, HokoDeeplinkingIsNotFirstRun, context);
-            Networking.getNetworking().addRequest(
-                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                            HttpRequest.getURLFromPath(HokoDeeplinkingInstallPath), token, null));
-        }
-
     }
 
 }
