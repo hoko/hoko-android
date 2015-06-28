@@ -4,16 +4,16 @@
 
 [![Build Status](https://travis-ci.org/hokolinks/hoko-android.svg?branch=open_source)](https://travis-ci.org/hokolinks/hoko-android)
 
-# Quick Start - HOKO Framework for Android
+# Quick Start - HOKO for Android
 
-This document is just a quick start introduction to the HOKO Framework for Android. You can read the
+This document is just a quick start introduction to the HOKO for Android. You can read the
 full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
 
-To integrate HOKO in your app, just follow the 4 simple steps below after adding it to your project.
+To integrate HOKO in your app, just follow the 3 simple steps below.
 
-## Add HOKO to your project
+## 1. Add HOKO to your project
 
-1. Add HOKO to your `gradle.build` file.
+Add HOKO to your `gradle.build` file:
 
 ```java
 // Build.gradle
@@ -22,19 +22,17 @@ dependencies {
 }
 ```
 
-## Start using HOKO
-
-### SDK Setup
-
-In your `Application` subclass setup the HOKO Framework in the `onCreate(...)` method:
+In your `Application` subclass setup HOKO in the `onCreate(...)` method:
 
 ```java
 @Override
 public void onCreate() {
 	super.onCreate();
-	Hoko.setup(this, "YOUR-APP-TOKEN");
+	Hoko.setup(this, "YOUR-ANDROID-TOKEN");
 }
 ```
+
+You can find the Android token under "Settings" when you open your app on the HOKO dashboard.
 
 ### 2. Setting up the AndroidManifest.xml
 
@@ -81,9 +79,7 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 </manifest>
 ```
 
-### 3. Deeplinking
-
-#### Activities
+### 3. Deep linking
 
 To map routes to your `Activities` all you have to do is use the proper annotations.
 
