@@ -11,7 +11,7 @@ full documentation at [http://hokolinks.com/documentation#android](http://hokoli
 
 To integrate HOKO in your app, just follow the 3 simple steps below.
 
-## 1. Add HOKO to your project
+### 1. Add HOKO to your project
 
 Add HOKO to your `gradle.build` file:
 
@@ -34,7 +34,7 @@ public void onCreate() {
 
 You can find the Android token under "Settings" when you open your app on the HOKO dashboard.
 
-### 2. Setting up the AndroidManifest.xml
+### 2. Setup the AndroidManifest.xml
 
 To register a URL Scheme on your application you must add `HokoActivity` to your
 `AndroidManifest.xml`, making sure to replace your `URL scheme` with an appropriate scheme
@@ -79,7 +79,7 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 </manifest>
 ```
 
-### 3. Deep linking
+### 3. Map your application.
 
 To map routes to your `Activities` all you have to do is use the proper annotations.
 
