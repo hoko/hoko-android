@@ -133,7 +133,7 @@ public class Deeplinking {
      *
      * @param urlString The url passed on the intent.
      */
-    public void openDeferredURL(String urlString) {
+    protected void openDeferredURL(String urlString) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("deeplink", urlString);
@@ -153,15 +153,31 @@ public class Deeplinking {
      * @param smartlink A smartlink string.
      */
     public void openSmartlink(String smartlink) {
+        openSmartlink(smartlink, null);
+    }
+
+    /**
+     * openSmartlink(smartlink) should be called when a Smartlink needs to be resolved into a
+     * deeplink to open the correct view. e.g. Opening a Smartlink from a push notification.
+     *
+     * @param smartlink                A smartlink string.
+     * @param smartlinkResolveListener A link resolved listener for lifecycle purposes.
+     */
+    public void openSmartlink(String smartlink, final SmartlinkResolveListener smartlinkResolveListener) {
         mResolver.resolveSmartlink(smartlink, new SmartlinkResolveListener() {
             @Override
             public void onLinkResolved(String deeplink) {
+                if (smartlinkResolveListener != null) {
+                    smartlinkResolveListener.onLinkResolved(deeplink);
+                }
                 openURL(deeplink);
             }
 
             @Override
             public void onError(Exception e) {
-
+                if (smartlinkResolveListener != null) {
+                    smartlinkResolveListener.onError(e);
+                }
             }
         });
     }
@@ -281,6 +297,35 @@ public class Deeplinking {
      * @param listener A HokoLinkGenerationLister instance.
      */
     public void generateSmartlink(Fragment fragment, LinkGenerationListener listener) {
+        Deeplink deeplink = AnnotationParser.deeplinkFromFragment(fragment);
+        if (deeplink != null) {
+            generateSmartlink(deeplink, listener);
+        } else {
+            listener.onError(new LinkGenerationException());
+        }
+    }
+
+    /**
+     * generateSmartlink(fragment, listener) allows the app to generate Smartlinks for the
+     * user to share with other users, independent of the platform users will be redirected to the
+     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to
+     * generate the deeplinks for all available platforms. In case the request is successful, the
+     * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
+     * Otherwise it will return the cause of failure in the onError function.
+     * <pre>{@code
+     * Hoko.deeplinking().generateSmartlink(this, new LinkGenerationListener() {
+     *      public void onLinkGenerated(String smartlink) {
+     *          shareLink(smartlink);
+     *      }
+     *      public void onError(Exception exception) {
+     *          exception.printStackTrace();
+     *      }});
+     * }</pre>
+     *
+     * @param fragment A fragment annotated with DeeplinkRoute.
+     * @param listener A HokoLinkGenerationLister instance.
+     */
+    public void generateSmartlink(android.app.Fragment fragment, LinkGenerationListener listener) {
         Deeplink deeplink = AnnotationParser.deeplinkFromFragment(fragment);
         if (deeplink != null) {
             generateSmartlink(deeplink, listener);

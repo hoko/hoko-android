@@ -76,6 +76,17 @@ public class AnnotationParser {
         return deeplinkFromObject(fragment);
     }
 
+    /**
+     * This generates a Deeplink instance from a Fragment instance, taking basis on the
+     * annotations within. It collects values, propagates the hashmaps and returns a Deeplink.
+     *
+     * @param fragment An annotated fragment.
+     * @return A Deeplink instance or null.
+     */
+    public static Deeplink deeplinkFromFragment(android.app.Fragment fragment) {
+        return deeplinkFromObject(fragment);
+    }
+
     private static Deeplink deeplinkFromObject(Object object) {
         String route = routeFromClass(object.getClass());
         if (route != null) {
