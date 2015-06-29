@@ -87,10 +87,11 @@ To map routes to your `Activities` all you have to do is use the proper annotati
 // ProductActivity.java
 @DeeplinkRoute("product/:product_id")
 public class ProductActivity extends Activity {
-
+	// You should map your variables with @DeeplinkRouteParameter
 	@DeeplinkRouteParameter("product_id")
 	private int mProductId;
 
+	// If you want you can also use @DeeplinkQueryParameter to map query parameters
 	@DeeplinkQueryParameter("product_price")
 	private String mProductPrice;
 
@@ -101,6 +102,8 @@ public class ProductActivity extends Activity {
 	}
 }
 ```
+
+The previous example would match an incoming link like this `product/29?product_price=19`
 
 This will make sure that any incoming deep links with a certain route format will map its variables
 to your annotated variables.
