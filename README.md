@@ -110,4 +110,4 @@ to your annotated variables.
 
 ### Full documentation
 
-We recommend you to read the full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
+We recommend you to read the full documentation at [http://support.hokolinks.com/quickstart/android/](http://support.hokolinks.com/quickstart/android/).
