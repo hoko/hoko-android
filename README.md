@@ -18,7 +18,7 @@ Add HOKO to your `gradle.build` file:
 ```java
 // Build.gradle
 dependencies {
-	compile 'com.hokolinks:hoko:1.2.1'
+	compile 'com.hokolinks:hoko:2.0'
 }
 ```
 
