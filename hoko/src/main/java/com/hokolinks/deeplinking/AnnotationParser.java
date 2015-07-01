@@ -515,10 +515,12 @@ public class AnnotationParser {
                 HashMap<String, Field> routeParameters = getRouteParameters(classObject);
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
                 deeplinking.mapRoute(route, activityName, routeParameters, queryParameters);
+                return;
             }
             if (shouldDefault && isDefaultRoute(classObject)) {
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
                 deeplinking.mapDefaultRoute(activityName, queryParameters);
+                return;
             }
         }
 

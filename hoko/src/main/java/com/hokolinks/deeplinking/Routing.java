@@ -13,6 +13,7 @@ import com.hokolinks.model.Route;
 import com.hokolinks.model.RouteImpl;
 import com.hokolinks.model.URL;
 import com.hokolinks.model.exceptions.DuplicateRouteException;
+import com.hokolinks.model.exceptions.InvalidRouteException;
 import com.hokolinks.model.exceptions.MultipleDefaultRoutesException;
 import com.hokolinks.utils.log.HokoLog;
 
@@ -249,6 +250,9 @@ public class Routing {
                 mRoutes.add(intentRoute);
                 if (Hoko.isDebugMode())
                     intentRoute.post(mToken, mContext);
+            } else {
+                HokoLog.e(new InvalidRouteException(intentRoute.getActivityClassName(),
+                        intentRoute.getRoute()));
             }
         }
     }

@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class Hoko {
 
-    public static final String VERSION = "2.0";
+    public static final String VERSION = "2.0.1";
 
     // Static Instance
     private static Hoko mInstance;
@@ -70,6 +70,7 @@ public class Hoko {
     public static void setup(Context context, String token, String... testDevices) {
         if (mInstance == null) {
             boolean debugMode = debugModeWithTestDevices(context, token, testDevices);
+            setVerbose(debugMode);
             mInstance = new Hoko(context, token, debugMode);
             mInstance.checkVersions();
             AnnotationParser.parseActivities(context);
