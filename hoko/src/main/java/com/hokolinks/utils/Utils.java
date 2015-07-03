@@ -8,6 +8,7 @@ import com.hokolinks.utils.log.HokoLog;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -125,6 +126,8 @@ public class Utils {
             Object object = objectInputStream.readObject();
             objectInputStream.close();
             return object;
+        } catch (FileNotFoundException e) {
+            // ignore
         } catch (Exception e) {
             HokoLog.e(e);
         }

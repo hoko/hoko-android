@@ -48,10 +48,34 @@ public class Deeplink {
             mURLScheme = urlScheme;
 
         mRoute = route;
-        mRouteParameters = routeParameters;
-        mQueryParameters = queryParameters;
+        mRouteParameters = routeParameters != null ? routeParameters : new HashMap<String, String>();
+        mQueryParameters = queryParameters != null ? queryParameters : new HashMap<String, String>();
         mURLs = new HashMap<>();
         mDeeplinkURL = deeplinkURL;
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route) {
+        return Deeplink.deeplink(route, null);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route, HashMap<String, String> routeParameters) {
+        return Deeplink.deeplink(route, routeParameters, null);
     }
 
     /**

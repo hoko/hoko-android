@@ -103,7 +103,8 @@ public class Device {
     public static boolean hasInternetConnectivity(Context context) {
         String internetConnectivity = getInternetConnectivity(context);
         return internetConnectivity.equals(CONNECTIVITY_CELLULAR)
-                || internetConnectivity.equals(CONNECTIVITY_WIFI);
+                || internetConnectivity.equals(CONNECTIVITY_WIFI)
+                || internetConnectivity.equals(CONNECTIVITY_NO_PERMISSION);
     }
 
     /**
