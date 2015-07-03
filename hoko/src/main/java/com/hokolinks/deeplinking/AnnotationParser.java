@@ -350,6 +350,8 @@ public class AnnotationParser {
                     field.setDouble(object, Double.parseDouble(value));
                 } else if (classObject.equals(short.class)) {
                     field.setShort(object, Short.parseShort(value));
+                } else if (classObject.equals(long.class)) {
+                    field.setLong(object, Long.parseLong(value));
                 } else if (classObject.equals(boolean.class)) {
                     field.setBoolean(object, Boolean.parseBoolean(value));
                 } else if (classObject.equals(byte.class)) {
@@ -368,6 +370,8 @@ public class AnnotationParser {
                     field.set(object, Double.valueOf(value));
                 } else if (classObject.equals(Short.class)) {
                     field.set(object, Short.valueOf(value));
+                } else if (classObject.equals(Long.class)) {
+                    field.set(object, Long.valueOf(value));
                 } else if (classObject.equals(Boolean.class)) {
                     field.set(object, Boolean.valueOf(value));
                 } else if (classObject.equals(Byte.class)) {
@@ -515,12 +519,10 @@ public class AnnotationParser {
                 HashMap<String, Field> routeParameters = getRouteParameters(classObject);
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
                 deeplinking.mapRoute(route, activityName, routeParameters, queryParameters);
-                return;
             }
             if (shouldDefault && isDefaultRoute(classObject)) {
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
                 deeplinking.mapDefaultRoute(activityName, queryParameters);
-                return;
             }
         }
 
@@ -543,7 +545,7 @@ public class AnnotationParser {
      * Finds the fragment which matches to a given route object.
      *
      * @param route   A route string.
-     * @param classes An array of Classes.
+     * @param cngasses An array of Classes.
      * @return The Class that matches the route.
      */
     private static Class findFragmentForRoute(String route, Class[] classes) {

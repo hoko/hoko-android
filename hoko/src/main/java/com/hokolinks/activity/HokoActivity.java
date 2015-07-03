@@ -18,7 +18,7 @@ public class HokoActivity extends Activity implements SmartlinkResolveListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String urlString = getIntent().getData().toString();
-        if (urlString.startsWith("http") && urlString.contains("hoko.link")) {
+        if (urlString.startsWith("http")) {
             Hoko.deeplinking().openSmartlink(urlString, this);
         } else {
             openDeeplink(urlString);
