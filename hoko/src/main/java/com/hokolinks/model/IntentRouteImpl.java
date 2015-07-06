@@ -19,9 +19,10 @@ import java.util.List;
 public class IntentRouteImpl extends Route {
 
     // Keys for the Intent.putExtras(...)
-    public static final String HokoRouteBundleKey = "Route";
-    public static final String HokoRouteRouteParametersBundleKey = "HokoRouteParameters";
-    public static final String HokoRouteQueryParametersBundleKey = "HokoQueryParameters";
+    public static final String BUNDLE_KEY = "HokoRoute";
+    public static final String ROUTE_PARAMETERS_BUNDLE_KEY = "HokoRouteParameters";
+    public static final String QUERY_PARAMETERS_BUNDLE_KEY = "HokoQueryParameters";
+    public static final String METADATA_KEY = "HokoMetadata";
 
     private Context mContext;
     private String mActivityClassName;
@@ -82,10 +83,10 @@ public class IntentRouteImpl extends Route {
      * contains a HashMap&lt;String, String&gt; of key value pairs. The function also sets a few
      * flags for better deeplinking experience.
      *
-     * @param url A URL instance coming from a deeplink.
+     * @param deeplink A Deeplink instance.
      * @return The generated intent.
      */
-    public Intent getIntent(URL url) {
+    public Intent getIntent(Deeplink deeplink) {
         Class<?> klass = getActivityClass();
         if (klass == null)
             return null;
@@ -93,28 +94,31 @@ public class IntentRouteImpl extends Route {
 
         Bundle mainBundle = new Bundle();
 
-        mainBundle.putString(HokoRouteBundleKey, this.getRoute());
+        mainBundle.putString(BUNDLE_KEY, this.getRoute());
 
         // Route Params
         Bundle routeParametersBundle = new Bundle();
-        HashMap<String, String> routeParameters = url.matchesWithRoute(this);
+        HashMap<String, String> routeParameters = deeplink.getRouteParameters();
         if (routeParameters != null) {
             for (String key : routeParameters.keySet()) {
                 String value = routeParameters.get(key);
                 routeParametersBundle.putString(key, value);
             }
         }
-        mainBundle.putBundle(HokoRouteRouteParametersBundleKey, routeParametersBundle);
+        mainBundle.putBundle(ROUTE_PARAMETERS_BUNDLE_KEY, routeParametersBundle);
 
         // Query Params
         Bundle queryParametersBundle = new Bundle();
-        HashMap<String, String> queryParameters = url.getQueryParameters();
+        HashMap<String, String> queryParameters = deeplink.getQueryParameters();
         for (String key : queryParameters.keySet()) {
             String value = queryParameters.get(key);
             queryParametersBundle.putString(key, value);
         }
-        mainBundle.putBundle(HokoRouteQueryParametersBundleKey, queryParametersBundle);
+        mainBundle.putBundle(QUERY_PARAMETERS_BUNDLE_KEY, queryParametersBundle);
 
+        if (deeplink.getMetadata() != null) {
+            mainBundle.putString(METADATA_KEY, deeplink.getMetadata().toString());
+        }
         intent.putExtras(mainBundle);
 
         // Flags for Deeplinking
@@ -126,8 +130,8 @@ public class IntentRouteImpl extends Route {
     }
 
     @Override
-    public void execute(URL url) {
-        openIntent(getIntent(url));
+    public void execute(Deeplink deeplink) {
+        openIntent(getIntent(deeplink));
     }
 
 
@@ -137,7 +141,6 @@ public class IntentRouteImpl extends Route {
      * @param intent The intent to start the activity.
      */
     private void openIntent(Intent intent) {
-
         if (intent != null)
             mContext.startActivity(intent);
     }

@@ -229,7 +229,7 @@ public class HttpRequest implements Serializable {
             outputStreamWriter.flush();
             outputStreamWriter.close();
         }
-        HokoLog.d("POST to " + getUrl());
+        HokoLog.d("POST to " + getUrl() + " with " + getParameters());
 
         handleHttpResponse(connection, httpCallback);
     }

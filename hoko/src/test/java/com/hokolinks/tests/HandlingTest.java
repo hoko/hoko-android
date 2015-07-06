@@ -49,7 +49,7 @@ public class HandlingTest {
             }
         });
 
-        handling.handle(new Deeplink("hoko", "product/:product_id", new HashMap<String, String>() {
+        handling.handle(Deeplink.deeplink("product/:product_id", new HashMap<String, String>() {
             {
                 put("product_id", "1234");
             }
@@ -57,7 +57,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }, "hoko://product/1234?query=param"));
+        }, null));
 
         lock.await();
 
@@ -88,7 +88,7 @@ public class HandlingTest {
 
         handling.addHandler(handler);
 
-        handling.handle(new Deeplink("hoko", "product/:product_id", new HashMap<String, String>() {
+        handling.handle(Deeplink.deeplink("product/:product_id", new HashMap<String, String>() {
             {
                 put("product_id", "1234");
             }
@@ -96,7 +96,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }, "hoko://product/1234?query=param"));
+        }, null));
 
         lock.await();
 
@@ -136,7 +136,7 @@ public class HandlingTest {
             }
         });
 
-        handling.handle(new Deeplink("hoko", "product/:product_id", new HashMap<String, String>() {
+        handling.handle(Deeplink.deeplink("product/:product_id", new HashMap<String, String>() {
             {
                 put("product_id", "1234");
             }
@@ -144,7 +144,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }, "hoko://product/1234?query=param"));
+        }, null));
 
         lock.await();
 
@@ -193,7 +193,7 @@ public class HandlingTest {
             }
         });
 
-        handling.handle(new Deeplink("hoko", "product/:product_id", new HashMap<String, String>() {
+        handling.handle(Deeplink.deeplink("product/:product_id", new HashMap<String, String>() {
             {
                 put("product_id", "1234");
             }
@@ -201,7 +201,7 @@ public class HandlingTest {
             {
                 put("query", "param");
             }
-        }, "hoko://product/1234?query=param"));
+        }, null));
 
         lock.await();
 

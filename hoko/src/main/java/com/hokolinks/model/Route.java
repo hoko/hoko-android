@@ -35,7 +35,7 @@ public abstract class Route {
         return new ArrayList<>(Arrays.asList(mRoute.split("/")));
     }
 
-    public abstract void execute(URL url);
+    public abstract void execute(Deeplink deeplink);
 
     /**
      * This function serves the purpose of communicating to the Hoko backend service that a given

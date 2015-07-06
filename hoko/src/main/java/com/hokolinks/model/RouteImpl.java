@@ -1,7 +1,5 @@
 package com.hokolinks.model;
 
-import java.util.HashMap;
-
 public class RouteImpl extends Route {
 
     DeeplinkCallback mDeeplinkCallback;
@@ -12,14 +10,9 @@ public class RouteImpl extends Route {
     }
 
     @Override
-    public void execute(URL url) {
+    public void execute(Deeplink deeplink) {
         if (mDeeplinkCallback != null) {
-            HashMap<String, String> routeParameters = url.matchesWithRoute(this);
-            if (routeParameters != null) {
-                Deeplink deeplink = new Deeplink(url.getScheme(), this.getRoute(),
-                        routeParameters, url.getQueryParameters(), url.getURL());
-                mDeeplinkCallback.deeplinkOpened(deeplink);
-            }
+            mDeeplinkCallback.deeplinkOpened(deeplink);
         }
     }
 }

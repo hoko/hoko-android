@@ -52,7 +52,7 @@ public class LinkGenerator {
     private void requestForSmartlink(Deeplink deeplink,
                                      final LinkGenerationListener listener) {
         new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                "smartlinks/create", mToken, deeplink.json().toString())
+                "smartlinks", mToken, deeplink.json().toString())
                 .toRunnable(new HttpRequestCallback() {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {

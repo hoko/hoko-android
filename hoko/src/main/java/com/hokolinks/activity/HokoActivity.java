@@ -7,6 +7,8 @@ import android.os.Bundle;
 import com.hokolinks.Hoko;
 import com.hokolinks.deeplinking.listeners.SmartlinkResolveListener;
 
+import org.json.JSONObject;
+
 /**
  * HokoActivity serves the purpose of receiving incoming deeplinking intents and forwarding them to
  * the Deeplinking module where it will be parsed and start the associated activity.
@@ -21,23 +23,23 @@ public class HokoActivity extends Activity implements SmartlinkResolveListener {
         if (urlString.startsWith("http")) {
             Hoko.deeplinking().openSmartlink(urlString, this);
         } else {
-            openDeeplink(urlString);
+            openDeeplink(urlString, null);
         }
     }
 
     @Override
-    public void onLinkResolved(String deeplink) {
+    public void onLinkResolved(String deeplink, JSONObject metadata) {
         finish();
-        openDeeplink(deeplink);
+        openDeeplink(deeplink, metadata);
     }
 
     @Override
     public void onError(Exception e) {
         finish();
-        openDeeplink(null);
+        openDeeplink(null, null);
     }
 
-    private void openDeeplink(String deeplink) {
-        Hoko.deeplinking().openURL(deeplink);
+    private void openDeeplink(String deeplink, JSONObject metadata) {
+        Hoko.deeplinking().openURL(deeplink, metadata);
     }
 }
