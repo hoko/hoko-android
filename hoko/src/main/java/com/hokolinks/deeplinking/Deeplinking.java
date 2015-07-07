@@ -146,7 +146,7 @@ public class Deeplinking {
      *
      * @param urlString The url passed on the intent.
      */
-    protected void openDeferredURL(String urlString) {
+    void openDeferredURL(String urlString) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("deeplink", urlString);

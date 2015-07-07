@@ -10,7 +10,7 @@ import org.robolectric.util.ReflectionHelpers;
 
 public class HokoGradleTestRunner extends RobolectricGradleTestRunner {
 
-    private static final String BUILD_OUTPUT = "hoko/build/intermediates";
+    private static final String BUILD_OUTPUT = "build/intermediates";
 
     public HokoGradleTestRunner(Class<?> klass) throws InitializationError {
         super(klass);

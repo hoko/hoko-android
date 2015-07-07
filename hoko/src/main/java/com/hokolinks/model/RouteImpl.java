@@ -2,7 +2,7 @@ package com.hokolinks.model;
 
 public class RouteImpl extends Route {
 
-    DeeplinkCallback mDeeplinkCallback;
+    private DeeplinkCallback mDeeplinkCallback;
 
     public RouteImpl(String route, DeeplinkCallback deeplinkCallback) {
         super(route);

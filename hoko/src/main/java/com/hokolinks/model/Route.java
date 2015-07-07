@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Route {
-    String mRoute;
+    private String mRoute;
 
-    public Route(String route) {
+    Route(String route) {
         mRoute = route;
     }
 

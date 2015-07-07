@@ -46,7 +46,7 @@ public class AnnotationParser {
      * @param classObject A classObject (usually an activity).
      * @return The route string.
      */
-    public static String routeFromClass(Class classObject) {
+    private static String routeFromClass(Class classObject) {
         DeeplinkRoute annotation = (DeeplinkRoute) classObject
                 .getAnnotation(DeeplinkRoute.class);
         if (annotation != null && annotation.value().compareTo(DeeplinkRoute.noValue) != 0) {
@@ -423,7 +423,7 @@ public class AnnotationParser {
      * @param object The object on which the field should be extracted.
      * @return The value extracted from the object's field.
      */
-    public static String getValueForField(Field field, Object object) {
+    private static String getValueForField(Field field, Object object) {
         boolean accessible = field.isAccessible();
         String returnValue = null;
         try {
@@ -480,7 +480,7 @@ public class AnnotationParser {
      * @param classObject A classObject (usually an activity or a fragment).
      * @return true in case it has the DeeplinkDefaultRoute annotation.
      */
-    public static boolean isDefaultRoute(Class classObject) {
+    private static boolean isDefaultRoute(Class classObject) {
         DeeplinkDefaultRoute annotation =
                 (DeeplinkDefaultRoute) classObject.getAnnotation(DeeplinkDefaultRoute.class);
         return annotation != null;
@@ -635,7 +635,7 @@ public class AnnotationParser {
      * @param classObject A classObject (usually an activity).
      * @return A list of the fields on a given class.
      */
-    public static List<Field> getFields(Class classObject) {
+    private static List<Field> getFields(Class classObject) {
         return new ArrayList<>(Arrays.asList(classObject.getDeclaredFields()));
     }
 

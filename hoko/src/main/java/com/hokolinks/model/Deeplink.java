@@ -70,7 +70,7 @@ public class Deeplink {
      * @return The generated Deeplink.
      */
     public static Deeplink deeplink(String route) {
-        return Deeplink.deeplink(route, null);
+        return deeplink(route, null);
     }
 
     /**
@@ -83,7 +83,7 @@ public class Deeplink {
      * @return The generated Deeplink.
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters) {
-        return Deeplink.deeplink(route, routeParameters, null);
+        return deeplink(route, routeParameters, null);
     }
 
     /**
@@ -99,7 +99,7 @@ public class Deeplink {
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                         HashMap<String, String> queryParameters) {
-        return Deeplink.deeplink(route, routeParameters, queryParameters, null);
+        return deeplink(route, routeParameters, queryParameters, null);
     }
 
     /**
@@ -298,13 +298,13 @@ public class Deeplink {
      * @return The JSONObject representation of the Smartlink.
      */
     private JSONObject smartlinkJSON() {
+        JSONObject root = new JSONObject();
         try {
-            JSONObject root = new JSONObject();
             root.put("deeplink", mDeeplinkURL);
-            return root;
         } catch (JSONException e) {
-            return null;
+            HokoLog.e(e);
         }
+        return root;
     }
 
     public String toString() {

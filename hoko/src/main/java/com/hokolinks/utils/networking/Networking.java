@@ -52,15 +52,15 @@ public class Networking {
     @SuppressWarnings("unchecked")
     private Networking(Context context) {
         mContext = context;
-        List<HttpRequest> httpTasks = null;
+        List<HttpRequest> httpTasks;
         try {
             httpTasks = (List<HttpRequest>)
                     Utils.loadFromFile(HTTP_TASKS_FILENAME, context);
         } catch (ClassCastException e) {
-            httpTasks = new ArrayList<HttpRequest>();
+            httpTasks = new ArrayList<>();
         }
         if (httpTasks == null) {
-            httpTasks = new ArrayList<HttpRequest>();
+            httpTasks = new ArrayList<>();
         }
         mHttpTasks = httpTasks;
         flush();

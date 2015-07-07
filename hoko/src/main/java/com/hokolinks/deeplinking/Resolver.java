@@ -10,7 +10,7 @@ import com.hokolinks.utils.networking.async.NetworkAsyncTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Resolver {
+class Resolver {
 
     private static final String RESOLVER_ENDPOINT = "smartlinks/resolve";
 

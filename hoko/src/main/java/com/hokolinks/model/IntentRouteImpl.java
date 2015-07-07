@@ -86,7 +86,7 @@ public class IntentRouteImpl extends Route {
      * @param deeplink A Deeplink instance.
      * @return The generated intent.
      */
-    public Intent getIntent(Deeplink deeplink) {
+    private Intent getIntent(Deeplink deeplink) {
         Class<?> klass = getActivityClass();
         if (klass == null)
             return null;

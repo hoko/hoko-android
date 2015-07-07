@@ -26,13 +26,13 @@ public class VersionChecker {
         return normalisedVersion(version, ".", 4);
     }
 
-    private static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
+    private static String normalisedVersion(String version, String separator, int maxWidth) {
+        String[] split = Pattern.compile(separator, Pattern.LITERAL).split(version);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String string : split) {
+            stringBuilder.append(String.format("%" + maxWidth + 's', string));
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
     public void checkForNewVersion(final String currentVersion) {
@@ -45,8 +45,9 @@ public class VersionChecker {
                 if (versionName != null) {
                     String versionNumber = versionName.replace("v", "");
                     if (requiresUpdate(currentVersion, versionNumber)) {
-                        android.util.Log.e("HOKO", "A new version of HOKO is available at "
-                                + "http://github.com/hokolinks/hoko-android " + versionName);
+                        android.util.Log.e("HOKO", "A new version of HOKO is available, please " +
+                                "update your gradle.properties to \"compile 'com.hokolink:hoko:" +
+                                versionNumber + "'\"");
                     }
                 }
             }

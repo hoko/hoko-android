@@ -23,23 +23,20 @@ public class HokoActivity extends Activity implements SmartlinkResolveListener {
         if (urlString.startsWith("http")) {
             Hoko.deeplinking().openSmartlink(urlString, this);
         } else {
-            openDeeplink(urlString, null);
+            Hoko.deeplinking().openURL(urlString);
         }
     }
 
     @Override
     public void onLinkResolved(String deeplink, JSONObject metadata) {
         finish();
-        openDeeplink(deeplink, metadata);
+        Hoko.deeplinking().openURL(deeplink, metadata);
     }
 
     @Override
     public void onError(Exception e) {
         finish();
-        openDeeplink(null, null);
+        Hoko.deeplinking().openURL(null);
     }
 
-    private void openDeeplink(String deeplink, JSONObject metadata) {
-        Hoko.deeplinking().openURL(deeplink, metadata);
-    }
 }

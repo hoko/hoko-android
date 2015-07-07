@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * It connects with the Hoko backend service and will return a http link which will redirect
  * according to the correct deeplink depending on the platform it is later opened.
  */
-public class LinkGenerator {
+class LinkGenerator {
 
     private String mToken;
 

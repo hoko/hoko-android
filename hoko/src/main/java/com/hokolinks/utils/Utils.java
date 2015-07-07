@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -167,22 +166,6 @@ public class Utils {
     private static File fileFromFilename(String filename, Context context) {
         File directory = context.getDir(FOLDER_NAME, Context.MODE_PRIVATE);
         return new File(directory, filename);
-    }
-
-    /**
-     * Joins a list of strings with a given string in between.
-     *
-     * @param components A List of Strings.
-     * @param string The string to insert between components
-     * @return The joined string.
-     */
-    public static String joinComponentsByString(List<String> components, String string) {
-        String result = "";
-        for (String component : components) {
-            result = result + component +
-                    (components.indexOf(component) != (components.size() - 1) ? string : "");
-        }
-        return result;
     }
 
 }

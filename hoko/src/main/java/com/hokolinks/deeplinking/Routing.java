@@ -195,7 +195,7 @@ public class Routing {
      * @param url A URL object.
      * @return Route found
      */
-    public Route routeForURL(URL url) {
+    private Route routeForURL(URL url) {
         for (Route route : mRoutes) {
             if (url.matchesWithRoute(route) != null) {
                 return route;
