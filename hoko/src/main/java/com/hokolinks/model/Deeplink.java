@@ -119,7 +119,7 @@ public class Deeplink {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
                 routeParameters, queryParameters, metadata, null);
 
-        if (Deeplink.matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
+        if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
             return deeplink;
         }
         return null;
@@ -182,7 +182,7 @@ public class Deeplink {
         }
     }
 
-    public boolean hasURLs() {
+    private boolean hasURLs() {
         return mURLs.size() > 0;
     }
 
@@ -266,7 +266,7 @@ public class Deeplink {
             jsonObject.put("route", getRoute());
             jsonObject.put("routeParameters", new JSONObject(mRouteParameters));
             jsonObject.put("queryParameters", new JSONObject(mQueryParameters));
-            jsonObject.putOpt("metadata", null);
+            jsonObject.putOpt("metadata", getMetadata());
         } catch (JSONException e) {
             HokoLog.e(e);
         }
@@ -284,7 +284,7 @@ public class Deeplink {
             JSONObject root = new JSONObject();
             root.putOpt("uri", getURL());
             root.putOpt("metadata", getMetadata());
-            if (mURLs.size() > 0)
+            if (hasURLs())
                 root.putOpt("routes", new JSONObject(mURLs));
             return root;
         } catch (JSONException e) {
@@ -342,7 +342,7 @@ public class Deeplink {
         return mRoute;
     }
 
-    public String getSmartlinkClickIdentifier() {
+    private String getSmartlinkClickIdentifier() {
         return mQueryParameters.get(SMARTLINK_CLICK_IDENTIFIER_KEY);
     }
 
@@ -350,7 +350,7 @@ public class Deeplink {
         return mQueryParameters.containsKey(METADATA_KEY);
     }
 
-    public boolean isSmartlink() {
+    private boolean isSmartlink() {
         return getSmartlinkClickIdentifier() != null;
     }
 
