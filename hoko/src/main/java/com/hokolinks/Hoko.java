@@ -33,7 +33,7 @@ public class Hoko {
     public static final String VERSION = "2.0.2";
 
     // Static Instance
-    private static Hoko mInstance;
+    private static Hoko sInstance;
 
     // Private modules
     private Deeplinking mDeeplinking;
@@ -67,11 +67,11 @@ public class Hoko {
      * @param testDevices Toggle debug mode manually.
      */
     public static void setup(Context context, String token, String... testDevices) {
-        if (mInstance == null) {
+        if (sInstance == null) {
             boolean debugMode = debugModeWithTestDevices(context, testDevices);
             setVerbose(debugMode);
-            mInstance = new Hoko(context, token, debugMode);
-            mInstance.checkVersions();
+            sInstance = new Hoko(context, token, debugMode);
+            sInstance.checkVersions();
             AnnotationParser.parseActivities(context);
 
         } else {
@@ -90,11 +90,11 @@ public class Hoko {
      * @return A reference to the Deeplinking instance.
      */
     public static Deeplinking deeplinking() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             HokoLog.e(new SetupNotCalledYetException());
             return null;
         }
-        return mInstance.mDeeplinking;
+        return sInstance.mDeeplinking;
     }
 
     // Logging
@@ -117,11 +117,11 @@ public class Hoko {
      * @return true if debug mode is on, false otherwise.
      */
     public static boolean isDebugMode() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             HokoLog.e(new SetupNotCalledYetException());
             return false;
         }
-        return mInstance.mDebugMode;
+        return sInstance.mDebugMode;
     }
 
     /**

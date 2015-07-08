@@ -20,7 +20,7 @@ public class ApplicationLifecycle {
     /**
      * Static instance to handle static callback registration
      */
-    private static ApplicationLifecycle mInstance;
+    private static ApplicationLifecycle sInstance;
     private HokoApplicationStatus mApplicationStatus;
     private List<ApplicationLifecycleCallback> mCallbacks;
 
@@ -46,9 +46,9 @@ public class ApplicationLifecycle {
      * @return The static ApplicationLifecycle instance.
      */
     private static ApplicationLifecycle getInstance(Context context) {
-        if (mInstance == null)
-            mInstance = new ApplicationLifecycle(context);
-        return mInstance;
+        if (sInstance == null)
+            sInstance = new ApplicationLifecycle(context);
+        return sInstance;
     }
 
     /**

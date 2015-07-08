@@ -183,7 +183,6 @@ public class Deeplinking {
                 if (smartlinkResolveListener != null) {
                     smartlinkResolveListener.onLinkResolved(deeplink, metadata);
                 }
-                openURL(deeplink);
             }
 
             @Override

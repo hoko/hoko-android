@@ -33,7 +33,7 @@ public class HttpRequest implements Serializable {
     private static final String TASK_VERSION = "v2";
     private static final String TASK_FORMAT = "json";
 
-    private static String mTaskEndpoint = "https://api.hokolinks.com";
+    private static String sTaskEndpoint = "https://api.hokolinks.com";
 
     // Properties
     private HokoNetworkOperationType mOperationType;
@@ -62,7 +62,7 @@ public class HttpRequest implements Serializable {
     // Constructors
 
     public static void setEndpoint(String endpoint) {
-        mTaskEndpoint = endpoint;
+        sTaskEndpoint = endpoint;
     }
 
     /**
@@ -72,7 +72,7 @@ public class HttpRequest implements Serializable {
      * @return The full URL.
      */
     public static String getURLFromPath(String path) {
-        return mTaskEndpoint + "/" + TASK_VERSION + "/" + path + "."
+        return sTaskEndpoint + "/" + TASK_VERSION + "/" + path + "."
                 + TASK_FORMAT;
     }
 

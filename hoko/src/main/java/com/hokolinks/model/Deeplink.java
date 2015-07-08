@@ -66,6 +66,16 @@ public class Deeplink {
      * An easy to use static function for the developer to generate their own deeplinks to
      * generate Smartlinks afterwards.
      *
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink() {
+        return deeplink(null);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
      * @param route           A route in route format.
      * @return The generated Deeplink.
      */
@@ -119,7 +129,9 @@ public class Deeplink {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
                 routeParameters, queryParameters, metadata, null);
 
-        if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
+        if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
+                (route == null && routeParameters == null && queryParameters == null &&
+                        metadata == null)) {
             return deeplink;
         }
         return null;

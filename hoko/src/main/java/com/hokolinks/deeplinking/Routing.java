@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -41,6 +43,10 @@ public class Routing {
         mContext = context;
         mHandling = handling;
         mRoutes = new ArrayList<>();
+    }
+
+    public ArrayList<Route> getRoutes() {
+        return mRoutes;
     }
 
     /**
@@ -238,6 +244,7 @@ public class Routing {
             }
         } else {
             mRoutes.add(route);
+            sortRoutes();
             if (Hoko.isDebugMode())
                 route.post(mToken, mContext);
 
@@ -260,6 +267,7 @@ public class Routing {
         } else {
             if (intentRoute.isValid()) {
                 mRoutes.add(intentRoute);
+                sortRoutes();
                 if (Hoko.isDebugMode())
                     intentRoute.post(mToken, mContext);
             } else {
@@ -285,5 +293,37 @@ public class Routing {
                 return true;
         }
         return false;
+    }
+
+    private void sortRoutes() {
+        Collections.sort(mRoutes, new Comparator<Route>() {
+            @Override
+            public int compare(Route route1, Route route2) {
+                if (route1.getComponents().size() != route2.getComponents().size()) {
+                    return route1.getComponents().size() - route2.getComponents().size();
+                }
+
+                for (int index = 0; index < route1.getComponents().size(); index ++) {
+                    String component1 = route1.getComponents().get(index);
+                    String component2 = route2.getComponents().get(index);
+
+                    boolean component1IsParameter = component1.startsWith(":");
+                    boolean component2IsParameter = component2.startsWith(":");
+
+                    if (component1IsParameter && component2IsParameter) {
+                        continue;
+                    }
+
+                    if (component1IsParameter) {
+                        return 1;
+                    }
+
+                    if (component2IsParameter) {
+                        return -1;
+                    }
+                }
+                return route1.getRoute().compareTo(route2.getRoute());
+            }
+        });
     }
 }
