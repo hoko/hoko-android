@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class Hoko {
 
-    public static final String VERSION = "2.0.2";
+    public static final String VERSION = "2.1";
 
     // Static Instance
     private static Hoko sInstance;
@@ -40,11 +40,12 @@ public class Hoko {
 
     // Private variables
     private boolean mDebugMode;
+    private String mToken;
 
     // Private initializer
     private Hoko(Context context, String token, boolean debugMode) {
         mDebugMode = debugMode;
-
+        mToken = token;
         Networking.setupNetworking(context);
 
         mDeeplinking = new Deeplinking(token, context);
@@ -69,7 +70,6 @@ public class Hoko {
     public static void setup(Context context, String token, String... testDevices) {
         if (sInstance == null) {
             boolean debugMode = debugModeWithTestDevices(context, testDevices);
-            setVerbose(debugMode);
             sInstance = new Hoko(context, token, debugMode);
             sInstance.checkVersions();
             AnnotationParser.parseActivities(context);
@@ -150,7 +150,7 @@ public class Hoko {
      */
     private void checkVersions() {
         if (mDebugMode) {
-            new VersionChecker().checkForNewVersion(VERSION);
+            VersionChecker.checkForNewVersion(VERSION, mToken);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.hokolinks.model;
 
+import android.content.Context;
+
 import com.hokolinks.deeplinking.listeners.MetadataRequestListener;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
@@ -205,12 +207,12 @@ public class Deeplink {
      *
      * @param token   The Hoko API Token.
      */
-    public void post(String token) {
+    public void post(String token, Context context) {
         if (isSmartlink()) {
             Networking.getNetworking().addRequest(
                     new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
                             "smartlinks/open", token,
-                            smartlinkJSON().toString()));
+                            smartlinkJSON(context).toString()));
         }
 
     }
@@ -309,10 +311,11 @@ public class Deeplink {
      *
      * @return The JSONObject representation of the Smartlink.
      */
-    private JSONObject smartlinkJSON() {
+    private JSONObject smartlinkJSON(Context context) {
         JSONObject root = new JSONObject();
         try {
             root.put("deeplink", mDeeplinkURL);
+            root.put("uid", Device.getDeviceID(context));
         } catch (JSONException e) {
             HokoLog.e(e);
         }

@@ -220,7 +220,7 @@ public class Routing {
     }
 
     private boolean openDeeplink(Deeplink deeplink, Route route) {
-        deeplink.post(mToken);
+        deeplink.post(mToken, mContext);
         mHandling.handle(deeplink);
         if (route != null) {
             route.execute(deeplink);
