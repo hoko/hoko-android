@@ -8,7 +8,6 @@ import com.hokolinks.deeplinking.Deeplinking;
 import com.hokolinks.model.Device;
 import com.hokolinks.model.exceptions.SetupCalledMoreThanOnceException;
 import com.hokolinks.model.exceptions.SetupNotCalledYetException;
-import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.versionchecker.VersionChecker;
@@ -31,21 +30,22 @@ import java.util.List;
  */
 public class Hoko {
 
-    public static final String VERSION = "2.0.1";
+    public static final String VERSION = "2.1";
 
     // Static Instance
-    private static Hoko mInstance;
+    private static Hoko sInstance;
 
     // Private modules
     private Deeplinking mDeeplinking;
 
     // Private variables
     private boolean mDebugMode;
+    private String mToken;
 
     // Private initializer
     private Hoko(Context context, String token, boolean debugMode) {
         mDebugMode = debugMode;
-
+        mToken = token;
         Networking.setupNetworking(context);
 
         mDeeplinking = new Deeplinking(token, context);
@@ -68,11 +68,10 @@ public class Hoko {
      * @param testDevices Toggle debug mode manually.
      */
     public static void setup(Context context, String token, String... testDevices) {
-        if (mInstance == null) {
-            boolean debugMode = debugModeWithTestDevices(context, token, testDevices);
-            setVerbose(debugMode);
-            mInstance = new Hoko(context, token, debugMode);
-            mInstance.checkVersions();
+        if (sInstance == null) {
+            boolean debugMode = debugModeWithTestDevices(context, testDevices);
+            sInstance = new Hoko(context, token, debugMode);
+            sInstance.checkVersions();
             AnnotationParser.parseActivities(context);
 
         } else {
@@ -91,11 +90,11 @@ public class Hoko {
      * @return A reference to the Deeplinking instance.
      */
     public static Deeplinking deeplinking() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             HokoLog.e(new SetupNotCalledYetException());
             return null;
         }
-        return mInstance.mDeeplinking;
+        return sInstance.mDeeplinking;
     }
 
     // Logging
@@ -118,11 +117,11 @@ public class Hoko {
      * @return true if debug mode is on, false otherwise.
      */
     public static boolean isDebugMode() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             HokoLog.e(new SetupNotCalledYetException());
             return false;
         }
-        return mInstance.mDebugMode;
+        return sInstance.mDebugMode;
     }
 
     /**
@@ -130,19 +129,16 @@ public class Hoko {
      * Will also print a description to help developer integrate easier.
      *
      * @param context     A context object.
-     * @param token       The Hoko token to be printed out
      * @param testDevices An array of test devices.
      * @return true if debug mode is active, false otherwise.
      */
-    private static boolean debugModeWithTestDevices(Context context, String token, String... testDevices) {
+    private static boolean debugModeWithTestDevices(Context context, String... testDevices) {
         List<String> testDevicesList = new ArrayList<>(Arrays.asList(testDevices));
         boolean debugMode = testDevicesList.contains(Device.getDeviceID(context));
         if (!debugMode) {
-            testDevicesList.add(Device.getDeviceID(context));
-            String testDevicesString = Utils.joinComponentsByString(testDevicesList, "\", \"");
-            Log.d(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
-                    "make sure to setup the SDK with \nHoko.setup(this, \"" + token +
-                    "\", \"" + testDevicesString + "\")");
+            Log.e(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
+                    "make sure to setup the SDK with \"" + Device.getDeviceID(context) +
+                    "\" as your test device.");
         }
         return debugMode;
     }
@@ -154,7 +150,7 @@ public class Hoko {
      */
     private void checkVersions() {
         if (mDebugMode) {
-            new VersionChecker().checkForNewVersion(VERSION);
+            VersionChecker.checkForNewVersion(VERSION, mToken);
         }
     }
 

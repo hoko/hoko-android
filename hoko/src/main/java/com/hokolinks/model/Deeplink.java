@@ -1,9 +1,14 @@
 package com.hokolinks.model;
 
+import android.content.Context;
+
+import com.hokolinks.deeplinking.listeners.MetadataRequestListener;
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.networking.async.HttpRequest;
+import com.hokolinks.utils.networking.async.HttpRequestCallback;
+import com.hokolinks.utils.networking.async.NetworkAsyncTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,11 +25,14 @@ import java.util.List;
 public class Deeplink {
 
     // Key values from incoming deeplinks
-    public static final String HokoDeeplinkSmartlinkClickIdentifierKey = "_hk_cid";
+    private static final String SMARTLINK_CLICK_IDENTIFIER_KEY = "_hk_cid";
+    private static final String METADATA_KEY = "_hk_cid";
+    private static final String METADATA_PATH = "smartlinks/%s/metadata";
 
     private String mRoute;
     private HashMap<String, String> mRouteParameters;
     private HashMap<String, String> mQueryParameters;
+    private JSONObject mMetadata;
     private String mURLScheme;
     private HashMap<String, JSONObject> mURLs;
     private String mDeeplinkURL;
@@ -38,16 +46,18 @@ public class Deeplink {
      *                        the route parameters.
      * @param queryParameters A HashMap where the keys are the query components and the values are
      *                        the query parameters.
+     * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
      * @param deeplinkURL The actual deeplink url opened by the app.
      */
     public Deeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
-                    HashMap<String, String> queryParameters, String deeplinkURL) {
+                    HashMap<String, String> queryParameters, JSONObject metadata, String deeplinkURL) {
         if (urlScheme == null)
             mURLScheme = "";
         else
             mURLScheme = urlScheme;
 
         mRoute = route;
+        mMetadata = metadata;
         mRouteParameters = routeParameters != null ? routeParameters : new HashMap<String, String>();
         mQueryParameters = queryParameters != null ? queryParameters : new HashMap<String, String>();
         mURLs = new HashMap<>();
@@ -58,11 +68,21 @@ public class Deeplink {
      * An easy to use static function for the developer to generate their own deeplinks to
      * generate Smartlinks afterwards.
      *
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink() {
+        return deeplink(null);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
      * @param route           A route in route format.
      * @return The generated Deeplink.
      */
     public static Deeplink deeplink(String route) {
-        return Deeplink.deeplink(route, null);
+        return deeplink(route, null);
     }
 
     /**
@@ -75,7 +95,7 @@ public class Deeplink {
      * @return The generated Deeplink.
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters) {
-        return Deeplink.deeplink(route, routeParameters, null);
+        return deeplink(route, routeParameters, null);
     }
 
     /**
@@ -91,10 +111,29 @@ public class Deeplink {
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                         HashMap<String, String> queryParameters) {
-        Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
-                routeParameters, queryParameters, null);
+        return deeplink(route, routeParameters, queryParameters, null);
+    }
 
-        if (Deeplink.matchRoute(deeplink.getRoute(), deeplink.getRouteParameters())) {
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
+     * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
+                                    HashMap<String, String> queryParameters, JSONObject metadata) {
+        Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
+                routeParameters, queryParameters, metadata, null);
+
+        if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
+                (route == null && routeParameters == null && queryParameters == null &&
+                        metadata == null)) {
             return deeplink;
         }
         return null;
@@ -131,6 +170,15 @@ public class Deeplink {
         }
     }
 
+    /**
+     * Logic behind the deeplink needing to request the server for metadata.
+     *
+     * @return true if the server should get metadata and doesn't have it already, false otherwise.
+     */
+    public boolean needsMetadata() {
+        return hasMetadataKey() && mMetadata == null;
+    }
+
     private String stringForPlatform(DeeplinkPlatform platform) {
         switch (platform) {
             case IPHONE:
@@ -148,7 +196,7 @@ public class Deeplink {
         }
     }
 
-    public boolean hasURLs() {
+    private boolean hasURLs() {
         return mURLs.size() > 0;
     }
 
@@ -159,14 +207,47 @@ public class Deeplink {
      *
      * @param token   The Hoko API Token.
      */
-    public void post(String token) {
+    public void post(String token, Context context) {
         if (isSmartlink()) {
             Networking.getNetworking().addRequest(
                     new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
                             "smartlinks/open", token,
-                            smartlinkJSON().toString()));
+                            smartlinkJSON(context).toString()));
         }
 
+    }
+
+    /**
+     * Requests metadata for the Deeplink object from the HOKO server.
+     * Will call the listener after the request is complete.
+     * @param token The HOKO SDK token.
+     * @param metadataRequestListener A listener to know when the task completes.
+     */
+    public void requestMetadata(String token, final MetadataRequestListener metadataRequestListener) {
+        if (needsMetadata()) {
+            String path = String.format(METADATA_PATH, getSmartlinkClickIdentifier());
+            Networking.getNetworking().addRequest(
+                    new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
+                            HttpRequest.getURLFromPath(path), token, null));
+            new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
+                    HttpRequest.getURLFromPath(path), token, null)
+                    .toRunnable(new HttpRequestCallback() {
+                        @Override
+                        public void onSuccess(JSONObject jsonObject) {
+                            Deeplink.this.mMetadata = jsonObject;
+                            if (metadataRequestListener != null) {
+                                metadataRequestListener.completion();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            if (metadataRequestListener != null) {
+                                metadataRequestListener.completion();
+                            }
+                        }
+                    })).execute();
+        }
     }
 
     private String getURL() {
@@ -199,6 +280,7 @@ public class Deeplink {
             jsonObject.put("route", getRoute());
             jsonObject.put("routeParameters", new JSONObject(mRouteParameters));
             jsonObject.put("queryParameters", new JSONObject(mQueryParameters));
+            jsonObject.putOpt("metadata", getMetadata());
         } catch (JSONException e) {
             HokoLog.e(e);
         }
@@ -215,7 +297,8 @@ public class Deeplink {
         try {
             JSONObject root = new JSONObject();
             root.putOpt("uri", getURL());
-            if (mURLs.size() > 0)
+            root.putOpt("metadata", getMetadata());
+            if (hasURLs())
                 root.putOpt("routes", new JSONObject(mURLs));
             return root;
         } catch (JSONException e) {
@@ -228,14 +311,15 @@ public class Deeplink {
      *
      * @return The JSONObject representation of the Smartlink.
      */
-    private JSONObject smartlinkJSON() {
+    private JSONObject smartlinkJSON(Context context) {
+        JSONObject root = new JSONObject();
         try {
-            JSONObject root = new JSONObject();
             root.put("deeplink", mDeeplinkURL);
-            return root;
+            root.put("uid", Device.getDeviceID(context));
         } catch (JSONException e) {
-            return null;
+            HokoLog.e(e);
         }
+        return root;
     }
 
     public String toString() {
@@ -243,9 +327,10 @@ public class Deeplink {
         String route = mRoute != null ? mRoute : "";
         String routeParameters = mRouteParameters != null ? mRouteParameters.toString() : "";
         String queryParameters = mQueryParameters != null ? mQueryParameters.toString() : "";
+        String metadata = mMetadata != null ? mMetadata.toString() : "";
         return "<Deeplink> URLScheme='" + urlScheme + "' route ='" + route
                 + "' routeParameters='" + routeParameters + "' queryParameters='" + queryParameters
-                + "'";
+                + "' metadata='" + metadata + "'";
     }
 
     public String getURLScheme() {
@@ -260,15 +345,27 @@ public class Deeplink {
         return mQueryParameters;
     }
 
+    public JSONObject getMetadata() {
+        return mMetadata;
+    }
+
+    public void setMetadata(JSONObject metadata) {
+        mMetadata = metadata;
+    }
+
     public String getRoute() {
         return mRoute;
     }
 
-    public String getSmartlinkClickIdentifier() {
-        return mQueryParameters.get(HokoDeeplinkSmartlinkClickIdentifierKey);
+    private String getSmartlinkClickIdentifier() {
+        return mQueryParameters.get(SMARTLINK_CLICK_IDENTIFIER_KEY);
     }
 
-    public boolean isSmartlink() {
+    private boolean hasMetadataKey() {
+        return mQueryParameters.containsKey(METADATA_KEY);
+    }
+
+    private boolean isSmartlink() {
         return getSmartlinkClickIdentifier() != null;
     }
 

@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * It connects with the Hoko backend service and will return a http link which will redirect
  * according to the correct deeplink depending on the platform it is later opened.
  */
-public class LinkGenerator {
+class LinkGenerator {
 
     private String mToken;
 
@@ -52,7 +52,7 @@ public class LinkGenerator {
     private void requestForSmartlink(Deeplink deeplink,
                                      final LinkGenerationListener listener) {
         new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                "smartlinks/create", mToken, deeplink.json().toString())
+                "smartlinks", mToken, deeplink.json().toString())
                 .toRunnable(new HttpRequestCallback() {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {

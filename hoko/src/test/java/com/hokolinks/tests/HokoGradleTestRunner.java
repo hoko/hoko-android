@@ -8,9 +8,6 @@ import org.robolectric.res.FileFsFile;
 import org.robolectric.util.Logger;
 import org.robolectric.util.ReflectionHelpers;
 
-/**
- * Created by ivanbruel on 26/05/15.
- */
 public class HokoGradleTestRunner extends RobolectricGradleTestRunner {
 
     private static final String BUILD_OUTPUT = "build/intermediates";

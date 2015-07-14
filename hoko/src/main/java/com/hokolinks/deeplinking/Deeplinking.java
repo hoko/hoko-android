@@ -124,7 +124,20 @@ public class Deeplinking {
      * @return true in case of success, false in case of failure or non-existent deeplink.
      */
     public boolean openURL(String urlString) {
-        return mRouting.openURL(urlString);
+        return openURL(urlString, null);
+    }
+
+    /**
+     * openURL(urlString) is called when HokoActivity receives a deeplink Intent from the Android
+     * OS.
+     * It returns true or false depending on whether it has such a deeplink mapped.
+     *
+     * @param urlString The url passed on the intent.
+     * @param metadata The metadata in JSON format which was passed when the smartlink was created.
+     * @return true in case of success, false in case of failure or non-existent deeplink.
+     */
+    public boolean openURL(String urlString, JSONObject metadata) {
+        return mRouting.openURL(urlString, metadata);
     }
 
     /**
@@ -133,7 +146,7 @@ public class Deeplinking {
      *
      * @param urlString The url passed on the intent.
      */
-    protected void openDeferredURL(String urlString) {
+    void openDeferredURL(String urlString) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("deeplink", urlString);
@@ -143,7 +156,7 @@ public class Deeplinking {
         Networking.getNetworking().addRequest(
                 new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
                         HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
-        mRouting.openURL(urlString);
+        mRouting.openURL(urlString, null);
     }
 
     /**
@@ -166,11 +179,10 @@ public class Deeplinking {
     public void openSmartlink(String smartlink, final SmartlinkResolveListener smartlinkResolveListener) {
         mResolver.resolveSmartlink(smartlink, new SmartlinkResolveListener() {
             @Override
-            public void onLinkResolved(String deeplink) {
+            public void onLinkResolved(String deeplink, JSONObject metadata) {
                 if (smartlinkResolveListener != null) {
-                    smartlinkResolveListener.onLinkResolved(deeplink);
+                    smartlinkResolveListener.onLinkResolved(deeplink, metadata);
                 }
-                openURL(deeplink);
             }
 
             @Override

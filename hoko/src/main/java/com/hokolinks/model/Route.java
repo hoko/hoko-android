@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Route {
-    String mRoute;
+    private String mRoute;
 
-    public Route(String route) {
+    Route(String route) {
         mRoute = route;
     }
 
@@ -35,7 +35,7 @@ public abstract class Route {
         return new ArrayList<>(Arrays.asList(mRoute.split("/")));
     }
 
-    public abstract void execute(URL url);
+    public abstract void execute(Deeplink deeplink);
 
     /**
      * This function serves the purpose of communicating to the Hoko backend service that a given

@@ -37,7 +37,7 @@ public class Networking {
     private static final int HTTP_TASKS_NUMBER_OF_RETRIES = 3;
 
     // Static class to avoid duplication of Networking instances
-    private static Networking mInstance;
+    private static Networking sInstance;
 
 
     private Context mContext;
@@ -52,15 +52,15 @@ public class Networking {
     @SuppressWarnings("unchecked")
     private Networking(Context context) {
         mContext = context;
-        List<HttpRequest> httpTasks = null;
+        List<HttpRequest> httpTasks;
         try {
             httpTasks = (List<HttpRequest>)
                     Utils.loadFromFile(HTTP_TASKS_FILENAME, context);
         } catch (ClassCastException e) {
-            httpTasks = new ArrayList<HttpRequest>();
+            httpTasks = new ArrayList<>();
         }
         if (httpTasks == null) {
-            httpTasks = new ArrayList<HttpRequest>();
+            httpTasks = new ArrayList<>();
         }
         mHttpTasks = httpTasks;
         flush();
@@ -74,8 +74,8 @@ public class Networking {
      * @param context A context object.
      */
     public static void setupNetworking(Context context) {
-        if (mInstance == null) {
-            mInstance = new Networking(context);
+        if (sInstance == null) {
+            sInstance = new Networking(context);
         }
     }
 
@@ -85,7 +85,7 @@ public class Networking {
      * @return The static Networking instance.
      */
     public static Networking getNetworking() {
-        return mInstance;
+        return sInstance;
     }
 
     public Context getContext() {

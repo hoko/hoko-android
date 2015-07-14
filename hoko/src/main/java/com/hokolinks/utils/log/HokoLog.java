@@ -13,7 +13,7 @@ public class HokoLog {
     /**
      * Verbose is false by default
      */
-    private static boolean mVerbose = false;
+    private static boolean sVerbose = false;
 
     /**
      * Prints a debug message.
@@ -21,7 +21,7 @@ public class HokoLog {
      * @param message The message.
      */
     public static void d(String message) {
-        if (mVerbose) {
+        if (sVerbose) {
             android.util.Log.d(TAG, message);
         }
     }
@@ -32,7 +32,7 @@ public class HokoLog {
      * @param exception The exception.
      */
     public static void d(Exception exception) {
-        if (mVerbose) {
+        if (sVerbose) {
             android.util.Log.d(TAG, exception.getMessage(), exception);
         }
     }
@@ -43,7 +43,7 @@ public class HokoLog {
      * @param message The message.
      */
     public static void e(String message) {
-        if (mVerbose) {
+        if (sVerbose) {
             android.util.Log.e(TAG, message);
         }
     }
@@ -54,7 +54,7 @@ public class HokoLog {
      * @param exception The exception.
      */
     public static void e(Exception exception) {
-        if (mVerbose) {
+        if (sVerbose) {
             android.util.Log.e(TAG, exception.getMessage(), exception);
         }
     }
@@ -65,17 +65,17 @@ public class HokoLog {
      * @param error The exception.
      */
     public static void e(Error error) {
-        if (mVerbose) {
+        if (sVerbose) {
             android.util.Log.e(TAG, error.getMessage(), error);
         }
     }
 
     public static boolean isVerbose() {
-        return mVerbose;
+        return sVerbose;
     }
 
     public static void setVerbose(boolean verbose) {
-        HokoLog.mVerbose = verbose;
+        HokoLog.sVerbose = verbose;
     }
 
 }

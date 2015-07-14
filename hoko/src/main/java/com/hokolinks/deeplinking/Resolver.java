@@ -10,7 +10,7 @@ import com.hokolinks.utils.networking.async.NetworkAsyncTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Resolver {
+class Resolver {
 
     private static final String RESOLVER_ENDPOINT = "smartlinks/resolve";
 
@@ -27,9 +27,10 @@ public class Resolver {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
                         String deeplink = jsonObject.optString("deeplink");
+                        JSONObject metadata = jsonObject.optJSONObject("metadata");
                         if (resolveListener != null) {
                             if (deeplink != null)
-                                resolveListener.onLinkResolved(deeplink);
+                                resolveListener.onLinkResolved(deeplink, metadata);
                             else
                                 resolveListener.onError(new LinkResolveException());
                         }

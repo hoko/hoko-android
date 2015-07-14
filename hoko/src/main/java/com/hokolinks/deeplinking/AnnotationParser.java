@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import com.hokolinks.Hoko;
 import com.hokolinks.deeplinking.annotations.DeeplinkDefaultRoute;
 import com.hokolinks.deeplinking.annotations.DeeplinkFragmentActivity;
+import com.hokolinks.deeplinking.annotations.DeeplinkMetadata;
 import com.hokolinks.deeplinking.annotations.DeeplinkQueryParameter;
 import com.hokolinks.deeplinking.annotations.DeeplinkRoute;
 import com.hokolinks.deeplinking.annotations.DeeplinkRouteParameter;
@@ -21,6 +22,9 @@ import com.hokolinks.model.IntentRouteImpl;
 import com.hokolinks.model.Route;
 import com.hokolinks.model.exceptions.ActivityNotDeeplinkableException;
 import com.hokolinks.utils.log.HokoLog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,7 +46,7 @@ public class AnnotationParser {
      * @param classObject A classObject (usually an activity).
      * @return The route string.
      */
-    public static String routeFromClass(Class classObject) {
+    private static String routeFromClass(Class classObject) {
         DeeplinkRoute annotation = (DeeplinkRoute) classObject
                 .getAnnotation(DeeplinkRoute.class);
         if (annotation != null && annotation.value().compareTo(DeeplinkRoute.noValue) != 0) {
@@ -158,22 +162,23 @@ public class AnnotationParser {
      * @return true in case it injected values, false otherwise.
      */
     public static boolean inject(Activity activity) {
-        String route = activity.getIntent().getStringExtra(IntentRouteImpl.HokoRouteBundleKey);
+        String route = activity.getIntent().getStringExtra(IntentRouteImpl.BUNDLE_KEY);
         if (route == null)
             return false;
 
         Bundle routeParametersBundle = activity.getIntent()
-                .getBundleExtra(IntentRouteImpl.HokoRouteRouteParametersBundleKey);
+                .getBundleExtra(IntentRouteImpl.ROUTE_PARAMETERS_BUNDLE_KEY);
         Bundle queryParametersBundle = activity.getIntent()
-                .getBundleExtra(IntentRouteImpl.HokoRouteQueryParametersBundleKey);
+                .getBundleExtra(IntentRouteImpl.QUERY_PARAMETERS_BUNDLE_KEY);
+        String metadata = activity.getIntent().getStringExtra(IntentRouteImpl.METADATA_KEY);
 
         String routeFromClass = routeFromClass(activity.getClass());
 
         if (routeFromClass != null && routeFromClass.compareTo(route) == 0) { // Activity
-            return inject(activity, route, routeParametersBundle, queryParametersBundle);
+            return inject(activity, route, routeParametersBundle, queryParametersBundle, metadata);
         } else if (activity instanceof FragmentActivity) {
             return injectFragment((FragmentActivity) activity, route, routeParametersBundle,
-                    queryParametersBundle);
+                    queryParametersBundle, metadata);
         }
         return false;
     }
@@ -190,16 +195,17 @@ public class AnnotationParser {
         if (fragment.getArguments() == null)
             return false;
 
-        String route = fragment.getArguments().getString(IntentRouteImpl.HokoRouteBundleKey);
+        String route = fragment.getArguments().getString(IntentRouteImpl.BUNDLE_KEY);
         if (route == null)
             return false;
 
         Bundle routeParametersBundle = fragment.getArguments()
-                .getBundle(IntentRouteImpl.HokoRouteRouteParametersBundleKey);
+                .getBundle(IntentRouteImpl.ROUTE_PARAMETERS_BUNDLE_KEY);
         Bundle queryParametersBundle = fragment.getArguments()
-                .getBundle(IntentRouteImpl.HokoRouteQueryParametersBundleKey);
+                .getBundle(IntentRouteImpl.QUERY_PARAMETERS_BUNDLE_KEY);
+        String metadata = fragment.getArguments().getString(IntentRouteImpl.METADATA_KEY);
 
-        return inject(fragment, route, routeParametersBundle, queryParametersBundle);
+        return inject(fragment, route, routeParametersBundle, queryParametersBundle, metadata);
     }
 
     /**
@@ -215,16 +221,17 @@ public class AnnotationParser {
         if (fragment.getArguments() == null)
             return false;
 
-        String route = fragment.getArguments().getString(IntentRouteImpl.HokoRouteBundleKey);
+        String route = fragment.getArguments().getString(IntentRouteImpl.BUNDLE_KEY);
         if (route == null)
             return false;
 
         Bundle routeParametersBundle = fragment.getArguments()
-                .getBundle(IntentRouteImpl.HokoRouteRouteParametersBundleKey);
+                .getBundle(IntentRouteImpl.ROUTE_PARAMETERS_BUNDLE_KEY);
         Bundle queryParametersBundle = fragment.getArguments()
-                .getBundle(IntentRouteImpl.HokoRouteQueryParametersBundleKey);
+                .getBundle(IntentRouteImpl.QUERY_PARAMETERS_BUNDLE_KEY);
+        String metadata = fragment.getArguments().getString(IntentRouteImpl.METADATA_KEY);
 
-        return inject(fragment, route, routeParametersBundle, queryParametersBundle);
+        return inject(fragment, route, routeParametersBundle, queryParametersBundle, metadata);
     }
 
     /**
@@ -239,7 +246,8 @@ public class AnnotationParser {
      */
     private static boolean injectFragment(FragmentActivity activity, String route,
                                           Bundle routeParametersBundle,
-                                          Bundle queryParametersBundle) {
+                                          Bundle queryParametersBundle,
+                                          String metadata) {
         DeeplinkFragmentActivity deeplinkFragmentActivityAnnotation =
                 getFragmentAnnotationFromClass(activity.getClass());
 
@@ -255,9 +263,10 @@ public class AnnotationParser {
 
         try {
             Bundle bundle = new Bundle();
-            bundle.putString(IntentRouteImpl.HokoRouteBundleKey, route);
-            bundle.putBundle(IntentRouteImpl.HokoRouteRouteParametersBundleKey, routeParametersBundle);
-            bundle.putBundle(IntentRouteImpl.HokoRouteQueryParametersBundleKey, queryParametersBundle);
+            bundle.putString(IntentRouteImpl.BUNDLE_KEY, route);
+            bundle.putBundle(IntentRouteImpl.ROUTE_PARAMETERS_BUNDLE_KEY, routeParametersBundle);
+            bundle.putBundle(IntentRouteImpl.QUERY_PARAMETERS_BUNDLE_KEY, queryParametersBundle);
+            bundle.putString(IntentRouteImpl.METADATA_KEY, metadata);
             if (Fragment.class.isAssignableFrom(fragmentClass)) {
                 Fragment fragment = (Fragment) fragmentClass.getDeclaredConstructor().newInstance();
                 fragment.setArguments(bundle);
@@ -291,7 +300,7 @@ public class AnnotationParser {
      * @return true in case it injected values, false otherwise.
      */
     private static boolean inject(Object object, String route, Bundle routeParametersBundle,
-                                  Bundle queryParametersBundle) {
+                                  Bundle queryParametersBundle, String metadata) {
         Deeplinking deeplinking = Hoko.deeplinking();
         if (deeplinking != null) {
             Route routeObj = deeplinking.routing().getRoute(route);
@@ -313,6 +322,11 @@ public class AnnotationParser {
                             String parameter = queryParametersBundle.getString(key);
                             setValueForField(field, object, parameter, false);
                         }
+                    }
+
+                    Field metadataField = getMetadataField(object.getClass());
+                    if (metadataField != null && metadata != null) {
+                        setValueForField(metadataField, object, metadata, false);
                     }
 
                     return true;
@@ -378,6 +392,14 @@ public class AnnotationParser {
                     field.set(object, Byte.valueOf(value));
                 } else if (classObject.equals(Character.class)) {
                     field.set(object, value.charAt(0));
+                } else if (classObject.equals(JSONObject.class)) {
+                    try {
+                        field.set(object, new JSONObject(value));
+                    } catch (JSONException e) {
+                        if (logError) {
+                            HokoLog.e(e);
+                        }
+                    }
                 }
             }
             returnValue = true;
@@ -401,7 +423,7 @@ public class AnnotationParser {
      * @param object The object on which the field should be extracted.
      * @return The value extracted from the object's field.
      */
-    public static String getValueForField(Field field, Object object) {
+    private static String getValueForField(Field field, Object object) {
         boolean accessible = field.isAccessible();
         String returnValue = null;
         try {
@@ -458,7 +480,7 @@ public class AnnotationParser {
      * @param classObject A classObject (usually an activity or a fragment).
      * @return true in case it has the DeeplinkDefaultRoute annotation.
      */
-    public static boolean isDefaultRoute(Class classObject) {
+    private static boolean isDefaultRoute(Class classObject) {
         DeeplinkDefaultRoute annotation =
                 (DeeplinkDefaultRoute) classObject.getAnnotation(DeeplinkDefaultRoute.class);
         return annotation != null;
@@ -545,7 +567,7 @@ public class AnnotationParser {
      * Finds the fragment which matches to a given route object.
      *
      * @param route   A route string.
-     * @param cngasses An array of Classes.
+     * @param classes An array of Classes.
      * @return The Class that matches the route.
      */
     private static Class findFragmentForRoute(String route, Class[] classes) {
@@ -595,13 +617,25 @@ public class AnnotationParser {
         return queryParametersMap;
     }
 
+    private static Field getMetadataField(Class classObject) {
+        List<Field> fieldList = getFields(classObject);
+        for (Field field : fieldList) {
+            DeeplinkMetadata deeplinkMetadataAnnotation = field
+                    .getAnnotation(DeeplinkMetadata.class);
+            if (deeplinkMetadataAnnotation != null) {
+                return field;
+            }
+        }
+        return null;
+    }
+
     /**
      * Retrieves all the fields from a given class.
      *
      * @param classObject A classObject (usually an activity).
      * @return A list of the fields on a given class.
      */
-    public static List<Field> getFields(Class classObject) {
+    private static List<Field> getFields(Class classObject) {
         return new ArrayList<>(Arrays.asList(classObject.getDeclaredFields()));
     }
 

@@ -20,7 +20,7 @@ public class ApplicationLifecycle {
     /**
      * Static instance to handle static callback registration
      */
-    private static ApplicationLifecycle mInstance;
+    private static ApplicationLifecycle sInstance;
     private HokoApplicationStatus mApplicationStatus;
     private List<ApplicationLifecycleCallback> mCallbacks;
 
@@ -30,7 +30,7 @@ public class ApplicationLifecycle {
      * @param context A context.
      */
     private ApplicationLifecycle(Context context) {
-        mCallbacks = new ArrayList<ApplicationLifecycleCallback>();
+        mCallbacks = new ArrayList<>();
         mApplicationStatus = HokoApplicationStatus.FOREGROUND;
         try {
             registerActivityLifecycle(context);
@@ -46,9 +46,9 @@ public class ApplicationLifecycle {
      * @return The static ApplicationLifecycle instance.
      */
     private static ApplicationLifecycle getInstance(Context context) {
-        if (mInstance == null)
-            mInstance = new ApplicationLifecycle(context);
-        return mInstance;
+        if (sInstance == null)
+            sInstance = new ApplicationLifecycle(context);
+        return sInstance;
     }
 
     /**
@@ -116,7 +116,7 @@ public class ApplicationLifecycle {
 
 
                         private ArrayList<HokoActivityStatus> statusHistory =
-                                new ArrayList<HokoActivityStatus>();
+                                new ArrayList<>();
 
                         @Override
                         public void onActivityCreated(Activity activity, Bundle bundle) {
@@ -163,7 +163,7 @@ public class ApplicationLifecycle {
                                     && statusHistory.get(1) == HokoActivityStatus.STOPPED) {
                                 onPause();
                             }
-                            statusHistory = new ArrayList<HokoActivityStatus>();
+                            statusHistory = new ArrayList<>();
                         }
 
                     });

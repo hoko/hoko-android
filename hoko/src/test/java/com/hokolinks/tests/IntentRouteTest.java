@@ -50,18 +50,19 @@ public class IntentRouteTest {
     }
 
     // For CI to work for the time being, this definitely needs fixing (is only breaking on travis and not locally)
-    /*@Test
+    @Test
     public void testJSON() throws Exception {
         IntentRouteImpl intentRoute = new IntentRouteImpl("product/:product_id/price/:price/open", null, null, null, RuntimeEnvironment.application);
 
         JSONObject expectedJSON = new JSONObject();
         JSONObject expectedJSONRoute = new JSONObject();
-        expectedJSONRoute.put("build", "0");
+        expectedJSONRoute.put("build", "1");
         expectedJSONRoute.put("device", Device.getVendor() + " " + Device.getModel());
         expectedJSONRoute.put("path", "product/:product_id/price/:price/open");
+        expectedJSONRoute.put("version", "1.0");
         expectedJSON.put("route", expectedJSONRoute);
 
-        /assertThat(intentRoute.getJSON(RuntimeEnvironment.application).toString()).isEqualTo(expectedJSON.toString());
-    }*/
+        assertThat(intentRoute.getJSON(RuntimeEnvironment.application).toString()).isEqualTo(expectedJSON.toString());
+    }
 
 }

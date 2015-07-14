@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.hokolinks.Hoko;
+import com.hokolinks.deeplinking.listeners.MetadataRequestListener;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.DeeplinkCallback;
 import com.hokolinks.model.IntentRouteImpl;
@@ -17,8 +18,12 @@ import com.hokolinks.model.exceptions.InvalidRouteException;
 import com.hokolinks.model.exceptions.MultipleDefaultRoutesException;
 import com.hokolinks.utils.log.HokoLog;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -38,6 +43,10 @@ public class Routing {
         mContext = context;
         mHandling = handling;
         mRoutes = new ArrayList<>();
+    }
+
+    public ArrayList<Route> getRoutes() {
+        return mRoutes;
     }
 
     /**
@@ -135,34 +144,46 @@ public class Routing {
      * or doesn't do anything if a default route does not exist.
      *
      * @param urlString The deeplink.
+     * @param metadata  The metadata in JSON format which was passed when the smartlink was created.
      * @return true if it can open the deeplink, false otherwise.
      */
-    public boolean openURL(String urlString) {
+    public boolean openURL(String urlString, JSONObject metadata) {
         if (urlString == null) {
             openApp();
             return false;
         }
         HokoLog.d("Opening Deeplink " + urlString);
         URL url = new URL(urlString);
-        return handleOpenURL(url);
+        return handleOpenURL(url, metadata);
     }
 
     /**
      * Tries to get an intent for a given deeplink, in case it can't, returns false.
      * If it gets an intent it will open the intent, starting a given activity.
      *
-     * @param url A URL object.
+     * @param url      A URL object.
+     * @param metadata The metadata in JSON format which was passed when the smartlink was created.
      * @return true in case in opened the activity, false otherwise.
      */
-    private boolean handleOpenURL(URL url) {
-        Route route = routeForURL(url);
-        notifyHandler(route, url);
-        if (route != null) {
-            route.execute(url);
-            return true;
+    private boolean handleOpenURL(URL url, JSONObject metadata) {
+        final Route route = routeForURL(url);
+        if (route == null) {
+            openApp();
+            return false;
         }
-        openApp();
-        return false;
+        final Deeplink deeplink = deeplinkForURL(url, route);
+        deeplink.setMetadata(metadata);
+        if (deeplink.needsMetadata()) {
+            deeplink.requestMetadata(mToken, new MetadataRequestListener() {
+                @Override
+                public void completion() {
+                    Routing.this.openDeeplink(deeplink, route);
+                }
+            });
+            return true;
+        } else {
+            return openDeeplink(deeplink, route);
+        }
     }
 
     private void openApp() {
@@ -180,7 +201,7 @@ public class Routing {
      * @param url A URL object.
      * @return Route found
      */
-    public Route routeForURL(URL url) {
+    private Route routeForURL(URL url) {
         for (Route route : mRoutes) {
             if (url.matchesWithRoute(route) != null) {
                 return route;
@@ -193,23 +214,20 @@ public class Routing {
         return null;
     }
 
-    private void notifyHandler(Route route, URL url) {
-        if (route == null || route == mDefaultRoute) {
-            Deeplink deeplink = new Deeplink(url.getScheme(), null, null,
-                    url.getQueryParameters(), url.getURL());
-            deeplink.post(mToken);
-            mHandling.handle(deeplink);
-        } else {
-            HashMap<String, String> routeParameters = url.matchesWithRoute(route);
-            if (routeParameters != null) {
-                Deeplink deeplink = new Deeplink(url.getScheme(), route.getRoute(),
-                        routeParameters, url.getQueryParameters(), url.getURL());
-                deeplink.post(mToken);
-                mHandling.handle(deeplink);
-            }
-        }
+    private Deeplink deeplinkForURL(URL url, Route route) {
+        return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
+                url.getQueryParameters(), null, url.toString());
     }
 
+    private boolean openDeeplink(Deeplink deeplink, Route route) {
+        deeplink.post(mToken, mContext);
+        mHandling.handle(deeplink);
+        if (route != null) {
+            route.execute(deeplink);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Function to add a new Route to the routes list (or as a default route).
@@ -226,6 +244,7 @@ public class Routing {
             }
         } else {
             mRoutes.add(route);
+            sortRoutes();
             if (Hoko.isDebugMode())
                 route.post(mToken, mContext);
 
@@ -248,6 +267,7 @@ public class Routing {
         } else {
             if (intentRoute.isValid()) {
                 mRoutes.add(intentRoute);
+                sortRoutes();
                 if (Hoko.isDebugMode())
                     intentRoute.post(mToken, mContext);
             } else {
@@ -273,5 +293,37 @@ public class Routing {
                 return true;
         }
         return false;
+    }
+
+    private void sortRoutes() {
+        Collections.sort(mRoutes, new Comparator<Route>() {
+            @Override
+            public int compare(Route route1, Route route2) {
+                if (route1.getComponents().size() != route2.getComponents().size()) {
+                    return route1.getComponents().size() - route2.getComponents().size();
+                }
+
+                for (int index = 0; index < route1.getComponents().size(); index ++) {
+                    String component1 = route1.getComponents().get(index);
+                    String component2 = route2.getComponents().get(index);
+
+                    boolean component1IsParameter = component1.startsWith(":");
+                    boolean component2IsParameter = component2.startsWith(":");
+
+                    if (component1IsParameter && component2IsParameter) {
+                        continue;
+                    }
+
+                    if (component1IsParameter) {
+                        return 1;
+                    }
+
+                    if (component2IsParameter) {
+                        return -1;
+                    }
+                }
+                return route1.getRoute().compareTo(route2.getRoute());
+            }
+        });
     }
 }

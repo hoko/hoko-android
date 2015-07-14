@@ -11,10 +11,6 @@ import java.util.regex.Pattern;
 
 public class VersionChecker {
 
-    private static final String GITHUB_API =
-            "https://api.github.com/repos/hokolinks/hoko-android/releases?per_page=1";
-    private static final String GITHUB_VERISON_KEY = "tag_name";
-
     private static boolean requiresUpdate(String currentVersion, String githubVersion) {
         String normalisedCurrentVersion = normalisedVersion(currentVersion);
         String normalisedGithubVersion = normalisedVersion(githubVersion);
@@ -26,27 +22,27 @@ public class VersionChecker {
         return normalisedVersion(version, ".", 4);
     }
 
-    private static String normalisedVersion(String version, String sep, int maxWidth) {
-        String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
-        StringBuilder sb = new StringBuilder();
-        for (String s : split) {
-            sb.append(String.format("%" + maxWidth + 's', s));
+    private static String normalisedVersion(String version, String separator, int maxWidth) {
+        String[] split = Pattern.compile(separator, Pattern.LITERAL).split(version);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String string : split) {
+            stringBuilder.append(String.format("%" + maxWidth + 's', string));
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
-    public void checkForNewVersion(final String currentVersion) {
+    public static void checkForNewVersion(final String currentVersion, String token) {
         new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
-                GITHUB_API, null, null).toRunnable(new HttpRequestCallback() {
+                HttpRequest.getURLFromPath("version"), token, null).toRunnable(new HttpRequestCallback() {
 
             @Override
             public void onSuccess(JSONObject jsonObject) {
-                String versionName = jsonObject.optString(GITHUB_VERISON_KEY);
-                if (versionName != null) {
-                    String versionNumber = versionName.replace("v", "");
-                    if (requiresUpdate(currentVersion, versionNumber)) {
-                        android.util.Log.e("HOKO", "A new version of HOKO is available at "
-                                + "http://github.com/hokolinks/hoko-android " + versionName);
+                String version = jsonObject.optString("version");
+                if (version != null) {
+                    if (requiresUpdate(currentVersion, version)) {
+                        android.util.Log.e("HOKO", "A new version of HOKO is available, please " +
+                                "update your gradle.properties to \"compile 'com.hokolink:hoko:" +
+                                version + "'\"");
                     }
                 }
             }
