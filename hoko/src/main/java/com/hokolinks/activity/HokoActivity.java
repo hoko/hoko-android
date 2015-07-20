@@ -30,7 +30,6 @@ public class HokoActivity extends Activity implements SmartlinkResolveListener {
     @Override
     public void onLinkResolved(String deeplink, JSONObject metadata) {
         finish();
-        Hoko.deeplinking().openURL(deeplink, metadata);
     }
 
     @Override

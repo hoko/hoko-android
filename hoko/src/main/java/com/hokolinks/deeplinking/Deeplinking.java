@@ -174,7 +174,8 @@ public class Deeplinking {
      * deeplink to open the correct view. e.g. Opening a Smartlink from a push notification.
      *
      * @param smartlink                A smartlink string.
-     * @param smartlinkResolveListener A link resolved listener for lifecycle purposes.
+     * @param smartlinkResolveListener A link resolved listener for lifecycle purposes, called
+     *                                 before opening the deeplink.
      */
     public void openSmartlink(String smartlink, final SmartlinkResolveListener smartlinkResolveListener) {
         mResolver.resolveSmartlink(smartlink, new SmartlinkResolveListener() {
@@ -183,6 +184,7 @@ public class Deeplinking {
                 if (smartlinkResolveListener != null) {
                     smartlinkResolveListener.onLinkResolved(deeplink, metadata);
                 }
+                openURL(deeplink, metadata);
             }
 
             @Override

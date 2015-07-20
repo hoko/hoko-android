@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -76,6 +77,26 @@ public class HttpRequest implements Serializable {
                 + TASK_FORMAT;
     }
 
+    private static String urlEncode(String url, String jsonString) {
+        String finalURL = url;
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            if (jsonObject.names().length() > 0) {
+                finalURL += "?";
+            }
+            for (Iterator<String> iterator = jsonObject.keys(); iterator.hasNext(); ) {
+                String key = iterator.next();
+                finalURL += key + "=" + jsonObject.getString(key);
+                if (iterator.hasNext()) {
+                    finalURL += "&";
+                }
+            }
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+        return finalURL;
+    }
+
     // Property Gets
     public HokoNetworkOperationType getOperationType() {
         return mOperationType;
@@ -83,7 +104,11 @@ public class HttpRequest implements Serializable {
 
     public URL getUrl() {
         try {
-            return new URL(mUrl);
+            if (mOperationType != HokoNetworkOperationType.GET) {
+                return new URL(mUrl);
+            } else {
+                return new URL(urlEncode(mUrl, getParameters()));
+            }
         } catch (MalformedURLException e) {
             HokoLog.e(e);
         }
@@ -94,21 +119,21 @@ public class HttpRequest implements Serializable {
         return mToken;
     }
 
+    // Runnable
+
     public String getParameters() {
         return mParameters;
     }
-
-    // Runnable
 
     public int getNumberOfRetries() {
         return mNumberOfRetries;
     }
 
+    // Networking
+
     public void incrementNumberOfRetries() {
         mNumberOfRetries++;
     }
-
-    // Networking
 
     /**
      * Transforms the HttpRequest to a Runnable object so it can execute the request
