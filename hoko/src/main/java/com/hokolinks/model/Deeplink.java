@@ -26,8 +26,9 @@ public class Deeplink {
 
     // Key values from incoming deeplinks
     private static final String SMARTLINK_CLICK_IDENTIFIER_KEY = "_hk_cid";
-    private static final String METADATA_KEY = "_hk_cid";
-    private static final String METADATA_PATH = "smartlinks/%s/metadata";
+    private static final String SMARTLINK_IDENTIFIER_KEY = "_hk_sid";
+    private static final String METADATA_KEY = "_hk_md";
+    private static final String METADATA_PATH = "smartlinks/metadata";
 
     private String mRoute;
     private HashMap<String, String> mRouteParameters;
@@ -225,12 +226,8 @@ public class Deeplink {
      */
     public void requestMetadata(String token, final MetadataRequestListener metadataRequestListener) {
         if (needsMetadata()) {
-            String path = String.format(METADATA_PATH, getSmartlinkClickIdentifier());
-            Networking.getNetworking().addRequest(
-                    new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
-                            HttpRequest.getURLFromPath(path), token, null));
             new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
-                    HttpRequest.getURLFromPath(path), token, null)
+                    HttpRequest.getURLFromPath(METADATA_PATH), token, metadataJSON().toString())
                     .toRunnable(new HttpRequestCallback() {
                         @Override
                         public void onSuccess(JSONObject jsonObject) {
@@ -322,6 +319,19 @@ public class Deeplink {
         return root;
     }
 
+    private JSONObject metadataJSON() {
+        try {
+            if (getSmartlinkClickIdentifier() != null) {
+                return new JSONObject().put(SMARTLINK_CLICK_IDENTIFIER_KEY, getSmartlinkClickIdentifier());
+            } else {
+                return new JSONObject().put(SMARTLINK_IDENTIFIER_KEY, getSmartlinkIdentifier());
+            }
+        } catch (JSONException e) {
+            HokoLog.e(e);
+        }
+        return null;
+    }
+
     public String toString() {
         String urlScheme = mURLScheme != null ? mURLScheme : "";
         String route = mRoute != null ? mRoute : "";
@@ -359,6 +369,10 @@ public class Deeplink {
 
     private String getSmartlinkClickIdentifier() {
         return mQueryParameters.get(SMARTLINK_CLICK_IDENTIFIER_KEY);
+    }
+
+    private String getSmartlinkIdentifier() {
+        return mQueryParameters.get(SMARTLINK_IDENTIFIER_KEY);
     }
 
     private boolean hasMetadataKey() {
