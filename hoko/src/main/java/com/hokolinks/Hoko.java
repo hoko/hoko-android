@@ -1,20 +1,15 @@
 package com.hokolinks;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.hokolinks.deeplinking.AnnotationParser;
 import com.hokolinks.deeplinking.Deeplinking;
-import com.hokolinks.model.Device;
+import com.hokolinks.model.App;
 import com.hokolinks.model.exceptions.SetupCalledMoreThanOnceException;
 import com.hokolinks.model.exceptions.SetupNotCalledYetException;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
 import com.hokolinks.utils.versionchecker.VersionChecker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Hoko is an easy-to-use Framework to handle Deeplinking and the Analytics around it.
@@ -57,6 +52,25 @@ public class Hoko {
      * Setting up with a token will make sure you can take full advantage of the Hoko service,
      * as you will be able to track everything through automatic Analytics, which will
      * be shown on your Hoko dashboards.
+     * Also sets the debug mode according to your generated BuildConfig class, which depends on your
+     * Build Variant. Debug mode serves the purpose of uploading the mapped Routes to the Hoko
+     * backend service.
+     * <pre>{@code
+     * Hoko.setup(this, "YOUR-API-TOKEN");
+     * }</pre>
+     *
+     * @param context   Your application context.
+     * @param token     Hoko service API key.
+     */
+    public static void setup(Context context, String token) {
+        setup(context, token, App.isDebug(context));
+    }
+
+    /**
+     * Setups all the Hoko module instances, logging and asynchronous networking queues.
+     * Setting up with a token will make sure you can take full advantage of the Hoko service,
+     * as you will be able to track everything through automatic Analytics, which will
+     * be shown on your Hoko dashboards.
      * Also sets the debug mode for the devices set.  Debug mode serves the purpose of uploading
      * the mapped Routes to the Hoko backend service.
      * <pre>{@code
@@ -65,11 +79,10 @@ public class Hoko {
      *
      * @param context   Your application context.
      * @param token     Hoko service API key.
-     * @param testDevices Toggle debug mode manually.
+     * @param debugMode Toggle debug mode manually.
      */
-    public static void setup(Context context, String token, String... testDevices) {
+    public static void setup(Context context, String token, boolean debugMode) {
         if (sInstance == null) {
-            boolean debugMode = debugModeWithTestDevices(context, testDevices);
             sInstance = new Hoko(context, token, debugMode);
             sInstance.checkVersions();
             AnnotationParser.parseActivities(context);
@@ -122,25 +135,6 @@ public class Hoko {
             return false;
         }
         return sInstance.mDebugMode;
-    }
-
-    /**
-     * This will check for debug mode with the device IDs specified.
-     * Will also print a description to help developer integrate easier.
-     *
-     * @param context     A context object.
-     * @param testDevices An array of test devices.
-     * @return true if debug mode is active, false otherwise.
-     */
-    private static boolean debugModeWithTestDevices(Context context, String... testDevices) {
-        List<String> testDevicesList = new ArrayList<>(Arrays.asList(testDevices));
-        boolean debugMode = testDevicesList.contains(Device.getDeviceID(context));
-        if (!debugMode) {
-            Log.e(HokoLog.TAG, "To upload the mapped routes to Hoko on this device, please " +
-                    "make sure to setup the SDK with \"" + Device.getDeviceID(context) +
-                    "\" as your test device.");
-        }
-        return debugMode;
     }
 
     /**

@@ -34,14 +34,12 @@ public class Networking {
 
     // Configuration of the Networking
     private static final int FLUSH_TIMER_INTERVAL = 30000; // in millis
-    private static final int HTTP_TASKS_NUMBER_OF_RETRIES = 3;
+    private static final int HTTP_TASKS_NUMBER_OF_RETRIES = 1;
 
     // Static class to avoid duplication of Networking instances
     private static Networking sInstance;
-
-
-    private Context mContext;
     final private List<HttpRequest> mHttpTasks;
+    private Context mContext;
     private Timer mTimer;
 
     /**
