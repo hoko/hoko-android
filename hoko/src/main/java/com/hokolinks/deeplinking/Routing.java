@@ -216,7 +216,7 @@ public class Routing {
 
     private Deeplink deeplinkForURL(URL url, Route route) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), null, url.toString());
+                url.getQueryParameters(), null, url.getURL());
     }
 
     private boolean openDeeplink(Deeplink deeplink, Route route) {

@@ -78,6 +78,10 @@ public class HttpRequest implements Serializable {
     }
 
     private static String urlEncode(String url, String jsonString) {
+        if (jsonString == null) {
+            return url;
+        }
+
         String finalURL = url;
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
