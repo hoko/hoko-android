@@ -141,7 +141,7 @@ public class Utils {
     public static String generateUUID() {
         String uid = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
         long timeSince1970 = Calendar.getInstance().getTimeInMillis();
-        return uid + "-" + String.valueOf(timeSince1970).substring(0, 10);
+        return uid + "-" + tenCharEpoch(timeSince1970);
     }
 
     /**
@@ -168,4 +168,19 @@ public class Utils {
         return new File(directory, filename);
     }
 
+
+    /**
+     * Cut and format unix epoch to 10 chars long
+     *
+     * @param epoch to be formated
+     * @return 10 char epoch
+     */
+    private static String tenCharEpoch(long epoch) {
+        String timeSince1970 = String.valueOf(epoch);
+        if(timeSince1970.length() >= 10) {
+            return timeSince1970.substring(0, 10);
+        } else {
+            return String.format("%010d", epoch);
+        }
+    }
 }

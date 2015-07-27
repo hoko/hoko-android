@@ -187,7 +187,7 @@ public class Deeplink {
             case IPAD:
                 return "ipad";
             case IOS_UNIVERSAL:
-                return "ios";
+                return "universal";
             case ANDROID:
                 return "android";
             case WEB:

@@ -1,53 +1,44 @@
 <p align="center" >
-<img src="https://s3-eu-west-1.amazonaws.com/hokoassets/hoko_logo.png" alt="Hoko" title="Hoko">
+<img src="https://s3-eu-west-1.amazonaws.com/hokoassets/hoko_logo.png" alt="HOKO" title="HOKO">
 </p>
 
 [![Build Status](https://travis-ci.org/hokolinks/hoko-android.svg?branch=open_source)](https://travis-ci.org/hokolinks/hoko-android)
 
-# What's Hoko?
+# Quick Start - HOKO for Android
 
-The Hoko Framework is a easy to use deep linking framework that enables an app to map deep linking routes to actual behavior in the app. This behavior can include showing a particular screen or performing a certain action. Hoko also provides new ways for users to be redirected to your app regardless of the platform they are on.
+This document is just a quick start introduction to the HOKO for Android. You can read the
+full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
 
-After integrating Hoko in your app you should be able to open your app by opening URI links such as...
+To integrate HOKO in your app, just follow the 3 simple steps below.
 
-```
-your.app.scheme://<mapped_route>/<route_param>?<query_params>
-```
+### 1. Add HOKO to your project
 
-# Quick Start - Hoko Framework for Android
-
-This document is just a quick start introduction to the Hoko Framework for Android. You can read the full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
-
-To integrate Hoko in your app, just follow the 4 simple steps below after adding it to your project.
-
-## Add Hoko to your project
-
-1. Add Hoko to your `gradle.build` file.
+Add HOKO to your `gradle.build` file:
 
 ```java
 // Build.gradle
 dependencies {
-	compile 'com.hokolinks:hoko:1.2.1'
+	compile 'com.hokolinks:hoko:2.1.2.1'
 }
 ```
 
-## Start using Hoko
-
-### SDK Setup
-
-In your `Application` subclass setup the Hoko Framework in the `onCreate(...)` method:
+In your `Application` subclass setup HOKO in the `onCreate(...)` method:
 
 ```java
 @Override
 public void onCreate() {
 	super.onCreate();
-	Hoko.setup(this, "YOUR-APP-TOKEN");
+	Hoko.setup(this, "YOUR-ANDROID-TOKEN");
 }
 ```
 
-### 2. Setting up the AndroidManifest.xml
+You can find the Android token under "Settings" when you open your app on the HOKO dashboard.
 
-To register a URL Scheme on your application you must add `HokoActivity` to your `AndroidManifest.xml`, making sure to replace your `URL scheme` with an appropriate scheme in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
+### 2. Setup the AndroidManifest.xml
+
+To register a URL Scheme on your application you must add `HokoActivity` to your
+`AndroidManifest.xml`, making sure to replace your `URL scheme` with an appropriate scheme
+in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 
 
 ```xml
@@ -57,13 +48,13 @@ To register a URL Scheme on your application you must add `HokoActivity` to your
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
 	<application
 		android:name="===YOUR.PACKAGE.NAME===.Application">
 		<!-- Your other activities go here -->
 		<!-- Start of Hoko Code -->
 		<activity
-			android:name="com.hoko.activity.HokoActivity"
+			android:name="com.hokolinks.activity.HokoActivity"
 			android:alwaysRetainTaskState="true"
 			android:launchMode="singleTask"
 			android:noHistory="true"
@@ -71,7 +62,7 @@ To register a URL Scheme on your application you must add `HokoActivity` to your
 			<intent-filter>
 				<data android:scheme="===YOUR-URL-SCHEME===" />
 				<action android:name="android.intent.action.VIEW" />
-				
+
 				<category android:name="android.intent.category.VIEW" />
 			<category android:name="android.intent.category.DEFAULT" />
 			<category android:name="android.intent.category.BROWSABLE" />
@@ -83,14 +74,12 @@ To register a URL Scheme on your application you must add `HokoActivity` to your
                 		<action android:name="com.android.vending.INSTALL_REFERRER" />
             		</intent-filter>
         	</receiver>
-		
+
 	</application>
 </manifest>
 ```
 
-### 3. Deeplinking
-
-#### Activities
+### 3. Map your application.
 
 To map routes to your `Activities` all you have to do is use the proper annotations.
 
@@ -98,10 +87,11 @@ To map routes to your `Activities` all you have to do is use the proper annotati
 // ProductActivity.java
 @DeeplinkRoute("product/:product_id")
 public class ProductActivity extends Activity {
-
+	// You should map your variables with @DeeplinkRouteParameter
 	@DeeplinkRouteParameter("product_id")
 	private int mProductId;
-	
+
+	// If you want you can also use @DeeplinkQueryParameter to map query parameters
 	@DeeplinkQueryParameter("product_price")
 	private String mProductPrice;
 
@@ -113,33 +103,11 @@ public class ProductActivity extends Activity {
 }
 ```
 
-This will make sure that any incoming deeplinks with a certain route format will map its variables to your annotated variables.
+The previous example would match an incoming link like this `product/29?product_price=19`
 
-### 4. Analytics
-
-In order to provide you with metrics on push notifications and deeplinking campaigns, it is advised to delegate key events to the Analytics module (e.g. in-app purchases, referals, etc).
-
-All you have to do is:
-
-```java
-Hoko.analytics().trackKeyEvent("dress_purchase", 29.99);
-```
-
-You can also identify your users to create targeted campaigns on Hoko.
-
-```java
-Hoko.analytics().identifyUser("johndoe", HokoUserAccountType.GITHUB, "John Doe", "johndoe@hoko.com", new Date(), HokoUserGender.MALE);
-```
+This will make sure that any incoming deep links with a certain route format will map its variables
+to your annotated variables.
 
 ### Full documentation
 
-We recommend you to read the full documentation at [http://hokolinks.com/documentation#android](http://hokolinks.com/documentation#android).
-
-
-# Author
-
-Hoko, S.A.
-
-# License
-
-Hoko is available under the Apache license. See the LICENSE file for more info.
+We recommend you to read the full documentation at [http://support.hokolinks.com/quickstart/android/](http://support.hokolinks.com/quickstart/android/).
