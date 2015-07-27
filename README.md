@@ -18,7 +18,7 @@ Add HOKO to your `gradle.build` file:
 ```java
 // Build.gradle
 dependencies {
-	compile 'com.hokolinks:hoko:2.1.2.1'
+	compile 'com.hokolinks:hoko:2.2'
 }
 ```
 
@@ -62,10 +62,26 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 			<intent-filter>
 				<data android:scheme="===YOUR-URL-SCHEME===" />
 				<action android:name="android.intent.action.VIEW" />
-
-				<category android:name="android.intent.category.VIEW" />
-			<category android:name="android.intent.category.DEFAULT" />
-			<category android:name="android.intent.category.BROWSABLE" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name="com.hokolinks.activity.HokoAppLinksActivity"
+			android:alwaysRetainTaskState="true"
+			android:launchMode="singleTask"
+			android:noHistory="true"
+			android:theme="@android:style/Theme.NoDisplay">
+			<intent-filter>
+				<data
+					android:host="===YOUR-HOKO-SUBDOMAIN==="
+					android:scheme="http" />
+				<data
+					android:host="===YOUR-HOKO-SUBDOMAIN==="
+					android:scheme="https" />
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
 			</intent-filter>
 		</activity>
 		<receiver android:name="com.hokolinks.deeplinking.DeferredDeeplinkingBroadcastReceiver"
