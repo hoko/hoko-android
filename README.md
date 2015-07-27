@@ -50,7 +50,7 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 	<application
-		android:name="===YOUR.PACKAGE.NAME===.Application">
+		android:name="com.bananas.BananasApplication">
 		<!-- Your other activities go here -->
 		<!-- Start of Hoko Code -->
 		<activity
