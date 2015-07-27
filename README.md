@@ -44,7 +44,7 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="===YOUR.PACKAGE.NAME===">
+	package="com.bananas">
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -60,7 +60,7 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 			android:noHistory="true"
 			android:theme="@android:style/Theme.NoDisplay">
 			<intent-filter>
-				<data android:scheme="===YOUR-URL-SCHEME===" />
+				<data android:scheme="bananas" />
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.BROWSABLE" />
@@ -74,10 +74,10 @@ in **reverse DNS notation** (e.g. *com.hoko.hokotestbed*).
 			android:theme="@android:style/Theme.NoDisplay">
 			<intent-filter>
 				<data
-					android:host="===YOUR-HOKO-SUBDOMAIN==="
+					android:host="bananas.hoko.link"
 					android:scheme="http" />
 				<data
-					android:host="===YOUR-HOKO-SUBDOMAIN==="
+					android:host="bananas.hoko.link"
 					android:scheme="https" />
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
