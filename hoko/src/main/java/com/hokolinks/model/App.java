@@ -146,7 +146,7 @@ public class App {
      * @return A Class object or null.
      */
     private static Class<?> getBuildConfigClass(Context context) {
-        Class<?> klass = getBuildConfigClassFromPackage(context.getPackageName(), false);
+        Class<?> klass = getBuildConfigClassFromPackage(context.getPackageName(), true);
         if (klass == null) {
             klass = getBuildConfigClassFromPackage(context.getClass().getPackage().getName(), true);
         }

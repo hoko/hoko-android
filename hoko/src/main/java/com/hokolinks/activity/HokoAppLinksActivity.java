@@ -23,7 +23,7 @@ public class HokoAppLinksActivity extends Activity implements SmartlinkResolveLi
         if (urlString.startsWith("http")) {
             Hoko.deeplinking().openSmartlink(urlString, this);
         } else {
-            Hoko.deeplinking().openURL(null);
+            Hoko.deeplinking().openURL(urlString);
         }
     }
 
