@@ -54,6 +54,10 @@ public class Deeplinking {
         mRouting.mapRoute(route, activityClassName, routeParameters, queryParameters);
     }
 
+    public void mapRoute(String route, DeeplinkCallback callback) {
+        mRouting.mapRoute(route, callback);
+    }
+
     /**
      * Maps an activity class as a default route and its fields as query parameters.
      *
@@ -62,6 +66,11 @@ public class Deeplinking {
      */
     void mapDefaultRoute(String activityClassName, HashMap<String, Field> queryParameters) {
         mapRoute(null, activityClassName, null, queryParameters);
+    }
+
+
+    public void mapDefaultRoute(String route, DeeplinkCallback callback) {
+        mapRoute(null, callback);
     }
 
     /**
@@ -194,10 +203,6 @@ public class Deeplinking {
                 }
             }
         });
-    }
-
-    public void mapRoute(String route, DeeplinkCallback callback) {
-        mRouting.mapRoute(route, callback);
     }
 
     // Handlers
