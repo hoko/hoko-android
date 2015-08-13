@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 
@@ -62,6 +61,15 @@ public class Device {
      */
     public static String getSystemVersion() {
         return String.valueOf(android.os.Build.VERSION.SDK_INT);
+    }
+
+    /**
+     * Returns the Android release version (like 5.1) of the device Hoko is being run on.
+     *
+     * @return The Android release version.
+     */
+    public static String getSystemReleaseVersion() {
+        return android.os.Build.VERSION.RELEASE;
     }
 
     /**

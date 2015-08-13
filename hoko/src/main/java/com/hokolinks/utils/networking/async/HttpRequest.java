@@ -84,7 +84,7 @@ public class HttpRequest implements Serializable {
             environment = App.getEnvironment(Networking.getNetworking().getContext());
 
         return "HOKO/" + Hoko.VERSION + " (" + environment + "; Linux; " + Device.getPlatform() + " " +
-                Device.getSystemVersion() + "; " + Device.getVendor() + " " + Device.getModel() + ")";
+                Device.getSystemReleaseVersion() + "; " + Device.getVendor() + " " + Device.getModel() + ")";
     }
 
     private static String urlEncode(String url, String jsonString) {
