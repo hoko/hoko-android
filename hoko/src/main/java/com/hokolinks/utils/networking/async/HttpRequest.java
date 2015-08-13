@@ -2,6 +2,7 @@ package com.hokolinks.utils.networking.async;
 
 import com.hokolinks.Hoko;
 import com.hokolinks.model.App;
+import com.hokolinks.model.Device;
 import com.hokolinks.model.exceptions.HokoException;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
@@ -75,6 +76,15 @@ public class HttpRequest implements Serializable {
     public static String getURLFromPath(String path) {
         return sTaskEndpoint + "/" + TASK_VERSION + "/" + path + "."
                 + TASK_FORMAT;
+    }
+
+    private static String getUserAgent() {
+        String environment = "";
+        if (Networking.getNetworking() != null)
+            environment = App.getEnvironment(Networking.getNetworking().getContext());
+
+        return "HOKO/" + Hoko.VERSION + " (" + environment + "; Linux; " + Device.getPlatform() + " " +
+                Device.getSystemVersion() + "; " + Device.getVendor() + " " + Device.getModel() + ")";
     }
 
     private static String urlEncode(String url, String jsonString) {
@@ -195,6 +205,7 @@ public class HttpRequest implements Serializable {
         if (getToken() != null) {
             connection.setRequestProperty("Authorization", "Token " + getToken());
             connection.setRequestProperty("Hoko-SDK-Version", Hoko.VERSION);
+            connection.setRequestProperty("User-Agent", HttpRequest.getUserAgent());
             if (Networking.getNetworking() != null)
                 connection.setRequestProperty("Hoko-SDK-Env",
                         App.getEnvironment(Networking.getNetworking().getContext()));
