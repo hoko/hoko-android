@@ -37,11 +37,13 @@ public class Routing {
     private String mToken;
     private Context mContext;
     private Handling mHandling;
+    private Filtering mFiltering;
 
-    public Routing(String token, Context context, Handling handling) {
+    public Routing(String token, Context context, Handling handling, Filtering filtering) {
         mToken = token;
         mContext = context;
         mHandling = handling;
+        mFiltering = filtering;
         mRoutes = new ArrayList<>();
     }
 
@@ -171,8 +173,8 @@ public class Routing {
             openApp();
             return false;
         }
-        final Deeplink deeplink = deeplinkForURL(url, route);
-        deeplink.setMetadata(metadata);
+        final Deeplink deeplink = deeplinkForURL(url, route, metadata);
+
         if (deeplink.needsMetadata()) {
             deeplink.requestMetadata(mToken, new MetadataRequestListener() {
                 @Override
@@ -215,19 +217,27 @@ public class Routing {
     }
 
     private Deeplink deeplinkForURL(URL url, Route route) {
+        return deeplinkForURL(url, route, null);
+    }
+
+    private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), null, url.getURL());
+                url.getQueryParameters(), metadata, url.getURL());
     }
 
     private boolean openDeeplink(Deeplink deeplink, Route route) {
-        deeplink.post(mToken, mContext);
-        mHandling.handle(deeplink);
-        if (route != null) {
-            route.execute(deeplink);
-            return true;
+        if (mFiltering.filter(deeplink)) {
+
+            deeplink.post(mToken, mContext);
+            mHandling.handle(deeplink);
+            if (route != null) {
+                route.execute(deeplink);
+                return true;
+            }
         }
         return false;
     }
+
 
     /**
      * Function to add a new Route to the routes list (or as a default route).
@@ -303,7 +313,7 @@ public class Routing {
                     return route1.getComponents().size() - route2.getComponents().size();
                 }
 
-                for (int index = 0; index < route1.getComponents().size(); index ++) {
+                for (int index = 0; index < route1.getComponents().size(); index++) {
                     String component1 = route1.getComponents().get(index);
                     String component2 = route2.getComponents().get(index);
 

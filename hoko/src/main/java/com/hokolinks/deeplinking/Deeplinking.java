@@ -28,6 +28,7 @@ public class Deeplinking {
     private static final String INSTALL_PATH = "installs/android";
     private Routing mRouting;
     private Handling mHandling;
+    private Filtering mFiltering;
     private LinkGenerator mLinkGenerator;
     private Resolver mResolver;
     private String mToken;
@@ -35,7 +36,8 @@ public class Deeplinking {
     public Deeplinking(String token, Context context) {
         mToken = token;
         mHandling = new Handling();
-        mRouting = new Routing(token, context, mHandling);
+        mFiltering = new Filtering();
+        mRouting = new Routing(token, context, mHandling, mFiltering);
         mLinkGenerator = new LinkGenerator(token);
         mResolver = new Resolver(token);
     }
