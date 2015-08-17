@@ -54,6 +54,13 @@ public class Deeplinking {
         mRouting.mapRoute(route, activityClassName, routeParameters, queryParameters);
     }
 
+    /**
+     * Maps a route with a specific callback that will be executed whenever the mapped deep link
+     * is opened.
+     *
+     * @param route             The route in route format.
+     * @param callback          The callback that will be executed when the mapped deep link is opened.
+     */
     public void mapRoute(String route, DeeplinkCallback callback) {
         mRouting.mapRoute(route, callback);
     }
@@ -69,7 +76,14 @@ public class Deeplinking {
     }
 
 
-    public void mapDefaultRoute(String route, DeeplinkCallback callback) {
+    /**
+     * Maps the default route with a specific callback. Only deep links that do not match any
+     * existing routes will trigger the default route.
+     *
+     * @param callback          The callback that will be executed when the opened deep link does not match
+     *                          any existing routes.
+     */
+    public void mapDefaultRoute(DeeplinkCallback callback) {
         mapRoute(null, callback);
     }
 

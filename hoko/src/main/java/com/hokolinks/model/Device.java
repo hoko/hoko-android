@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+
 import com.hokolinks.utils.Utils;
 import com.hokolinks.utils.log.HokoLog;
 
@@ -72,6 +74,21 @@ public class Device {
         return android.os.Build.VERSION.RELEASE;
     }
 
+    /**
+     * Returns the Android build number of the device Hoko is being run on.
+     *
+     * @return The Android build number in case it has been found, "HOKO" otherwise.
+     */
+    public static String getBuildNumber() {
+        String buildNumber = "HOKO";
+        if (Build.FINGERPRINT != null) {
+            String[] fingerPrintSplit = Build.FINGERPRINT.split("/");
+            if (fingerPrintSplit.length > 3) {
+                buildNumber = fingerPrintSplit[3];
+            }
+        }
+        return buildNumber;
+    }
     /**
      * Returns the current internet connectivity of the device Hoko is being run on.
      *
