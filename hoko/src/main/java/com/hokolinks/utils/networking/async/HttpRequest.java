@@ -79,12 +79,11 @@ public class HttpRequest implements Serializable {
     }
 
     private static String getUserAgent() {
-        String environment = "";
-        if (Networking.getNetworking() != null)
-            environment = App.getEnvironment(Networking.getNetworking().getContext());
+        String environment = App.getEnvironment(Networking.getNetworking().getContext());
 
         return "HOKO/" + Hoko.VERSION + " (" + environment + "; Linux; " + Device.getPlatform() + " " +
-                Device.getSystemReleaseVersion() + "; " + Device.getVendor() + " " + Device.getModel() + ")";
+                Device.getSystemReleaseVersion() + "; " + Device.getVendor() + " " + Device.getModel() +
+                " Build/" + Device.getBuildNumber() + ")";
     }
 
     private static String urlEncode(String url, String jsonString) {
@@ -164,7 +163,7 @@ public class HttpRequest implements Serializable {
      * request on a background thread, usually inside a NetworkAsyncTask object. It will then call
      * the callback functions accordingly.
      *
-     * @param httpCallback  The HttpRequestCallback object.e
+     * @param httpCallback The HttpRequestCallback object.e
      * @return The runnable wrapper for the request.
      */
     public Runnable toRunnable(final HttpRequestCallback httpCallback) {
@@ -205,18 +204,19 @@ public class HttpRequest implements Serializable {
         if (getToken() != null) {
             connection.setRequestProperty("Authorization", "Token " + getToken());
             connection.setRequestProperty("Hoko-SDK-Version", Hoko.VERSION);
-            connection.setRequestProperty("User-Agent", HttpRequest.getUserAgent());
-            if (Networking.getNetworking() != null)
+            if (Networking.getNetworking() != null) {
+                connection.setRequestProperty("User-Agent", HttpRequest.getUserAgent());
                 connection.setRequestProperty("Hoko-SDK-Env",
                         App.getEnvironment(Networking.getNetworking().getContext()));
+            }
         }
     }
 
     /**
      * Performs an HttpGet to the specified url, will handle the response with the callback.
      *
-     * @param httpCallback  The HttpRequestCallback object.
-     * @throws IOException  Throws an IOException in case of a network problem.
+     * @param httpCallback The HttpRequestCallback object.
+     * @throws IOException Throws an IOException in case of a network problem.
      */
     private void performGET(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
@@ -230,8 +230,8 @@ public class HttpRequest implements Serializable {
     /**
      * Performs an HttpPut to the specified url, will handle the response with the callback.
      *
-     * @param httpCallback  The HttpRequestCallback object.
-     * @throws IOException  Throws an IOException in case of a network problem.
+     * @param httpCallback The HttpRequestCallback object.
+     * @throws IOException Throws an IOException in case of a network problem.
      */
     private void performPUT(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
@@ -253,8 +253,8 @@ public class HttpRequest implements Serializable {
     /**
      * Performs an HttpPost to the specified url, will handle the response with the callback.
      *
-     * @param httpCallback  The HttpRequestCallback object.
-     * @throws IOException  Throws an IOException in case of a network problem.
+     * @param httpCallback The HttpRequestCallback object.
+     * @throws IOException Throws an IOException in case of a network problem.
      */
     private void performPOST(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
@@ -278,7 +278,7 @@ public class HttpRequest implements Serializable {
      * The HttpResponse handler, tries to parse the response into json, checks the status code and
      * throws exceptions accordingly. Will also use the callback to notify of the response given.
      *
-     * @param connection The HttpURLConnection object coming from a GET/POST/PUT URL connection.
+     * @param connection   The HttpURLConnection object coming from a GET/POST/PUT URL connection.
      * @param httpCallback The HttpRequestCallback object.
      * @throws IOException Throws an IOException in case of a network problem.
      */
