@@ -23,7 +23,7 @@ public class Filtering {
      *
      * @param callback A FilterCallback object.
      */
-    public void addHandler(FilterCallback callback) {
+    public void addFilter(FilterCallback callback) {
         mFilters.add(callback);
     }
 
@@ -33,7 +33,7 @@ public class Filtering {
      * @param callback A FilterCallback object.
      * @return true if filter was removed, false otherwise.
      */
-    public boolean removeHandler(FilterCallback callback) {
+    public boolean removeFilter(FilterCallback callback) {
         return mFilters.remove(callback);
     }
 

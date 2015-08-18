@@ -38,6 +38,7 @@ public class Routing {
     private Context mContext;
     private Handling mHandling;
     private Filtering mFiltering;
+    private Deeplink mCurrentDeeplink;
 
     public Routing(String token, Context context, Handling handling, Filtering filtering) {
         mToken = token;
@@ -49,6 +50,10 @@ public class Routing {
 
     public ArrayList<Route> getRoutes() {
         return mRoutes;
+    }
+
+    public Deeplink getCurrentDeeplink() {
+        return mCurrentDeeplink;
     }
 
     /**
@@ -225,7 +230,19 @@ public class Routing {
                 url.getQueryParameters(), metadata, url.getURL());
     }
 
+    protected boolean openCurrentDeeplink() {
+        return openDeeplink(mCurrentDeeplink);
+    }
+
+    protected boolean openDeeplink(Deeplink deeplink) {
+        if (deeplink == null) {
+            return false;
+        }
+        return openDeeplink(deeplink, routeForDeeplink(deeplink));
+    }
+
     private boolean openDeeplink(Deeplink deeplink, Route route) {
+        mCurrentDeeplink = deeplink;
         if (mFiltering.filter(deeplink)) {
 
             deeplink.post(mToken, mContext);
@@ -234,6 +251,8 @@ public class Routing {
                 route.execute(deeplink);
                 return true;
             }
+        } else {
+            openApp();
         }
         return false;
     }
@@ -303,6 +322,15 @@ public class Routing {
                 return true;
         }
         return false;
+    }
+
+    private Route routeForDeeplink(Deeplink deeplink) {
+        for (Route route : mRoutes) {
+            if (route.getRoute().equals(deeplink.getRoute())) {
+                return route;
+            }
+        }
+        return null;
     }
 
     private void sortRoutes() {
