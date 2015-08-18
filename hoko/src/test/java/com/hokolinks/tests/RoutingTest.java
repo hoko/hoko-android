@@ -1,6 +1,7 @@
 package com.hokolinks.tests;
 
 import com.hokolinks.BuildConfig;
+import com.hokolinks.deeplinking.Filtering;
 import com.hokolinks.deeplinking.Handling;
 import com.hokolinks.deeplinking.Routing;
 import com.hokolinks.model.Route;
@@ -20,7 +21,7 @@ public class RoutingTest {
 
     @Test
     public void testRoutingSort() {
-        Routing routing = new Routing("token", RuntimeEnvironment.application, new Handling());
+        Routing routing = new Routing("token", RuntimeEnvironment.application, new Handling(), new Filtering());
         routing.mapRoute("product/:product_id", null);
         routing.mapRoute("product/xpto/:id", null);
         routing.mapRoute("product/xpto/zzz", null);
