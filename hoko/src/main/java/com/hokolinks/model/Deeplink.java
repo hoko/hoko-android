@@ -37,6 +37,8 @@ public class Deeplink {
     private String mURLScheme;
     private HashMap<String, JSONObject> mURLs;
     private String mDeeplinkURL;
+    private boolean mIsDeferred;
+    private boolean mWasOpened;
 
     /**
      * The constructor for Deeplink objects.

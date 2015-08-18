@@ -8,6 +8,7 @@ import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
 import com.hokolinks.deeplinking.listeners.SmartlinkResolveListener;
 import com.hokolinks.model.Deeplink;
 import com.hokolinks.model.DeeplinkCallback;
+import com.hokolinks.model.FilterCallback;
 import com.hokolinks.model.exceptions.LinkGenerationException;
 import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.Networking;
@@ -28,6 +29,7 @@ public class Deeplinking {
     private static final String INSTALL_PATH = "installs/android";
     private Routing mRouting;
     private Handling mHandling;
+    private Filtering mFiltering;
     private LinkGenerator mLinkGenerator;
     private Resolver mResolver;
     private String mToken;
@@ -35,9 +37,10 @@ public class Deeplinking {
     public Deeplinking(String token, Context context) {
         mToken = token;
         mHandling = new Handling();
-        mRouting = new Routing(token, context, mHandling);
+        mFiltering = new Filtering();
+        mRouting = new Routing(token, context, mHandling, mFiltering);
         mLinkGenerator = new LinkGenerator(token);
-        mResolver = new Resolver(token);
+        mResolver = new Resolver(token, context);
     }
 
     // Map Routes
@@ -55,6 +58,17 @@ public class Deeplinking {
     }
 
     /**
+     * Maps a route with a specific callback that will be executed whenever the mapped deep link
+     * is opened.
+     *
+     * @param route             The route in route format.
+     * @param callback          The callback that will be executed when the mapped deep link is opened.
+     */
+    public void mapRoute(String route, DeeplinkCallback callback) {
+        mRouting.mapRoute(route, callback);
+    }
+
+    /**
      * Maps an activity class as a default route and its fields as query parameters.
      *
      * @param activityClassName The activity's class name.
@@ -62,6 +76,18 @@ public class Deeplinking {
      */
     void mapDefaultRoute(String activityClassName, HashMap<String, Field> queryParameters) {
         mapRoute(null, activityClassName, null, queryParameters);
+    }
+
+
+    /**
+     * Maps the default route with a specific callback. Only deep links that do not match any
+     * existing routes will trigger the default route.
+     *
+     * @param callback          The callback that will be executed when the opened deep link does not match
+     *                          any existing routes.
+     */
+    public void mapDefaultRoute(DeeplinkCallback callback) {
+        mapRoute(null, callback);
     }
 
     /**
@@ -196,14 +222,47 @@ public class Deeplinking {
         });
     }
 
-    public void mapRoute(String route, DeeplinkCallback callback) {
-        mRouting.mapRoute(route, callback);
+    /**
+     * This method will return the current the last deep link that was processed (whether it was
+     * sucessfully opened, or not, due to filters) by the HOKO SDK. If no deep links were processed
+     * at the time of the call, this will return null.
+     *
+     * @return The last deeplink object that was processed by the SDK.
+     */
+    public Deeplink getCurrentDeeplink() {
+        return mRouting.getCurrentDeeplink();
+    }
+
+    /**
+     * This method will try to open the last deep link that was processed (whether it was
+     * sucessfully opened, or not, due to filters) by calling the route that is currently mapping
+     * this deeplink and the handlers.
+     * If the deeplink object is not nil and was opened during this call, the method will return
+     * true, otherwise false.
+     *
+     * @return Returns true if the current deeplink object was sucessfully opened, false otherwise.
+     */
+    public boolean openCurrentDeeplink() {
+        return mRouting.openCurrentDeeplink();
+    }
+
+    /**
+     * This method will try to open the deeplink object given in the parameters,
+     * by calling the route that is currently mapping that deeplink and the handlers.
+     * If the deeplink was opened during this call, the method will return true, otherwise false
+     *
+     * @param deeplink The deeplink object that will be opened
+     * @return true if the deeplink object given in the parameters was successfully opened, false
+     * otherwise.
+     */
+    public boolean openDeeplink(Deeplink deeplink) {
+        return mRouting.openDeeplink(deeplink);
     }
 
     // Handlers
 
     /**
-     * With addHandler() you can add an object which implements the Handler interface to be
+     * With addHandler() you can add an object which implements the DeeplinkCallback interface to be
      * called every time your application opens a deeplink. This allows you to track incoming
      * deeplinks outside of the deeplinking targets.
      * <pre>{@code
@@ -220,7 +279,7 @@ public class Deeplinking {
     }
 
     /**
-     * With removeHandler() you can remove a previously added Handler object.
+     * With removeHandler() you can remove a previously added DeeplinkCallback object.
      * <pre>{@code
      * Hoko.deeplinking().removeHandler(analyticsHandler);
      * }</pre>
@@ -230,6 +289,38 @@ public class Deeplinking {
      */
     public boolean removeHandler(DeeplinkCallback callback) {
         return mHandling.removeHandler(callback);
+    }
+
+    // Filters
+
+    /**
+     * With addFilter() you can add an object which implements the FilterCallback interface to be
+     * called every time your application opens a deeplink. This allows to filter out deeplinks on
+     * your application.
+     * <pre>{@code
+     * Hoko.deeplinking().addFilter(new FilterCallback() {
+     *      public boolean openDeeplink(Deeplink deeplink) {
+     *          return user.isLoggedIn();
+     *      }});
+     * }</pre>
+     *
+     * @param filterCallback An object which implements the FilterCallback interface.
+     */
+    public void addFilter(FilterCallback filterCallback) {
+        mFiltering.addFilter(filterCallback);
+    }
+
+    /**
+     * With removeFilter() you can remove a previously added FilterCallback object.
+     * <pre>{@code
+     * Hoko.deeplinking().removeFilter(userLoggedInFilter);
+     * }</pre>
+     *
+     * @param filterCallback An object which implements the DeeplinkCallback interface.
+     * @return true if the handler was removed, false otherwise.
+     */
+    public boolean removeFilter(FilterCallback filterCallback) {
+        return mFiltering.removeFilter(filterCallback);
     }
 
     // Link Generation

@@ -37,16 +37,23 @@ public class Routing {
     private String mToken;
     private Context mContext;
     private Handling mHandling;
+    private Filtering mFiltering;
+    private Deeplink mCurrentDeeplink;
 
-    public Routing(String token, Context context, Handling handling) {
+    public Routing(String token, Context context, Handling handling, Filtering filtering) {
         mToken = token;
         mContext = context;
         mHandling = handling;
+        mFiltering = filtering;
         mRoutes = new ArrayList<>();
     }
 
     public ArrayList<Route> getRoutes() {
         return mRoutes;
+    }
+
+    public Deeplink getCurrentDeeplink() {
+        return mCurrentDeeplink;
     }
 
     /**
@@ -171,8 +178,8 @@ public class Routing {
             openApp();
             return false;
         }
-        final Deeplink deeplink = deeplinkForURL(url, route);
-        deeplink.setMetadata(metadata);
+        final Deeplink deeplink = deeplinkForURL(url, route, metadata);
+
         if (deeplink.needsMetadata()) {
             deeplink.requestMetadata(mToken, new MetadataRequestListener() {
                 @Override
@@ -215,19 +222,41 @@ public class Routing {
     }
 
     private Deeplink deeplinkForURL(URL url, Route route) {
+        return deeplinkForURL(url, route, null);
+    }
+
+    private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), null, url.getURL());
+                url.getQueryParameters(), metadata, url.getURL());
+    }
+
+    protected boolean openCurrentDeeplink() {
+        return openDeeplink(mCurrentDeeplink);
+    }
+
+    protected boolean openDeeplink(Deeplink deeplink) {
+        if (deeplink == null) {
+            return false;
+        }
+        return openDeeplink(deeplink, routeForDeeplink(deeplink));
     }
 
     private boolean openDeeplink(Deeplink deeplink, Route route) {
-        deeplink.post(mToken, mContext);
-        mHandling.handle(deeplink);
-        if (route != null) {
-            route.execute(deeplink);
-            return true;
+        mCurrentDeeplink = deeplink;
+        if (mFiltering.filter(deeplink)) {
+
+            deeplink.post(mToken, mContext);
+            mHandling.handle(deeplink);
+            if (route != null) {
+                route.execute(deeplink);
+                return true;
+            }
+        } else {
+            openApp();
         }
         return false;
     }
+
 
     /**
      * Function to add a new Route to the routes list (or as a default route).
@@ -295,6 +324,15 @@ public class Routing {
         return false;
     }
 
+    private Route routeForDeeplink(Deeplink deeplink) {
+        for (Route route : mRoutes) {
+            if (route.getRoute().equals(deeplink.getRoute())) {
+                return route;
+            }
+        }
+        return null;
+    }
+
     private void sortRoutes() {
         Collections.sort(mRoutes, new Comparator<Route>() {
             @Override
@@ -303,7 +341,7 @@ public class Routing {
                     return route1.getComponents().size() - route2.getComponents().size();
                 }
 
-                for (int index = 0; index < route1.getComponents().size(); index ++) {
+                for (int index = 0; index < route1.getComponents().size(); index++) {
                     String component1 = route1.getComponents().get(index);
                     String component2 = route2.getComponents().get(index);
 
