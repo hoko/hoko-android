@@ -51,9 +51,11 @@ public class Deeplink {
      *                        the query parameters.
      * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
      * @param deeplinkURL The actual deeplink url opened by the app.
+     * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
      */
     public Deeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
-                    HashMap<String, String> queryParameters, JSONObject metadata, String deeplinkURL) {
+                    HashMap<String, String> queryParameters, JSONObject metadata,
+                    String deeplinkURL, boolean isDeferred) {
         if (urlScheme == null)
             mURLScheme = "";
         else
@@ -65,6 +67,7 @@ public class Deeplink {
         mQueryParameters = queryParameters != null ? queryParameters : new HashMap<String, String>();
         mURLs = new HashMap<>();
         mDeeplinkURL = deeplinkURL;
+        mIsDeferred = isDeferred;
     }
 
     /**
@@ -132,7 +135,7 @@ public class Deeplink {
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                     HashMap<String, String> queryParameters, JSONObject metadata) {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
-                routeParameters, queryParameters, metadata, null);
+                routeParameters, queryParameters, metadata, null, false);
 
         if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
                 (route == null && routeParameters == null && queryParameters == null &&
@@ -385,4 +388,15 @@ public class Deeplink {
         return getSmartlinkClickIdentifier() != null;
     }
 
+    public boolean wasOpened() {
+        return mWasOpened;
+    }
+
+    public void setWasOpened(boolean wasOpened) {
+        mWasOpened = wasOpened;
+    }
+
+    public boolean isDeferred() {
+        return mIsDeferred;
+    }
 }

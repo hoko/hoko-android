@@ -14,6 +14,7 @@ import com.hokolinks.Hoko;
 import com.hokolinks.deeplinking.annotations.DeeplinkDefaultRoute;
 import com.hokolinks.deeplinking.annotations.DeeplinkFragmentActivity;
 import com.hokolinks.deeplinking.annotations.DeeplinkMetadata;
+import com.hokolinks.deeplinking.annotations.DeeplinkMultipleRoute;
 import com.hokolinks.deeplinking.annotations.DeeplinkQueryParameter;
 import com.hokolinks.deeplinking.annotations.DeeplinkRoute;
 import com.hokolinks.deeplinking.annotations.DeeplinkRouteParameter;
@@ -49,8 +50,23 @@ public class AnnotationParser {
     private static String routeFromClass(Class classObject) {
         DeeplinkRoute annotation = (DeeplinkRoute) classObject
                 .getAnnotation(DeeplinkRoute.class);
-        if (annotation != null && annotation.value().compareTo(DeeplinkRoute.noValue) != 0) {
+        if (annotation != null && !annotation.value().equals(DeeplinkRoute.noValue)) {
             return annotation.value();
+        }
+        return null;
+    }
+
+    /**
+     * Get the route annotated with DeeplinkMultipleRoute on a certain class.
+     *
+     * @param classObject A classObject (usually an activity).
+     * @return The route string.
+     */
+    private static List<String> routesFromClass(Class classObject) {
+        DeeplinkMultipleRoute annotation = (DeeplinkMultipleRoute) classObject
+                .getAnnotation(DeeplinkMultipleRoute.class);
+        if (annotation != null && annotation.routes().length > 0) {
+            return Arrays.asList(annotation.routes());
         }
         return null;
     }
@@ -173,8 +189,10 @@ public class AnnotationParser {
         String metadata = activity.getIntent().getStringExtra(IntentRouteImpl.METADATA_KEY);
 
         String routeFromClass = routeFromClass(activity.getClass());
-
-        if (routeFromClass != null && routeFromClass.compareTo(route) == 0) { // Activity
+        List<String> routesFromClass = routesFromClass(activity.getClass());
+        boolean isClassRoute = (routeFromClass != null && routeFromClass.equals(route)) ||
+                (routesFromClass != null && routesFromClass.contains(route));
+        if (isClassRoute) { // Activity
             return inject(activity, route, routeParametersBundle, queryParametersBundle, metadata);
         } else if (activity instanceof FragmentActivity) {
             return injectFragment((FragmentActivity) activity, route, routeParametersBundle,
@@ -541,6 +559,8 @@ public class AnnotationParser {
                 HashMap<String, Field> routeParameters = getRouteParameters(classObject);
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
                 deeplinking.mapRoute(route, activityName, routeParameters, queryParameters);
+            } else {
+                mapClassToMultipleDeeplink(activityName, classObject);
             }
             if (shouldDefault && isDefaultRoute(classObject)) {
                 HashMap<String, Field> queryParameters = getQueryParameters(classObject);
@@ -550,6 +570,20 @@ public class AnnotationParser {
 
         if (shouldFragment) {
             parseFragmentActivity(classObject, activityName);
+        }
+    }
+
+    private static void mapClassToMultipleDeeplink(String activityName, Class classObject) {
+        List<String> routes = routesFromClass(classObject);
+        Deeplinking deeplinking = Hoko.deeplinking();
+        if (deeplinking != null) {
+            if (routes != null) {
+                for (String route : routes) {
+                    HashMap<String, Field> routeParameters = getRouteParameters(classObject);
+                    HashMap<String, Field> queryParameters = getQueryParameters(classObject);
+                    deeplinking.mapRoute(route, activityName, routeParameters, queryParameters);
+                }
+            }
         }
     }
 

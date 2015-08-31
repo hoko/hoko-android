@@ -152,16 +152,17 @@ public class Routing {
      *
      * @param urlString The deeplink.
      * @param metadata  The metadata in JSON format which was passed when the smartlink was created.
+     * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
      * @return true if it can open the deeplink, false otherwise.
      */
-    public boolean openURL(String urlString, JSONObject metadata) {
+    public boolean openURL(String urlString, JSONObject metadata, boolean isDeferred) {
         if (urlString == null) {
             openApp();
             return false;
         }
         HokoLog.d("Opening Deeplink " + urlString);
         URL url = new URL(urlString);
-        return handleOpenURL(url, metadata);
+        return handleOpenURL(url, metadata, isDeferred);
     }
 
     /**
@@ -170,15 +171,16 @@ public class Routing {
      *
      * @param url      A URL object.
      * @param metadata The metadata in JSON format which was passed when the smartlink was created.
+     * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
      * @return true in case in opened the activity, false otherwise.
      */
-    private boolean handleOpenURL(URL url, JSONObject metadata) {
+    private boolean handleOpenURL(URL url, JSONObject metadata, boolean isDeferred) {
         final Route route = routeForURL(url);
         if (route == null) {
             openApp();
             return false;
         }
-        final Deeplink deeplink = deeplinkForURL(url, route, metadata);
+        final Deeplink deeplink = deeplinkForURL(url, route, metadata, isDeferred);
 
         if (deeplink.needsMetadata()) {
             deeplink.requestMetadata(mToken, new MetadataRequestListener() {
@@ -221,13 +223,9 @@ public class Routing {
         return null;
     }
 
-    private Deeplink deeplinkForURL(URL url, Route route) {
-        return deeplinkForURL(url, route, null);
-    }
-
-    private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata) {
+    private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata, boolean isDeferred) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), metadata, url.getURL());
+                url.getQueryParameters(), metadata, url.getURL(), isDeferred);
     }
 
     protected boolean openCurrentDeeplink() {
@@ -249,6 +247,7 @@ public class Routing {
             mHandling.handle(deeplink);
             if (route != null) {
                 route.execute(deeplink);
+                deeplink.setWasOpened(true);
                 return true;
             }
         } else {
