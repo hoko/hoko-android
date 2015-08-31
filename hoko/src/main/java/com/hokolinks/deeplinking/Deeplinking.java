@@ -163,7 +163,7 @@ public class Deeplinking {
      * @return true in case of success, false in case of failure or non-existent deeplink.
      */
     public boolean openURL(String urlString, JSONObject metadata) {
-        return mRouting.openURL(urlString, metadata);
+        return mRouting.openURL(urlString, metadata, false);
     }
 
     /**
@@ -182,7 +182,7 @@ public class Deeplinking {
         Networking.getNetworking().addRequest(
                 new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
                         HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
-        mRouting.openURL(urlString, null);
+        mRouting.openURL(urlString, null, true);
     }
 
     /**

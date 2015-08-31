@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.hokolinks.activity.HokoActivity;
+import com.hokolinks.activity.HokoAppLinksActivity;
 import com.hokolinks.utils.log.HokoLog;
 
 import java.util.ArrayList;
@@ -128,7 +129,8 @@ public class ApplicationLifecycle {
 
                         @Override
                         public void onActivityResumed(Activity activity) {
-                            if (activity instanceof HokoActivity)
+                            if (activity instanceof HokoActivity ||
+                                    activity instanceof HokoAppLinksActivity)
                                 return;
                             if (statusHistory.size() != 0)
                                 statusHistory.add(HokoActivityStatus.RESUMED);
@@ -137,7 +139,8 @@ public class ApplicationLifecycle {
 
                         @Override
                         public void onActivityPaused(Activity activity) {
-                            if (activity instanceof HokoActivity)
+                            if (activity instanceof HokoActivity ||
+                                    activity instanceof HokoAppLinksActivity)
                                 return;
                             statusHistory.add(HokoActivityStatus.PAUSED);
                         }

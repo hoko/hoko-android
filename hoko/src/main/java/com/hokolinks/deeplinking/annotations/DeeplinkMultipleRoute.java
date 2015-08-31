@@ -8,16 +8,15 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation on the activities you wish to be deeplinkable.
- * <pre>{@code @DeeplinkRoute("product/:product_id")
+ * <pre>{@code @DeeplinkMultipleRoute(routes = {"product/:product_id", "product/:product_id/:gender"})
  * public class ProductActivity extends Activity { ... }
  * }</pre>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface DeeplinkRoute {
-    String noValue = "DeeplinkNoValue";
+public @interface DeeplinkMultipleRoute {
 
-    String value() default noValue;
+    String[] routes() default {};
 
 }
