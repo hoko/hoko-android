@@ -23,12 +23,16 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 /**
  * HttpRequest is a savable model around HttpRequests.
  * It contains the path, an operation type, parameters in the form of json and the number of
  * retries.
  */
-public class HttpRequest implements Serializable {
+public class HttpRequest implements Serializable, HostnameVerifier{
 
     // Constants
     private static final int TASK_TIMEOUT = 15000; // millis
@@ -212,6 +216,13 @@ public class HttpRequest implements Serializable {
         }
     }
 
+    private void applyHttpsHostnameVerifier(HttpURLConnection connection, URL url) {
+        if (url.getProtocol().equals("https")) {
+            HttpsURLConnection httpsURLConnection = (HttpsURLConnection)connection;
+            httpsURLConnection.setHostnameVerifier(this);
+        }
+    }
+
     /**
      * Performs an HttpGet to the specified url, will handle the response with the callback.
      *
@@ -221,6 +232,7 @@ public class HttpRequest implements Serializable {
     private void performGET(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        applyHttpsHostnameVerifier(connection, url);
         connection.setRequestMethod("GET");
         applyHeaders(connection, false);
         HokoLog.d("GET from " + getUrl());
@@ -236,6 +248,7 @@ public class HttpRequest implements Serializable {
     private void performPUT(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        applyHttpsHostnameVerifier(connection, url);
         connection.setRequestMethod("PUT");
         applyHeaders(connection, true);
         if (getParameters() != null) {
@@ -259,8 +272,10 @@ public class HttpRequest implements Serializable {
     private void performPOST(HttpRequestCallback httpCallback) throws IOException {
         URL url = getUrl();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        applyHttpsHostnameVerifier(connection, url);
         connection.setRequestMethod("POST");
         applyHeaders(connection, true);
+        HokoLog.d("POST to " + getUrl() + " with " + getParameters());
         if (getParameters() != null) {
             connection.setDoOutput(true);
             OutputStreamWriter outputStreamWriter =
@@ -269,7 +284,6 @@ public class HttpRequest implements Serializable {
             outputStreamWriter.flush();
             outputStreamWriter.close();
         }
-        HokoLog.d("POST to " + getUrl() + " with " + getParameters());
 
         handleHttpResponse(connection, httpCallback);
     }
@@ -333,6 +347,11 @@ public class HttpRequest implements Serializable {
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean verify(String hostname, SSLSession session) {
+        return sTaskEndpoint.contains(hostname);
     }
 
     // Type Enum

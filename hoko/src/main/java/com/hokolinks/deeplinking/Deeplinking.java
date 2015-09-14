@@ -345,7 +345,7 @@ public class Deeplinking {
      *      }});
      * }</pre>
      *
-     * @param deeplink A HKDeeplink object.
+     * @param deeplink A Deeplink object.
      * @param listener A HokoLinkGenerationLister instance.
      */
     public void generateSmartlink(Deeplink deeplink, LinkGenerationListener listener) {
@@ -370,7 +370,7 @@ public class Deeplinking {
      * }</pre>
      *
      * @param activity An activity annotated with DeeplinkRoute.
-     * @param listener A HokoLinkGenerationLister instance.
+     * @param listener A LinkGenerationLister instance.
      */
     public void generateSmartlink(Activity activity, LinkGenerationListener listener) {
         Deeplink deeplink = AnnotationParser.deeplinkFromActivity(activity);
@@ -384,7 +384,7 @@ public class Deeplinking {
     /**
      * generateSmartlink(fragment, listener) allows the app to generate Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to
+     * corresponding view. A fragment annotated with DeeplinkRoute may be passed along to
      * generate the deeplinks for all available platforms. In case the request is successful, the
      * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
@@ -413,7 +413,7 @@ public class Deeplinking {
     /**
      * generateSmartlink(fragment, listener) allows the app to generate Smartlinks for the
      * user to share with other users, independent of the platform users will be redirected to the
-     * corresponding view. An fragment annotated with DeeplinkRoute may be passed along to
+     * corresponding view. A fragment annotated with DeeplinkRoute may be passed along to
      * generate the deeplinks for all available platforms. In case the request is successful, the
      * onLinkGenerated function will be called receiving an smartlink (e.g. http://hoko.io/XmPle).
      * Otherwise it will return the cause of failure in the onError function.
@@ -437,6 +437,70 @@ public class Deeplinking {
         } else {
             listener.onError(new LinkGenerationException());
         }
+    }
+
+    /**
+     *  generateLazySmartlink(deeplink, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. A user generated Deeplink object may be passed along to generate the
+     *  deeplinks for all available platforms. In case the translation is possible, the method will
+     *  return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param deeplink A Deeplink object.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    public String generateLazySmartlink(Deeplink deeplink, String domain) {
+        return mLinkGenerator.generateLazySmartlink(deeplink, domain);
+    }
+
+    /**
+     *  generateLazySmartlink(fragment, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. A fragment annotated with DeeplinkRoute may be passed along to generate
+     *  the deeplinks for all available platforms. In case the translation is possible, the method
+     *  will return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param fragment A fragment annotated with DeeplinkRoute.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    public String generateLazySmartlink(android.app.Fragment fragment, String domain) {
+        return generateLazySmartlink(AnnotationParser.deeplinkFromFragment(fragment), domain);
+    }
+
+    /**
+     *  generateLazySmartlink(fragment, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. A fragment annotated with DeeplinkRoute may be passed along to generate
+     *  the deeplinks for all available platforms. In case the translation is possible, the method
+     *  will return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param fragment A fragment annotated with DeeplinkRoute.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    public String generateLazySmartlink(Fragment fragment, String domain) {
+        return generateLazySmartlink(AnnotationParser.deeplinkFromFragment(fragment), domain);
+    }
+
+    /**
+     *  generateLazySmartlink(fragment, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. An activity annotated with DeeplinkRoute may be passed along to generate
+     *  the deeplinks for all available platforms. In case the translation is possible, the method
+     *  will return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param activity An activity annotated with DeeplinkRoute.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    public String generateLazySmartlink(Activity activity, String domain) {
+        return generateLazySmartlink(AnnotationParser.deeplinkFromActivity(activity), domain);
     }
 
 

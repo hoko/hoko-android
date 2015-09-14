@@ -3,14 +3,21 @@ package com.hokolinks.deeplinking;
 import com.hokolinks.Hoko;
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.exceptions.InvalidDomainException;
+import com.hokolinks.model.exceptions.LazySmartlinkCantHaveURLsException;
 import com.hokolinks.model.exceptions.LinkGenerationException;
 import com.hokolinks.model.exceptions.NullDeeplinkException;
 import com.hokolinks.model.exceptions.RouteNotMappedException;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.async.HttpRequest;
 import com.hokolinks.utils.networking.async.HttpRequestCallback;
 import com.hokolinks.utils.networking.async.NetworkAsyncTask;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * LinkGenerator serves the purpose of generating Smartlinks for a given deeplink.
@@ -71,6 +78,28 @@ class LinkGenerator {
                             listener.onError(new LinkGenerationException());
                     }
                 })).execute();
+    }
+
+    public String generateLazySmartlink(Deeplink deeplink, String domain) {
+        if (deeplink != null && domain != null) {
+            if (deeplink.hasURLs()) {
+                HokoLog.e(new LazySmartlinkCantHaveURLsException());
+                return null;
+            }
+            String strippedDomain = new String(domain);
+            strippedDomain = strippedDomain.replace("http://", "");
+            strippedDomain = strippedDomain.replace("https://","");
+            if (strippedDomain.contains("/")) {
+                HokoLog.e(new InvalidDomainException(domain));
+            } else {
+                try {
+                    return "http://" + domain + "lazy?uri=" + URLEncoder.encode(deeplink.getURL(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    HokoLog.e(e);
+                }
+            }
+        }
+        return null;
     }
 
 }

@@ -25,7 +25,7 @@ import com.hokolinks.utils.versionchecker.VersionChecker;
  */
 public class Hoko {
 
-    public static final String VERSION = "2.2";
+    public static final String VERSION = BuildConfig.VERSION_NAME.replace("-SNAPSHOT","");
 
     // Static Instance
     private static Hoko sInstance;
