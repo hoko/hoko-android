@@ -28,6 +28,9 @@ public class Deeplink {
     private static final String SMARTLINK_CLICK_IDENTIFIER_KEY = "_hk_cid";
     private static final String SMARTLINK_IDENTIFIER_KEY = "_hk_sid";
     private static final String METADATA_KEY = "_hk_md";
+
+    private static final String OPEN_PATH = "smartlinks/open";
+    private static final String REDEEM_PATH = "smartlinks/redeem";
     private static final String METADATA_PATH = "smartlinks/metadata";
 
     private String mRoute;
@@ -37,6 +40,7 @@ public class Deeplink {
     private String mURLScheme;
     private HashMap<String, JSONObject> mURLs;
     private String mDeeplinkURL;
+    private int mRedeemLimit;
     private boolean mIsDeferred;
     private boolean mWasOpened;
 
@@ -52,10 +56,12 @@ public class Deeplink {
      * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
      * @param deeplinkURL The actual deeplink url opened by the app.
      * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
+     * @param redeemLimit The number of times this deep link may be redeemed (a.k.a. retrieving the
+     *                    metadata from the backend).
      */
     public Deeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
                     HashMap<String, String> queryParameters, JSONObject metadata,
-                    String deeplinkURL, boolean isDeferred) {
+                    String deeplinkURL, boolean isDeferred, int redeemLimit) {
         if (urlScheme == null)
             mURLScheme = "";
         else
@@ -68,6 +74,7 @@ public class Deeplink {
         mURLs = new HashMap<>();
         mDeeplinkURL = deeplinkURL;
         mIsDeferred = isDeferred;
+        mRedeemLimit = redeemLimit;
     }
 
     /**
@@ -134,8 +141,28 @@ public class Deeplink {
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                     HashMap<String, String> queryParameters, JSONObject metadata) {
+       return deeplink(route, routeParameters, queryParameters, metadata, 0);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
+     * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
+     * @param redeemLimit The number of times this deep link may be redeemed (a.k.a. retrieving the
+     *                    metadata from the backend).
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
+                                    HashMap<String, String> queryParameters, JSONObject metadata,
+                                    int redeemLimit) {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
-                routeParameters, queryParameters, metadata, null, false);
+                routeParameters, queryParameters, metadata, null, false, redeemLimit);
 
         if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
                 (route == null && routeParameters == null && queryParameters == null &&
@@ -206,6 +233,13 @@ public class Deeplink {
         return mURLs.size() > 0;
     }
 
+    public void redeem(String token) {
+        Networking.getNetworking().addRequest(
+                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                        REDEEM_PATH, token,
+                        idJSON().toString()));
+    }
+
     /**
      * This function serves the purpose of communicating to the Hoko backend service that a given
      * inbound deeplink object was opened either through the notification id or through the
@@ -217,7 +251,7 @@ public class Deeplink {
         if (isSmartlink()) {
             Networking.getNetworking().addRequest(
                     new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                            "smartlinks/open", token,
+                            OPEN_PATH, token,
                             smartlinkJSON(context).toString()));
         }
 
@@ -232,7 +266,7 @@ public class Deeplink {
     public void requestMetadata(String token, final MetadataRequestListener metadataRequestListener) {
         if (needsMetadata()) {
             new NetworkAsyncTask(new HttpRequest(HttpRequest.HokoNetworkOperationType.GET,
-                    HttpRequest.getURLFromPath(METADATA_PATH), token, metadataJSON().toString())
+                    HttpRequest.getURLFromPath(METADATA_PATH), token, idJSON().toString())
                     .toRunnable(new HttpRequestCallback() {
                         @Override
                         public void onSuccess(JSONObject jsonObject) {
@@ -299,6 +333,7 @@ public class Deeplink {
         try {
             JSONObject root = new JSONObject();
             root.putOpt("uri", getURL());
+            root.put("redeemLimit", getRedeemLimit());
             root.putOpt("metadata", getMetadata());
             if (hasURLs())
                 root.putOpt("routes", new JSONObject(mURLs));
@@ -324,7 +359,7 @@ public class Deeplink {
         return root;
     }
 
-    private JSONObject metadataJSON() {
+    private JSONObject idJSON() {
         try {
             if (getSmartlinkClickIdentifier() != null) {
                 return new JSONObject().put(SMARTLINK_CLICK_IDENTIFIER_KEY, getSmartlinkClickIdentifier());
@@ -398,5 +433,9 @@ public class Deeplink {
 
     public boolean isDeferred() {
         return mIsDeferred;
+    }
+
+    public int getRedeemLimit() {
+        return mRedeemLimit;
     }
 }

@@ -439,6 +439,15 @@ public class Deeplinking {
         }
     }
 
+    /**
+     *  Redeem will let the HOKO backend know that the deep link was redeemed by the user.
+     *
+     *  @param deeplink The deep link which should be redeemed.
+     */
+    public void redeemDeeplink(Deeplink deeplink) {
+        deeplink.redeem(mToken);
+    }
+
 
     public Routing routing() {
         return mRouting;
