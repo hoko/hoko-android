@@ -225,7 +225,7 @@ public class Routing {
 
     private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata, boolean isDeferred) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), metadata, url.getURL(), isDeferred);
+                url.getQueryParameters(), metadata, url.getURL(), isDeferred, false);
     }
 
     protected boolean openCurrentDeeplink() {

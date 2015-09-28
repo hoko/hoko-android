@@ -3,14 +3,21 @@ package com.hokolinks.deeplinking;
 import com.hokolinks.Hoko;
 import com.hokolinks.deeplinking.listeners.LinkGenerationListener;
 import com.hokolinks.model.Deeplink;
+import com.hokolinks.model.exceptions.InvalidDomainException;
+import com.hokolinks.model.exceptions.LazySmartlinkCantHaveURLsException;
 import com.hokolinks.model.exceptions.LinkGenerationException;
 import com.hokolinks.model.exceptions.NullDeeplinkException;
 import com.hokolinks.model.exceptions.RouteNotMappedException;
+import com.hokolinks.utils.log.HokoLog;
 import com.hokolinks.utils.networking.async.HttpRequest;
 import com.hokolinks.utils.networking.async.HttpRequestCallback;
 import com.hokolinks.utils.networking.async.NetworkAsyncTask;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * LinkGenerator serves the purpose of generating Smartlinks for a given deeplink.
@@ -71,6 +78,40 @@ class LinkGenerator {
                             listener.onError(new LinkGenerationException());
                     }
                 })).execute();
+    }
+
+    /**
+     *  generateLazySmartlink(deeplink, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. A user generated Deeplink object may be passed along to generate the
+     *  deeplinks for all available platforms. In case the translation is possible, the method will
+     *  return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param deeplink A Deeplink object.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    String generateLazySmartlink(Deeplink deeplink, String domain) {
+        if (deeplink != null && domain != null) {
+            if (deeplink.hasURLs()) {
+                HokoLog.e(new LazySmartlinkCantHaveURLsException());
+                return null;
+            }
+            String strippedDomain = domain + "";
+            strippedDomain = strippedDomain.replace("http://", "");
+            strippedDomain = strippedDomain.replace("https://","");
+            if (strippedDomain.contains("/")) {
+                HokoLog.e(new InvalidDomainException(domain));
+            } else {
+                try {
+                    return "http://" + domain + "lazy?uri=" + URLEncoder.encode(deeplink.getURL(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    HokoLog.e(e);
+                }
+            }
+        }
+        return null;
     }
 
 }

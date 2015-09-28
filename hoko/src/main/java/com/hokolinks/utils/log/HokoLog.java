@@ -43,9 +43,7 @@ public class HokoLog {
      * @param message The message.
      */
     public static void e(String message) {
-        if (sVerbose) {
-            android.util.Log.e(TAG, message);
-        }
+        android.util.Log.e(TAG, message);
     }
 
     /**
@@ -54,9 +52,7 @@ public class HokoLog {
      * @param exception The exception.
      */
     public static void e(Exception exception) {
-        if (sVerbose) {
-            android.util.Log.e(TAG, exception.getMessage(), exception);
-        }
+        android.util.Log.e(TAG, exception.getMessage(), exception);
     }
 
     /**
@@ -65,9 +61,7 @@ public class HokoLog {
      * @param error The exception.
      */
     public static void e(Error error) {
-        if (sVerbose) {
-            android.util.Log.e(TAG, error.getMessage(), error);
-        }
+        android.util.Log.e(TAG, error.getMessage(), error);
     }
 
     public static boolean isVerbose() {

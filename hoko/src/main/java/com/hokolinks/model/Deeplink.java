@@ -39,6 +39,7 @@ public class Deeplink {
     private String mDeeplinkURL;
     private boolean mIsDeferred;
     private boolean mWasOpened;
+    private boolean mIsUnique;
 
     /**
      * The constructor for Deeplink objects.
@@ -52,10 +53,11 @@ public class Deeplink {
      * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
      * @param deeplinkURL The actual deeplink url opened by the app.
      * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
+     * @param isUnique true in case the deeplink should be unique, false otherwise.
      */
     public Deeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
                     HashMap<String, String> queryParameters, JSONObject metadata,
-                    String deeplinkURL, boolean isDeferred) {
+                    String deeplinkURL, boolean isDeferred, boolean isUnique) {
         if (urlScheme == null)
             mURLScheme = "";
         else
@@ -68,6 +70,7 @@ public class Deeplink {
         mURLs = new HashMap<>();
         mDeeplinkURL = deeplinkURL;
         mIsDeferred = isDeferred;
+        mIsUnique = mIsUnique;
     }
 
     /**
@@ -134,8 +137,27 @@ public class Deeplink {
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                     HashMap<String, String> queryParameters, JSONObject metadata) {
+       return deeplink(route, routeParameters, queryParameters, metadata, false);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
+     * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
+     * @param isUnique true in case the deeplink should be unique, false otherwise.
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
+                                    HashMap<String, String> queryParameters, JSONObject metadata,
+                                    boolean isUnique) {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
-                routeParameters, queryParameters, metadata, null, false);
+                routeParameters, queryParameters, metadata, null, false, isUnique);
 
         if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
                 (route == null && routeParameters == null && queryParameters == null &&
@@ -202,7 +224,7 @@ public class Deeplink {
         }
     }
 
-    private boolean hasURLs() {
+    public boolean hasURLs() {
         return mURLs.size() > 0;
     }
 
@@ -252,7 +274,7 @@ public class Deeplink {
         }
     }
 
-    private String getURL() {
+    public String getURL() {
         String url = this.getRoute();
         if (this.getRouteParameters() != null) {
             for (String routeParameterKey : this.getRouteParameters().keySet()) {
@@ -300,6 +322,7 @@ public class Deeplink {
             JSONObject root = new JSONObject();
             root.putOpt("uri", getURL());
             root.putOpt("metadata", getMetadata());
+            root.putOpt("unique", isUnique());
             if (hasURLs())
                 root.putOpt("routes", new JSONObject(mURLs));
             return root;
@@ -398,5 +421,9 @@ public class Deeplink {
 
     public boolean isDeferred() {
         return mIsDeferred;
+    }
+
+    public boolean isUnique() {
+        return mIsUnique;
     }
 }
