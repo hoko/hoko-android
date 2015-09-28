@@ -43,6 +43,7 @@ public class Deeplink {
     private int mRedeemLimit;
     private boolean mIsDeferred;
     private boolean mWasOpened;
+    private boolean mIsUnique;
 
     /**
      * The constructor for Deeplink objects.
@@ -58,10 +59,12 @@ public class Deeplink {
      * @param isDeferred true in case the deeplink came from a deferred deeplink, false otherwise.
      * @param redeemLimit The number of times this deep link may be redeemed (a.k.a. retrieving the
      *                    metadata from the backend).
+     * @param isUnique true in case the deeplink should be unique, false otherwise.
      */
     public Deeplink(String urlScheme, String route, HashMap<String, String> routeParameters,
                     HashMap<String, String> queryParameters, JSONObject metadata,
-                    String deeplinkURL, boolean isDeferred, int redeemLimit) {
+                    String deeplinkURL, boolean isDeferred, boolean isUnique, int redeemLimit) {
+
         if (urlScheme == null)
             mURLScheme = "";
         else
@@ -75,6 +78,7 @@ public class Deeplink {
         mDeeplinkURL = deeplinkURL;
         mIsDeferred = isDeferred;
         mRedeemLimit = redeemLimit;
+        mIsUnique = mIsUnique;
     }
 
     /**
@@ -141,7 +145,7 @@ public class Deeplink {
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                     HashMap<String, String> queryParameters, JSONObject metadata) {
-       return deeplink(route, routeParameters, queryParameters, metadata, 0);
+       return deeplink(route, routeParameters, queryParameters, metadata, false);
     }
 
     /**
@@ -154,15 +158,37 @@ public class Deeplink {
      * @param queryParameters A HashMap where the keys are the query components and the values are
      *                        the query parameters.
      * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
-     * @param redeemLimit The number of times this deep link may be redeemed (a.k.a. retrieving the
-     *                    metadata from the backend).
+
+     * @param isUnique true in case the deeplink should be unique, false otherwise.
      * @return The generated Deeplink.
      */
     public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
                                     HashMap<String, String> queryParameters, JSONObject metadata,
-                                    int redeemLimit) {
+                                    boolean isUnique) {
+        return deeplink(route, routeParameters, queryParameters, metadata, isUnique, 0);
+    }
+
+    /**
+     * An easy to use static function for the developer to generate their own deeplinks to
+     * generate Smartlinks afterwards.
+     *
+     * @param route           A route in route format.
+     * @param routeParameters A HashMap where the keys are the route components and the values are
+     *                        the route parameters.
+     * @param queryParameters A HashMap where the keys are the query components and the values are
+     *                        the query parameters.
+     * @param metadata A JSONObject containing metadata to be passed to whoever opens the deeplink.
+
+     * @param isUnique true in case the deeplink should be unique, false otherwise.
+     * @param redeemLimit The number of times a deeplink can be redeemed (a.k.a. how many times the
+     *                    metadata can be retrieved from the HOKO backend).
+     * @return The generated Deeplink.
+     */
+    public static Deeplink deeplink(String route, HashMap<String, String> routeParameters,
+                                    HashMap<String, String> queryParameters, JSONObject metadata,
+                                    boolean isUnique, int redeemLimit) {
         Deeplink deeplink = new Deeplink(null, Utils.sanitizeRoute(route),
-                routeParameters, queryParameters, metadata, null, false, redeemLimit);
+                routeParameters, queryParameters, metadata, null, false, isUnique, redeemLimit);
 
         if (matchRoute(deeplink.getRoute(), deeplink.getRouteParameters()) ||
                 (route == null && routeParameters == null && queryParameters == null &&
@@ -229,7 +255,7 @@ public class Deeplink {
         }
     }
 
-    private boolean hasURLs() {
+    public boolean hasURLs() {
         return mURLs.size() > 0;
     }
 
@@ -286,7 +312,7 @@ public class Deeplink {
         }
     }
 
-    private String getURL() {
+    public String getURL() {
         String url = this.getRoute();
         if (this.getRouteParameters() != null) {
             for (String routeParameterKey : this.getRouteParameters().keySet()) {
@@ -335,6 +361,7 @@ public class Deeplink {
             root.putOpt("uri", getURL());
             root.put("redeemLimit", getRedeemLimit());
             root.putOpt("metadata", getMetadata());
+            root.putOpt("unique", isUnique());
             if (hasURLs())
                 root.putOpt("routes", new JSONObject(mURLs));
             return root;
@@ -437,5 +464,9 @@ public class Deeplink {
 
     public int getRedeemLimit() {
         return mRedeemLimit;
+    }
+
+    public boolean isUnique() {
+        return mIsUnique;
     }
 }

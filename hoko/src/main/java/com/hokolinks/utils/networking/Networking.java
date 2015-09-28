@@ -1,6 +1,7 @@
 package com.hokolinks.utils.networking;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.hokolinks.model.Device;
 import com.hokolinks.utils.Utils;
@@ -18,6 +19,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 /**
  * The Networking class is a wrapper around HokoHttpRequests in order to process them in a

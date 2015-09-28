@@ -56,10 +56,9 @@ public class IntentRouteTest {
 
         JSONObject expectedJSON = new JSONObject();
         JSONObject expectedJSONRoute = new JSONObject();
-        expectedJSONRoute.put("build", "1");
+        expectedJSONRoute.put("build", "0");
         expectedJSONRoute.put("device", Device.getVendor() + " " + Device.getModel());
         expectedJSONRoute.put("path", "product/:product_id/price/:price/open");
-        expectedJSONRoute.put("version", "1.0");
         expectedJSON.put("route", expectedJSONRoute);
 
         assertThat(intentRoute.getJSON(RuntimeEnvironment.application).toString()).isEqualTo(expectedJSON.toString());
