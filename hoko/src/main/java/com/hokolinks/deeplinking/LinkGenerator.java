@@ -80,13 +80,25 @@ class LinkGenerator {
                 })).execute();
     }
 
-    public String generateLazySmartlink(Deeplink deeplink, String domain) {
+    /**
+     *  generateLazySmartlink(deeplink, domain) allows the app to generate lazy Smartlinks for the
+     *  user to share with other users, independent of the platform, users will be redirected to the
+     *  corresponding view. A user generated Deeplink object may be passed along to generate the
+     *  deeplinks for all available platforms. In case the translation is possible, the method will
+     *  return a lazy Smartlink (e.g. http://yourapp.hoko.link/lazy?uri=%2Fproduct%2F0 ).
+     *  Where the uri query parameter will be the url encoded version of the translated deep link.
+     *
+     * @param deeplink A Deeplink object.
+     * @param domain   The domain to which HOKO should generate a lazy Smartlink.
+     *                 (e.g. yourapp.hoko.link or yourapp.customdomain.com).
+     */
+    String generateLazySmartlink(Deeplink deeplink, String domain) {
         if (deeplink != null && domain != null) {
             if (deeplink.hasURLs()) {
                 HokoLog.e(new LazySmartlinkCantHaveURLsException());
                 return null;
             }
-            String strippedDomain = new String(domain);
+            String strippedDomain = domain + "";
             strippedDomain = strippedDomain.replace("http://", "");
             strippedDomain = strippedDomain.replace("https://","");
             if (strippedDomain.contains("/")) {
