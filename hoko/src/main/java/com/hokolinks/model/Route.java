@@ -15,13 +15,23 @@ import java.util.List;
 
 public abstract class Route {
     private String mRoute;
+    private boolean mInternal;
 
     Route(String route) {
+        this(route, false);
+    }
+
+    Route(String route, boolean internal) {
         mRoute = route;
+        mInternal = internal;
     }
 
     public String getRoute() {
         return mRoute;
+    }
+
+    public boolean isInternal() {
+        return mInternal;
     }
 
     /**

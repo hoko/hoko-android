@@ -70,6 +70,16 @@ public class Routing {
     }
 
     /**
+     * Maps an internal route with a route format to a callback.
+     *
+     * @param route    The route in route format.
+     * @param callback A DeeplinkCallback object
+     */
+    public void mapInternalRoute(String route, DeeplinkCallback callback) {
+        addNewRoute(new RouteImpl(URL.sanitizeURL(route), true, callback));
+    }
+
+    /**
      * Maps a route with a route format, an activity class name, its route parameter fields and
      * its query parameter fields to a Route inside Routing.
      *
@@ -225,7 +235,7 @@ public class Routing {
 
     private Deeplink deeplinkForURL(URL url, Route route, JSONObject metadata, boolean isDeferred) {
         return new Deeplink(url.getScheme(), route.getRoute(), url.matchesWithRoute(route),
-                url.getQueryParameters(), metadata, url.getURL(), isDeferred, false);
+                url.getQueryParameters(), metadata, url.getURL(), isDeferred, false, 0);
     }
 
     protected boolean openCurrentDeeplink() {
@@ -240,11 +250,14 @@ public class Routing {
     }
 
     private boolean openDeeplink(Deeplink deeplink, Route route) {
-        mCurrentDeeplink = deeplink;
-        if (mFiltering.filter(deeplink)) {
-
-            deeplink.post(mToken, mContext);
-            mHandling.handle(deeplink);
+        if (!route.isInternal()) {
+            mCurrentDeeplink = deeplink;
+        }
+        if (route.isInternal() || mFiltering.filter(deeplink)) {
+            if (!route.isInternal()) {
+                deeplink.post(mToken, mContext);
+                mHandling.handle(deeplink);
+            }
             if (route != null) {
                 route.execute(deeplink);
                 deeplink.setWasOpened(true);

@@ -359,7 +359,7 @@ public class Deeplink {
         try {
             JSONObject root = new JSONObject();
             root.putOpt("uri", getURL());
-            root.put("redeemLimit", getRedeemLimit());
+            root.put("redeem_limit", getRedeemLimit());
             root.putOpt("metadata", getMetadata());
             root.putOpt("unique", isUnique());
             if (hasURLs())

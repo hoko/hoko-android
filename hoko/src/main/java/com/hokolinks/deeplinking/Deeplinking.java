@@ -41,6 +41,7 @@ public class Deeplinking {
         mRouting = new Routing(token, context, mHandling, mFiltering);
         mLinkGenerator = new LinkGenerator(token);
         mResolver = new Resolver(token, context);
+        setupBanners();
     }
 
     // Map Routes
@@ -176,13 +177,13 @@ public class Deeplinking {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("deeplink", urlString);
+            Networking.getNetworking().addRequest(
+                    new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
+                            HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
+            mRouting.openURL(urlString, null, true);
         } catch (JSONException e) {
             HokoLog.e(e);
         }
-        Networking.getNetworking().addRequest(
-                new HttpRequest(HttpRequest.HokoNetworkOperationType.POST,
-                        HttpRequest.getURLFromPath(INSTALL_PATH), mToken, jsonObject.toString()));
-        mRouting.openURL(urlString, null, true);
     }
 
     /**
@@ -440,14 +441,15 @@ public class Deeplinking {
     }
 
     /**
-<<<<<<< HEAD
      *  Redeem will let the HOKO backend know that the deep link was redeemed by the user.
      *
      *  @param deeplink The deep link which should be redeemed.
      */
     public void redeemDeeplink(Deeplink deeplink) {
         deeplink.redeem(mToken);
-=======
+    }
+
+    /*
      *  generateLazySmartlink(deeplink, domain) allows the app to generate lazy Smartlinks for the
      *  user to share with other users, independent of the platform, users will be redirected to the
      *  corresponding view. A user generated Deeplink object may be passed along to generate the
@@ -509,7 +511,15 @@ public class Deeplinking {
      */
     public String generateLazySmartlink(Activity activity, String domain) {
         return generateLazySmartlink(AnnotationParser.deeplinkFromActivity(activity), domain);
->>>>>>> dd90a3ad1e4ca367b5d5016e7b925d792f85ca4a
+    }
+
+    private void setupBanners() {
+        mRouting.mapInternalRoute("__banner", new DeeplinkCallback() {
+            @Override
+            public void deeplinkOpened(Deeplink deeplink) {
+                openSmartlink(deeplink.getURL());
+            }
+        });
     }
 
 

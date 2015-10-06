@@ -41,7 +41,7 @@ public class VersionChecker {
                 if (version != null) {
                     if (requiresUpdate(currentVersion, version)) {
                         android.util.Log.e("HOKO", "A new version of HOKO is available, please " +
-                                "update your gradle.properties to \"compile 'com.hokolink:hoko:" +
+                                "update your gradle.properties to \"compile 'com.hokolinks:hoko:" +
                                 version + "'\"");
                     }
                 }

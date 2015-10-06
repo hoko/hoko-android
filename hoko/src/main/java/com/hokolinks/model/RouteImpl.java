@@ -9,6 +9,11 @@ public class RouteImpl extends Route {
         mDeeplinkCallback = deeplinkCallback;
     }
 
+    public RouteImpl(String route, boolean internal, DeeplinkCallback deeplinkCallback) {
+        super(route, internal);
+        mDeeplinkCallback = deeplinkCallback;
+    }
+
     @Override
     public void execute(Deeplink deeplink) {
         if (mDeeplinkCallback != null) {
