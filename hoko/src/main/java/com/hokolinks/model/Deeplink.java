@@ -70,7 +70,7 @@ public class Deeplink {
         mURLs = new HashMap<>();
         mDeeplinkURL = deeplinkURL;
         mIsDeferred = isDeferred;
-        mIsUnique = mIsUnique;
+        mIsUnique = isUnique;
     }
 
     /**
