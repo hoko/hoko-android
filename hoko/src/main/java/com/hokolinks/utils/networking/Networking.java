@@ -170,7 +170,9 @@ public class Networking {
      * Saves all the current http requests to file, guaranteeing persistence.
      */
     private void saveTasks() {
-        Utils.saveToFile(mHttpTasks, HTTP_TASKS_FILENAME, mContext);
+        synchronized (mHttpTasks) {
+            Utils.saveToFile(mHttpTasks, HTTP_TASKS_FILENAME, mContext);
+        }
     }
 
     //Timer
