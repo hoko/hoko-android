@@ -338,7 +338,9 @@ public class AnnotationParser {
                         for (String key : hokoIntentRoute.getQueryParameters().keySet()) {
                             Field field = hokoIntentRoute.getQueryParameters().get(key);
                             String parameter = queryParametersBundle.getString(key);
-                            setValueForField(field, object, parameter, false);
+                            if (parameter != null) {
+                                setValueForField(field, object, parameter, false);
+                            }
                         }
                     }
 
